@@ -1,0 +1,698 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CNIQ India</title>
+<meta name="description" content="CNIQ India moves containers, project cargo and freight across road, port, sea and air, planned, tracked and verified on one live network.">
+<meta name="theme-color" content="#ffffff">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Martian+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+
+<!-- ============ PRELOADER ============ -->
+<div class="loader" id="loader" aria-hidden="true">
+  <div class="loader-inner">
+    <p class="loader-mark"><span class="split">CNIQ INDIA</span><i class="dot"></i></p>
+    <div class="loader-meta">
+      <span>Loading manifest · CNIU 820149 0</span>
+      <span class="loader-count" id="loaderCount">000</span>
+    </div>
+    <div class="loader-bar"><i id="loaderBar"></i></div>
+  </div>
+</div>
+
+<!-- ============ HEADER ============ -->
+<header class="site-header" id="top">
+  <a class="brand" href="#fleet" data-film="lift" aria-label="CNIQ India, back to start">CNIQ INDIA<i class="dot"></i></a>
+  <nav class="nav" aria-label="Primary">
+    <a href="#fleet" data-film="lift">Yard</a>
+    <a href="#services" data-film="run">Services</a>
+    <a href="#telemetry" data-film="aerial">Telemetry</a>
+    <a href="#approach">Approach</a>
+    <a href="#sea-air">Sea &amp; Air</a>
+  </nav>
+  <a class="header-cta" href="#contact">Get a quote</a>
+  <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="drawer">
+    <span class="sr">Open menu</span><i></i><i></i>
+  </button>
+</header>
+
+<div class="drawer" id="drawer" hidden>
+  <nav aria-label="Menu">
+    <a href="#fleet" data-film="lift"><small>01</small>Yard</a>
+    <a href="#services" data-film="run"><small>02</small>Services</a>
+    <a href="#telemetry" data-film="aerial"><small>03</small>Telemetry</a>
+    <a href="#approach"><small>04</small>Approach</a>
+    <a href="#sea-air"><small>05</small>Sea &amp; Air</a>
+    <a href="#contact"><small>06</small>Contact</a>
+  </nav>
+  <p class="drawer-foot">Thiruvananthapuram, Kerala · 08°31′N 076°56′E</p>
+</div>
+
+<!-- ============ FIXED HUD ============ -->
+<div class="hud-speed" id="hudSpeed" aria-hidden="true"><b id="spd">00</b> KM/H</div>
+<div class="hud-status" id="hudStatus" aria-hidden="true">
+  <p class="hud-chapter"><span id="hudNum">01</span> / 03 · <span id="hudChapter">The Lift</span></p>
+  <p class="hud-line"><i></i><span id="hudText">Awaiting chassis</span></p>
+</div>
+<button class="hud-ring" id="hudRing" type="button" aria-label="Back to top">
+  <svg viewBox="0 0 48 48" aria-hidden="true">
+    <circle cx="24" cy="24" r="21" class="ring-track"/>
+    <circle cx="24" cy="24" r="21" class="ring-fill" id="ringFill"/>
+    <path class="ring-arrow" id="ringArrow" d="M24 16v15m-6-6 6 6 6-6"/>
+  </svg>
+</button>
+
+<main>
+
+<!-- ============ THE FILM: yard → highway → corridor ============ -->
+<section class="film" id="fleet" aria-label="From yard to port">
+  <div class="stage" id="stage">
+
+    <div class="chart" aria-hidden="true">
+      <span class="tick t2">08°31′N · 076°56′E</span><span class="tick t4">08°30′N · 076°57′E</span>
+    </div>
+    <p class="giant" id="giant" aria-hidden="true">SERVICES</p>
+
+    <div class="hero" id="hero">
+      <p class="eyebrow">CNIQ INDIA · Highway monitoring · Real-time telemetry</p>
+      <h1 class="hero-title" id="heroTitle">Intelligent navigation for India’s cargo<i class="dot"></i></h1>
+      <p class="hero-lede">Port handling, highway linehaul, project cargo, and sea and air freight. Planned, tracked and verified on one live network.</p>
+      <div class="hero-cta">
+        <a class="btn btn-ink" href="#contact">Get a quote</a>
+        <a class="btn btn-line" href="#services" data-film="run">See what we move</a>
+      </div>
+    </div>
+    <p class="scroll-cue" id="scrollCue" aria-hidden="true"><span>Scroll to load</span><i></i></p>
+
+    <!-- The rig carries the road. Its top edge is the ground line the vehicles stand on. -->
+    <div class="rig" id="rig">
+      <div class="side-wrap" id="sideWrap">
+        <svg id="side" class="side" viewBox="0 0 1600 640" preserveAspectRatio="xMidYMax meet" role="img" aria-labelledby="sideTitle">
+          <title id="sideTitle">A reach stacker lowers a CNIQ INDIA 40-foot container onto a truck, which then drives out of the yard onto the highway.</title>
+          <defs>
+            <linearGradient id="gRib" x1="0" x2="1" y1="0" y2="0">
+              <stop offset="0" stop-color="#eceef0"/><stop offset=".42" stop-color="#d6d9dc"/>
+              <stop offset=".58" stop-color="#b7bbc1"/><stop offset="1" stop-color="#e6e8ea"/>
+            </linearGradient>
+            <pattern id="pRib" width="11" height="10" patternUnits="userSpaceOnUse"><rect width="11" height="10" fill="url(#gRib)"/></pattern>
+            <linearGradient id="gShade" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#fff" stop-opacity=".4"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/>
+              <stop offset="1" stop-color="#000" stop-opacity=".2"/>
+            </linearGradient>
+            <linearGradient id="gCab" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#34363b"/><stop offset=".3" stop-color="#1b1c1f"/><stop offset="1" stop-color="#0b0c0e"/>
+            </linearGradient>
+            <linearGradient id="gGlass" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#eef3f7"/><stop offset=".55" stop-color="#aebbc6"/><stop offset="1" stop-color="#7c8a97"/>
+            </linearGradient>
+            <linearGradient id="gAlu" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#f1f2f4"/><stop offset=".5" stop-color="#c4c8cd"/><stop offset="1" stop-color="#9aa0a6"/>
+            </linearGradient>
+            <linearGradient id="gSteel" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#86b6d8"/><stop offset=".5" stop-color="#5793be"/><stop offset="1" stop-color="#3b6f98"/>
+            </linearGradient>
+            <radialGradient id="gRim" cx=".42" cy=".38" r=".7">
+              <stop offset="0" stop-color="#eef0f2"/><stop offset=".7" stop-color="#b3b8be"/><stop offset="1" stop-color="#8b9097"/>
+            </radialGradient>
+            <pattern id="pHazard" width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+              <rect width="12" height="12" fill="#121315"/><rect width="6" height="12" fill="#e2b100"/>
+            </pattern>
+            <pattern id="pTread" width="34" height="7" patternUnits="userSpaceOnUse">
+              <rect width="34" height="7" fill="#141517"/><rect y="5" width="34" height="2" fill="#0a0b0c"/>
+            </pattern>
+            <linearGradient id="gEnd" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#fff" stop-opacity=".16"/><stop offset="1" stop-color="#000" stop-opacity=".22"/>
+            </linearGradient>
+
+            <!-- wheel, centred on 0,0 -->
+            <g id="wheel">
+              <circle r="26" fill="#111214"/>
+              <circle r="21.5" fill="#1d1f22"/>
+              <circle r="15" fill="url(#gRim)"/>
+              <circle r="15" fill="none" stroke="#6f747b" stroke-width="1.2"/>
+              <g fill="#6c7178">
+                <circle cx="0" cy="-10" r="2.6"/><circle cx="9.51" cy="-3.09" r="2.6"/><circle cx="5.88" cy="8.09" r="2.6"/>
+                <circle cx="-5.88" cy="8.09" r="2.6"/><circle cx="-9.51" cy="-3.09" r="2.6"/>
+              </g>
+              <circle r="5.5" fill="#5b6067"/><circle r="2.4" fill="#26282b"/>
+              <rect x="-1" y="-25" width="2" height="4" fill="#2c2e32"/>
+            </g>
+
+            <!-- container end (doors), 120 × 128, coloured by currentColor -->
+            <g id="crateEnd">
+              <rect width="120" height="128" fill="currentColor"/>
+              <rect width="120" height="128" fill="url(#gEnd)"/>
+              <rect width="120" height="8" fill="#000" opacity=".24"/>
+              <rect y="120" width="120" height="8" fill="#000" opacity=".3"/>
+              <rect width="7" height="128" fill="#000" opacity=".2"/>
+              <rect x="113" width="7" height="128" fill="#000" opacity=".2"/>
+              <rect x="59.3" y="8" width="1.4" height="112" fill="#000" opacity=".4"/>
+              <g fill="#fff" opacity=".42"><rect x="18" y="10" width="2.2" height="108"/><rect x="44" y="10" width="2.2" height="108"/><rect x="74" y="10" width="2.2" height="108"/><rect x="100" y="10" width="2.2" height="108"/></g>
+              <g fill="#000" opacity=".38"><rect x="14" y="62" width="10" height="4"/><rect x="40" y="62" width="10" height="4"/><rect x="70" y="62" width="10" height="4"/><rect x="96" y="62" width="10" height="4"/></g>
+              <rect x="7" y="22" width="106" height="1.2" fill="#000" opacity=".16"/>
+              <rect x="7" y="106" width="106" height="1.2" fill="#000" opacity=".16"/>
+              <g fill="#000" opacity=".5"><rect width="9" height="8"/><rect x="111" width="9" height="8"/><rect y="120" width="9" height="8"/><rect x="111" y="120" width="9" height="8"/></g>
+              <rect x="66" y="13" width="24" height="7" fill="#fff" opacity=".35"/>
+              <rect x="25" y="84" width="11" height="11" fill="#fff" opacity=".24"/>
+            </g>
+
+            <!-- NH milestone: white stone, yellow cap -->
+            <g id="milestone">
+              <path d="M0 0V-46a20 20 0 0 1 40 0V0Z" fill="#f4f4f1" stroke="#c9cbcf" stroke-width="1.5"/>
+              <path d="M0 -40V-46a20 20 0 0 1 40 0v6Z" fill="#e2b100"/>
+            </g>
+          </defs>
+
+          <!-- ===== world behind the truck ===== -->
+          <g id="worldBack">
+            <g class="mast">
+              <rect x="86" y="196" width="8" height="444" fill="#2a2c30"/>
+              <rect x="66" y="178" width="48" height="20" rx="2" fill="#1d1f22"/>
+              <g fill="#f3ebc6"><rect x="71" y="183" width="8" height="10"/><rect x="82" y="183" width="8" height="10"/><rect x="93" y="183" width="8" height="10"/><rect x="104" y="183" width="6" height="10"/></g>
+              <rect x="78" y="628" width="24" height="12" fill="#1d1f22"/>
+            </g>
+
+            <!-- yard sign -->
+            <g class="yard-sign">
+              <rect x="180" y="520" width="4" height="120" fill="#2a2c30"/>
+              <rect x="148" y="486" width="68" height="40" rx="2" fill="#16171a"/>
+              <text x="156" y="502" class="svg-mono" font-size="10" fill="#e2b100">YARD 3</text>
+              <text x="156" y="517" class="svg-mono" font-size="10" fill="#d7d9dc">BAY 14</text>
+            </g>
+
+            <!-- container stack, door ends facing camera -->
+            <g class="stack">
+              <use href="#crateEnd" x="1180" y="512" style="color:#24406a"/>
+              <use href="#crateEnd" x="1304" y="512" style="color:#c4582c"/>
+              <use href="#crateEnd" x="1428" y="512" style="color:#5f6d7a"/>
+              <use href="#crateEnd" x="1552" y="512" style="color:#7b302d"/>
+              <use href="#crateEnd" x="1676" y="512" style="color:#24406a"/>
+              <use href="#crateEnd" x="1800" y="512" style="color:#c4582c"/>
+              <use href="#crateEnd" x="1924" y="512" style="color:#5f6d7a"/>
+              <use href="#crateEnd" x="2048" y="512" style="color:#c9cdd2"/>
+              <use href="#crateEnd" x="1428" y="380" style="color:#c9cdd2"/>
+              <use href="#crateEnd" x="1552" y="380" style="color:#c4582c"/>
+              <use href="#crateEnd" x="1676" y="380" style="color:#5f6d7a"/>
+              <use href="#crateEnd" x="1800" y="380" style="color:#24406a"/>
+              <use href="#crateEnd" x="1924" y="380" style="color:#7b302d"/>
+              <use href="#crateEnd" x="1676" y="248" style="color:#24406a"/>
+              <use href="#crateEnd" x="1800" y="248" style="color:#c9cdd2"/>
+              <text x="1442" y="420" class="svg-display" font-size="15" fill="#16181d">CNIQ</text>
+              <circle cx="1490" cy="410" r="2.6" class="fill-cobalt"/>
+            </g>
+
+            <!-- highway furniture that slides past during the run -->
+            <g class="roadside">
+              <g transform="translate(2500 640)"><use href="#milestone"/><text x="20" y="-25" text-anchor="middle" class="svg-mono" font-size="8" fill="#16171a">NH66</text><text x="20" y="-11" text-anchor="middle" class="svg-display" font-size="12" fill="#16171a">212</text></g>
+              <g transform="translate(3200 640)"><use href="#milestone"/><text x="20" y="-25" text-anchor="middle" class="svg-mono" font-size="8" fill="#16171a">NH66</text><text x="20" y="-11" text-anchor="middle" class="svg-display" font-size="12" fill="#16171a">213</text></g>
+              <g transform="translate(3900 640)"><use href="#milestone"/><text x="20" y="-25" text-anchor="middle" class="svg-mono" font-size="8" fill="#16171a">NH66</text><text x="20" y="-11" text-anchor="middle" class="svg-display" font-size="12" fill="#16171a">214</text></g>
+              <g transform="translate(4600 640)"><use href="#milestone"/><text x="20" y="-25" text-anchor="middle" class="svg-mono" font-size="8" fill="#16171a">NH66</text><text x="20" y="-11" text-anchor="middle" class="svg-display" font-size="12" fill="#16171a">215</text></g>
+              <g fill="#2a2c30">
+                <g transform="translate(2850 0)"><rect x="-3" y="330" width="6" height="310"/><path d="M0 334q0-18 22-18h40v8H22q-14 0-14 10Z"/><rect x="56" y="318" width="26" height="9" rx="3"/></g>
+                <g transform="translate(3550 0)"><rect x="-3" y="330" width="6" height="310"/><path d="M0 334q0-18 22-18h40v8H22q-14 0-14 10Z"/><rect x="56" y="318" width="26" height="9" rx="3"/></g>
+                <g transform="translate(4250 0)"><rect x="-3" y="330" width="6" height="310"/><path d="M0 334q0-18 22-18h40v8H22q-14 0-14 10Z"/><rect x="56" y="318" width="26" height="9" rx="3"/></g>
+                <g transform="translate(4950 0)"><rect x="-3" y="330" width="6" height="310"/><path d="M0 334q0-18 22-18h40v8H22q-14 0-14 10Z"/><rect x="56" y="318" width="26" height="9" rx="3"/></g>
+              </g>
+              <g transform="translate(5800 640)">
+                <rect x="0" y="-150" width="5" height="150" fill="#2a2c30"/><rect x="120" y="-150" width="5" height="150" fill="#2a2c30"/>
+                <rect x="-10" y="-210" width="146" height="66" rx="3" fill="#1f5d3a"/>
+                <text x="8" y="-184" class="svg-display" font-size="15" fill="#fff">PORT</text>
+                <text x="8" y="-164" class="svg-mono" font-size="10" fill="#e8f0ea">GATE 2 · 4 KM</text>
+              </g>
+            </g>
+
+            <!-- reach stacker, seen from the front. Boom parts are positioned by script. -->
+            <g id="stacker">
+              <g clip-path="url(#clipBoom)">
+                <rect id="boomCol" x="538" y="140" width="44" height="400" fill="#18191c"/>
+                <rect id="boomHi" x="541" y="140" width="4" height="400" fill="#383b40"/>
+              </g>
+              <clipPath id="clipBoom"><rect x="400" y="-200" width="320" height="740"/></clipPath>
+              <line id="cylBarrelL" x1="522" y1="520" x2="529.2" y2="424.3" stroke="#2a2c30" stroke-width="11" stroke-linecap="round"/>
+              <line id="cylRodL" x1="529.2" y1="424.3" x2="538" y2="308" stroke="#c8ccd1" stroke-width="6" stroke-linecap="round"/>
+              <line id="cylBarrelR" x1="598" y1="520" x2="590.8" y2="424.3" stroke="#2a2c30" stroke-width="11" stroke-linecap="round"/>
+              <line id="cylRodR" x1="590.8" y1="424.3" x2="582" y2="308" stroke="#c8ccd1" stroke-width="6" stroke-linecap="round"/>
+
+              <!-- tyres (front view: tread faces us) -->
+              <g>
+                <rect x="450" y="548" width="34" height="92" rx="9" fill="url(#pTread)"/>
+                <rect x="487" y="548" width="34" height="92" rx="9" fill="url(#pTread)"/>
+                <rect x="599" y="548" width="34" height="92" rx="9" fill="url(#pTread)"/>
+                <rect x="636" y="548" width="34" height="92" rx="9" fill="url(#pTread)"/>
+              </g>
+              <rect x="470" y="560" width="180" height="36" fill="#26292d"/>
+              <rect x="476" y="572" width="14" height="8" rx="1" fill="#e9edf0"/>
+              <rect x="630" y="572" width="14" height="8" rx="1" fill="#e9edf0"/>
+              <rect x="444" y="535" width="83" height="15" rx="6" fill="url(#gSteel)"/>
+              <rect x="593" y="535" width="83" height="15" rx="6" fill="url(#gSteel)"/>
+              <rect x="444" y="526" width="232" height="12" fill="#3b6f98"/>
+              <!-- engine housing -->
+              <path d="M540 528V470q0-18 18-18h96q18 0 18 18v58Z" fill="url(#gSteel)"/>
+              <g fill="#2b5a7c" opacity=".65"><rect x="604" y="470" width="54" height="3"/><rect x="604" y="479" width="54" height="3"/><rect x="604" y="488" width="54" height="3"/><rect x="604" y="497" width="54" height="3"/><rect x="604" y="506" width="54" height="3"/></g>
+              <text x="550" y="500" class="svg-display" font-size="12" fill="#fff">CNIQ</text>
+              <circle cx="589" cy="491" r="2.4" fill="#fff"/>
+              <!-- cab -->
+              <rect x="448" y="396" width="90" height="10" rx="4" fill="#2a2d31"/>
+              <rect x="452" y="402" width="82" height="126" rx="8" fill="#1c1e21"/>
+              <rect x="460" y="412" width="66" height="82" rx="4" fill="url(#gGlass)"/>
+              <rect x="492" y="412" width="2" height="82" fill="#1c1e21"/>
+              <path d="M466 488l22-60" stroke="#fff" stroke-opacity=".35" stroke-width="2"/>
+              <rect x="460" y="499" width="66" height="22" rx="2" fill="#2a2d31"/>
+              <circle id="beaconGlow" cx="493" cy="390" r="15" fill="#e2b100" opacity="0"/>
+              <rect id="beacon" x="486" y="384" width="14" height="12" rx="3" fill="#e2b100"/>
+            </g>
+          </g>
+
+          <!-- ===== truck: tractor + skeletal trailer, facing right ===== -->
+          <g id="truck">
+            <!-- trailer -->
+            <rect x="244" y="566" width="636" height="12" fill="#1b1c1f"/>
+            <rect x="300" y="578" width="540" height="5" fill="#232528"/>
+            <rect x="840" y="566" width="40" height="20" fill="#1b1c1f"/>
+            <rect x="238" y="566" width="10" height="38" fill="#2a2c30"/>
+            <rect x="234" y="598" width="28" height="8" rx="1" fill="#3a3d42"/>
+            <rect x="240" y="569" width="5" height="7" fill="#c0392b"/>
+            <rect x="262" y="561" width="9" height="5" fill="#111"/><rect x="852" y="561" width="9" height="5" fill="#111"/>
+            <g fill="#26282c"><rect x="330" y="578" width="8" height="12"/><rect x="386" y="578" width="8" height="12"/><rect x="442" y="578" width="8" height="12"/></g>
+            <rect x="302" y="582" width="176" height="6" fill="#121315"/>
+            <rect x="298" y="582" width="5" height="34" fill="#121315"/>
+            <g fill="#26282c"><rect x="500" y="580" width="4" height="30"/><rect x="620" y="580" width="4" height="30"/><rect x="740" y="580" width="4" height="30"/></g>
+            <rect x="492" y="592" width="262" height="4" fill="url(#gAlu)"/>
+            <rect x="492" y="604" width="262" height="4" fill="url(#gAlu)"/>
+            <rect x="776" y="578" width="10" height="44" fill="#2a2c30"/>
+            <rect x="770" y="622" width="22" height="6" fill="#1d1f22"/>
+            <rect x="786" y="596" width="9" height="3" fill="#3a3d42"/>
+            <!-- tractor chassis -->
+            <rect x="826" y="586" width="272" height="12" fill="#1b1c1f"/>
+            <rect x="836" y="578" width="54" height="8" fill="#2b2e33"/>
+            <path d="M828 596q34-22 68 0v4h-68Z" fill="#111214"/>
+            <rect x="900" y="590" width="62" height="26" rx="6" fill="url(#gAlu)"/>
+            <g fill="#7d8288"><rect x="914" y="590" width="3" height="26"/><rect x="944" y="590" width="3" height="26"/></g>
+            <rect x="953" y="452" width="6" height="138" fill="url(#gAlu)"/>
+            <rect x="971" y="600" width="4" height="22" fill="#26292d"/>
+            <rect x="972" y="604" width="26" height="4" fill="#3a3d42"/><rect x="972" y="616" width="26" height="4" fill="#3a3d42"/>
+            <!-- cab -->
+            <g id="cabBody">
+              <path d="M956 436h6v104h-6Z" fill="#121315"/>
+              <path d="M962 598V446q0-16 16-16h72q16 0 20 14l20 78q5 16 6 34l2 42Z" fill="url(#gCab)"/>
+              <path d="M968 440q2-6 12-6h68" fill="none" stroke="#fff" stroke-opacity=".16" stroke-width="2"/>
+              <path d="M1066 448l6-2 18 74-6 2Z" fill="#9fb0bf" opacity=".85"/>
+              <path d="M1012 456h50l10 40h-60Z" fill="url(#gGlass)"/>
+              <path d="M1004 452h60l12 48 2 66h-74Z" fill="none" stroke="#2e3035" stroke-width="1.5"/>
+              <rect x="1012" y="512" width="12" height="3" rx="1" fill="#3a3d42"/>
+              <g fill="#2c2f33"><rect x="1091" y="548" width="4" height="4"/><rect x="1091" y="556" width="4" height="4"/><rect x="1091" y="564" width="4" height="4"/></g>
+              <path d="M1088 574h9l1 10h-8Z" fill="#dfe5ea"/>
+              <rect x="1066" y="586" width="38" height="14" rx="3" fill="#1d1f22"/>
+              <path d="M1070 470l30-4" stroke="#1d1f22" stroke-width="3"/>
+              <rect x="1098" y="456" width="7" height="30" rx="2" fill="#1d1f22"/>
+              <circle cx="1032" cy="538" r="3" class="fill-cobalt"/>
+              <text x="1039" y="541" class="svg-display" font-size="8.5" fill="#8d939b">CNIQ</text>
+              <path d="M998 598a34 34 0 0 1 68 0Z" fill="#08090a"/>
+            </g>
+            <!-- wheels -->
+            <g class="wheel" transform="translate(334 614)"><use href="#wheel"/></g>
+            <g class="wheel" transform="translate(390 614)"><use href="#wheel"/></g>
+            <g class="wheel" transform="translate(446 614)"><use href="#wheel"/></g>
+            <g class="wheel" transform="translate(862 614)"><use href="#wheel"/></g>
+            <g class="wheel" transform="translate(1032 614)"><use href="#wheel"/></g>
+          </g>
+
+          <!-- ===== the 40 ft container (local 600 × 142) ===== -->
+          <g id="box" transform="translate(260 424)">
+            <rect width="600" height="142" fill="url(#pRib)"/>
+            <rect width="600" height="142" fill="url(#gShade)"/>
+            <rect width="600" height="7" fill="#aeb2b8"/>
+            <rect y="135" width="600" height="7" fill="#959aa1"/>
+            <rect width="10" height="142" fill="#a4a9af"/><rect x="590" width="10" height="142" fill="#a4a9af"/>
+            <g fill="#5d6168"><rect width="12" height="9"/><rect x="588" width="12" height="9"/><rect y="133" width="12" height="9"/><rect x="588" y="133" width="12" height="9"/></g>
+            <text x="52" y="80" class="svg-display" font-size="46" fill="#15171c">CNIQ INDIA</text>
+            <circle cx="345" cy="45" r="5.5" class="fill-cobalt"/>
+            <text x="54" y="104" class="svg-mono" font-size="10.5" fill="#4b5058" letter-spacing=".5">CNIU 820149 0 · 45G1 · MULTIMODAL FLEET</text>
+            <rect x="520" y="96" width="44" height="22" fill="#fff" opacity=".55"/>
+            <g fill="#7b8088"><rect x="525" y="101" width="34" height="2"/><rect x="525" y="106" width="26" height="2"/><rect x="525" y="111" width="30" height="2"/></g>
+            <g id="callout" class="callout">
+              <path d="M600 0 L668 -64 H820" fill="none" stroke="#15171c" stroke-width="1.2"/>
+              <circle cx="600" cy="0" r="4" fill="#15171c"/>
+              <text x="676" y="-74" class="svg-mono" font-size="12" fill="#15171c">CNIU 820149 0 · 45G1</text>
+              <text x="676" y="-46" class="svg-mono" font-size="11" fill="#5d626b">40 FT HIGH CUBE</text>
+              <text x="676" y="-30" class="svg-mono fill-cobalt" font-size="11">TWIST-LOCKS ENGAGED</text>
+            </g>
+          </g>
+
+          <!-- ===== stacker head + spreader, in front of the box ===== -->
+          <g id="worldFront">
+            <g id="head" transform="translate(0 150)">
+              <rect x="544" y="-34" width="32" height="9" fill="#2c2f33"/>
+              <rect x="532" y="-26" width="56" height="26" rx="4" fill="#1d1f22"/>
+              <rect x="252" y="0" width="616" height="16" fill="#1b1c1f"/>
+              <rect x="252" y="0" width="616" height="3" fill="#34373c"/>
+              <g fill="#2d3035"><rect x="400" y="3" width="2" height="13"/><rect x="718" y="3" width="2" height="13"/></g>
+              <rect x="240" y="-4" width="22" height="24" fill="url(#pHazard)"/>
+              <rect x="858" y="-4" width="22" height="24" fill="url(#pHazard)"/>
+              <g fill="#111"><rect x="262" y="16" width="12" height="7"/><rect x="846" y="16" width="12" height="7"/></g>
+            </g>
+          </g>
+        </svg>
+      </div>
+
+      <div class="road" id="services">
+        <div class="lanes" id="lanes" aria-hidden="true"></div>
+        <div class="track" id="track">
+          <div class="track-intro">
+            <p class="eyebrow eyebrow-dark">02 · Services</p>
+            <h2>What we move<i class="dot"></i></h2>
+            <p>Six services, one shipment record. Each leg is planned, tracked and checked against its booking before it reaches your invoice.</p>
+          </div>
+          <article class="svc">
+            <span class="svc-no">01</span>
+            <svg class="pix" data-icon="truck" viewBox="0 0 12 12" aria-hidden="true"></svg>
+            <h3>Highway<br>linehaul</h3>
+            <p>Full-truckload container and cargo runs on national highway corridors, with rest stops and driver hours planned into every route.</p>
+          </article>
+          <article class="svc">
+            <span class="svc-no">02</span>
+            <svg class="pix" data-icon="crate" viewBox="0 0 12 12" aria-hidden="true"></svg>
+            <h3>Project<br>cargo</h3>
+            <p>Oversized and complex loads handled end to end, from route surveys and permits to engineered load plans.</p>
+          </article>
+          <article class="svc">
+            <span class="svc-no">03</span>
+            <svg class="pix" data-icon="pin" viewBox="0 0 12 12" aria-hidden="true"></svg>
+            <h3>Domestic &amp;<br>interstate</h3>
+            <p>Local, metro and interstate transport run to consistent service levels, with delivery visibility at every handover.</p>
+          </article>
+          <article class="svc">
+            <span class="svc-no">04</span>
+            <svg class="pix" data-icon="box" viewBox="0 0 12 12" aria-hidden="true"></svg>
+            <h3>Port &amp; yard<br>handling</h3>
+            <p>Container pickup, positioning and yard moves timed to terminal schedules, so boxes are ready when vessels and trucks are.</p>
+          </article>
+          <article class="svc">
+            <span class="svc-no">05</span>
+            <svg class="pix" data-icon="ship" viewBox="0 0 12 12" aria-hidden="true"></svg>
+            <h3>Sea &amp; air<br>freight</h3>
+            <p>Ocean and air legs booked alongside the road move, so a single shipment record covers the whole journey.</p>
+          </article>
+          <article class="svc">
+            <span class="svc-no">06</span>
+            <svg class="pix" data-icon="sat" viewBox="0 0 12 12" aria-hidden="true"></svg>
+            <h3>Live<br>telemetry</h3>
+            <p>GPS position, speed, geofence events and exceptions streamed to your team as they happen.</p>
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== satellite corridor ===== -->
+    <div class="aerial" id="telemetry">
+      <svg id="map" class="map" role="img" aria-labelledby="mapTitle">
+        <title id="mapTitle">Satellite-style map: the truck follows the highway from the container yard to the port gate.</title>
+        <defs>
+          <pattern id="pHatch" width="14" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+            <rect width="14" height="14" fill="#121316"/><rect width="5" height="14" fill="#4a4d53"/>
+          </pattern>
+          <pattern id="pField" width="18" height="18" patternUnits="userSpaceOnUse" patternTransform="rotate(-30)">
+            <rect width="18" height="18" fill="#efefeb"/><rect width="18" height="2" fill="#e4e5df"/>
+          </pattern>
+          <pattern id="pSea" width="60" height="22" patternUnits="userSpaceOnUse">
+            <rect width="60" height="22" fill="#e4eaf0"/><path d="M0 11q15-7 30 0t30 0" fill="none" stroke="#d3dce6" stroke-width="2"/>
+          </pattern>
+          <pattern id="pRoof" width="6" height="40" patternUnits="userSpaceOnUse">
+            <rect width="6" height="40" fill="#d9dcdf"/><rect width="2.6" height="40" fill="#bfc3c8"/>
+          </pattern>
+        </defs>
+        <g id="cam">
+          <rect x="-4000" y="-3200" width="11000" height="9000" fill="#f2f2ef"/>
+          <g id="mapGrid"></g>
+          <g id="mapGround"></g>
+          <g id="mapRoads"></g>
+          <g id="mapPort"></g>
+          <g id="mapLabels"></g>
+          <g id="geofence">
+            <circle id="fenceRing" cx="3000" cy="2000" r="170" fill="#1d4eff" fill-opacity=".07" stroke="#1d4eff" stroke-width="3" stroke-dasharray="14 10"/>
+            <circle id="fencePing" cx="3000" cy="2000" r="170" fill="none" stroke="#1d4eff" stroke-width="2" opacity="0"/>
+          </g>
+          <g id="cars"></g>
+          <g id="tvTruck">
+            <g id="tvTrailer">
+              <rect x="-178" y="-19" width="184" height="38" rx="2" fill="#0d0e10" opacity=".22"/>
+              <rect x="-176" y="-18" width="180" height="36" rx="2" fill="url(#pRoof)"/>
+              <rect x="-176" y="-18" width="180" height="36" rx="2" fill="none" stroke="#9ea3a9" stroke-width="1.5"/>
+              <g fill="#5d6168"><rect x="-176" y="-18" width="5" height="5"/><rect x="-1" y="-18" width="5" height="5"/><rect x="-176" y="13" width="5" height="5"/><rect x="-1" y="13" width="5" height="5"/></g>
+              <text x="-92" y="6.5" text-anchor="middle" class="svg-display" font-size="17" fill="#15171c">CNIQ INDIA</text>
+              <circle cx="-22" cy="-6" r="2.8" class="fill-cobalt"/>
+            </g>
+            <g id="tvCab">
+              <rect x="6" y="-18" width="44" height="36" rx="7" fill="#1c1d20"/>
+              <rect x="11" y="-14" width="28" height="28" rx="5" fill="#2c2e32"/>
+              <rect x="13" y="-12" width="22" height="3" rx="1.5" fill="#fff" opacity=".14"/>
+              <rect x="41" y="-15" width="5" height="30" rx="2" fill="#8798a8"/>
+              <rect x="40" y="-23" width="5" height="6" rx="1" fill="#1c1d20"/>
+              <rect x="40" y="17" width="5" height="6" rx="1" fill="#1c1d20"/>
+            </g>
+          </g>
+        </g>
+      </svg>
+
+      <aside class="telemetry" id="telemetryPanel" aria-label="Simulated live telemetry">
+        <header class="tl-head">
+          <span class="tl-live"><i></i>Live telemetry</span>
+          <span class="tl-sim">Simulated feed</span>
+        </header>
+        <div class="tl-id"><span>CNIU 820149 0 · 45G1</span><time id="tClock">21:04</time></div>
+        <div class="tl-body">
+          <dl class="tl-grid">
+            <div><dt>Lat</dt><dd id="tLat">08.5241° N</dd></div>
+            <div><dt>Lon</dt><dd id="tLon">076.9366° E</dd></div>
+            <div><dt>Heading</dt><dd id="tHdg">090° E</dd></div>
+            <div><dt>Speed</dt><dd><span id="tSpd">00</span> km/h</dd></div>
+            <div><dt>To gate</dt><dd id="tRem">4.6 km</dd></div>
+            <div><dt>ETA</dt><dd>21:31</dd></div>
+          </dl>
+          <svg class="compass" viewBox="0 0 100 100" aria-hidden="true">
+            <circle cx="50" cy="50" r="46" class="c-ring"/>
+            <g class="c-ticks" id="cTicks"></g>
+            <text x="50" y="17" text-anchor="middle" class="c-n">N</text>
+            <g id="cNeedle"><path d="M50 18 56 50H44Z" class="c-north"/><path d="M44 50h12L50 82Z" class="c-south"/></g>
+            <circle cx="50" cy="50" r="4" class="c-hub"/>
+          </svg>
+        </div>
+        <ol class="tl-events" id="tEvents">
+          <li data-at="0"><time>21:04</time>Geofence exit · CFS Yard 3</li>
+          <li data-at="0.36"><time>21:13</time>Junction cleared · NH 66</li>
+          <li data-at="0.7"><time>21:22</time>Route check · on plan</li>
+          <li data-at="0.985"><time>21:31</time>Geofence entry · Port gate 2</li>
+        </ol>
+      </aside>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ MANIFESTO ============ -->
+<section class="manifesto" id="approach">
+  <div class="wrap">
+    <p class="eyebrow">04 · Approach</p>
+    <p class="manifesto-text" id="manifestoText">We move containers, project cargo and everyday freight across India with one rule. Every kilometre is visible, every handover is recorded, and every trip is verified before it is billed.</p>
+    <div class="principles">
+      <article>
+        <h3>Verified before billed</h3>
+        <p>Trips are checked against the booking, the GPS trace and the handover record before they reach an invoice.</p>
+      </article>
+      <article>
+        <h3>One record per shipment</h3>
+        <p>Road, port, sea and air legs share a single shipment record that your team can open at any time.</p>
+      </article>
+      <article>
+        <h3>Every change on the record</h3>
+        <p>Corrections keep the old value, the new value, who made the change and why. Nothing is overwritten silently.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ OPERATING MODEL ============ -->
+<section class="model" id="model">
+  <div class="wrap">
+    <div class="model-head">
+      <p class="eyebrow">How a load moves</p>
+      <h2>Six steps from booking to proof of delivery<i class="dot"></i></h2>
+    </div>
+    <div class="model-line" aria-hidden="true"><i id="modelFill"></i></div>
+    <ol class="steps" id="steps">
+      <li><span class="step-no">01</span><h3>Book</h3><p>Your request is logged against your account and contract, with pickup, drop and cargo details.</p></li>
+      <li><span class="step-no">02</span><h3>Assign</h3><p>A compliant vehicle and a verified driver are matched to the load. Permits and documents are checked.</p></li>
+      <li><span class="step-no">03</span><h3>Dispatch</h3><p>The route, stops and handover points are planned and shared before the wheels turn.</p></li>
+      <li><span class="step-no">04</span><h3>Track</h3><p>GPS, geofences and exception alerts follow the load in real time.</p></li>
+      <li><span class="step-no">05</span><h3>Verify</h3><p>Distance, timings and handovers are reconciled against the booking and locked.</p></li>
+      <li><span class="step-no">06</span><h3>Deliver</h3><p>Proof of delivery, trip sheet and invoice reach you as one linked package.</p></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============ SEA & AIR ============ -->
+<section class="voyage" id="sea-air" aria-label="Sea and air freight">
+  <div class="voyage-head wrap">
+    <p class="eyebrow">05 · Sea &amp; Air</p>
+    <h2>Berth to runway, on the same record<i class="dot"></i></h2>
+    <p>Ocean and air freight are booked, tracked and handed over on the shipment record that already holds your road legs. One trail of documents, from gate-in to wheels-up.</p>
+  </div>
+  <div class="voyage-stage" id="voyageStage">
+    <svg id="voyageSvg" class="voyage-svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <defs>
+        <linearGradient id="gSky" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#dfe6ee"/><stop offset=".7" stop-color="#f4f6f8"/><stop offset="1" stop-color="#ffffff"/>
+        </linearGradient>
+        <linearGradient id="gSea" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#2a3442"/><stop offset=".15" stop-color="#151b24"/><stop offset="1" stop-color="#0b0e13"/>
+        </linearGradient>
+        <linearGradient id="gHull" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#26324a"/><stop offset="1" stop-color="#141b29"/>
+        </linearGradient>
+        <linearGradient id="gFuse" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#ffffff"/><stop offset=".55" stop-color="#eef0f3"/><stop offset="1" stop-color="#b9bfc7"/>
+        </linearGradient>
+        <linearGradient id="gTrail" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff" stop-opacity=".9"/>
+        </linearGradient>
+      </defs>
+      <rect x="-1600" y="0" width="4800" height="562" fill="url(#gSky)"/>
+      <g id="cloudsFar"></g>
+      <g id="plane" transform="translate(620 330) rotate(-4) scale(.62)">
+        <rect x="-900" y="-4" width="910" height="5" fill="url(#gTrail)"/>
+        <path d="M150 -30 L80 -196 L134 -196 L250 -36Z" fill="#1d4eff"/>
+        <circle cx="140" cy="-150" r="11" fill="#fff"/>
+        <path d="M30 -6 L190 -14 L200 -4 L44 2Z" fill="#9aa1aa"/>
+        <path d="M300 18 C340 26 420 28 520 22 L470 40 L330 42Z" fill="#c5cbd2"/>
+        <path d="M18 -14 C40 -26 80 -34 140 -36 L470 -38 C520 -40 545 -58 590 -63 L640 -64 C672 -64 694 -40 702 -12 C706 4 700 22 680 32 L640 40 L150 40 C100 40 60 28 30 6Z" fill="url(#gFuse)"/>
+        <path d="M150 40 L640 40 C660 36 676 33 686 28 L150 28Z" fill="#9ea6b0" opacity=".55"/>
+        <path d="M652 -50 L676 -50 L686 -36 L652 -36Z" fill="#26303c"/>
+        <g fill="#56606c"><rect x="560" y="-52" width="5" height="7" rx="1"/><rect x="574" y="-54" width="5" height="7" rx="1"/><rect x="588" y="-55" width="5" height="7" rx="1"/><rect x="602" y="-55" width="5" height="7" rx="1"/><rect x="616" y="-55" width="5" height="7" rx="1"/></g>
+        <rect x="520" y="-28" width="76" height="54" rx="3" fill="none" stroke="#c6ccd3" stroke-width="1.5"/>
+        <text x="200" y="12" class="svg-display" font-size="30" fill="#15171c">CNIQ INDIA</text>
+        <circle cx="403" cy="-11" r="4" fill="#1d4eff"/>
+        <text x="202" y="26" class="svg-mono" font-size="8" fill="#6a717b">PRIORITY AIR CARGO</text>
+        <rect x="290" y="44" width="88" height="22" rx="10" fill="#d1d6dc"/>
+        <rect x="372" y="44" width="6" height="22" fill="#4a525c"/>
+        <path d="M380 34 L420 34 L410 46 L388 46Z" fill="#aeb5bd"/>
+        <rect x="380" y="46" width="104" height="30" rx="13" fill="#e9ecef"/>
+        <rect x="478" y="47" width="8" height="28" rx="3" fill="#3a424c"/>
+        <rect x="390" y="56" width="70" height="3" fill="#c3c9d0"/>
+        <g class="cap">
+          <path d="M560 -70 L610 -140 H900" fill="none" stroke="#15171c" stroke-width="2"/>
+          <circle cx="560" cy="-70" r="5" fill="#15171c"/>
+          <text x="616" y="-152" class="svg-mono" font-size="21" fill="#15171c">AIR LEG · PRIORITY CARGO</text>
+        </g>
+      </g>
+      <g id="cloudsNear"></g>
+      <rect x="-1600" y="560" width="4800" height="560" fill="url(#gSea)"/>
+      <rect x="-1600" y="559" width="4800" height="2" fill="#f4f6f8" opacity=".5"/>
+      <g id="wavesFar"></g>
+      <g id="ship" transform="translate(120 712) scale(.74)">
+        <g id="shipBody">
+          <path d="M-300 6 L20 2 L20 10 L-300 18Z" fill="#fff" opacity=".18"/>
+          <path d="M-220 22 L30 10 L30 16 L-220 30Z" fill="#fff" opacity=".1"/>
+          <g id="shipBoxes"></g>
+          <rect x="40" y="-250" width="112" height="186" fill="#e7eaee"/>
+          <rect x="28" y="-252" width="136" height="14" fill="#d2d7dd"/>
+          <g fill="#2a3240" id="shipWindows"></g>
+          <rect x="88" y="-292" width="4" height="42" fill="#5a636f"/>
+          <rect x="74" y="-286" width="32" height="3" fill="#5a636f"/>
+          <path d="M162 -66 L162 -214 L198 -214 L198 -66Z" fill="#1c2330"/>
+          <rect x="162" y="-200" width="36" height="14" fill="#1d4eff"/>
+          <circle cx="180" cy="-193" r="4" fill="#fff"/>
+          <path d="M0 -66 L1000 -72 L952 0 L26 0Z" fill="url(#gHull)"/>
+          <path d="M26 0 L952 0 L946 -9 L22 -9Z" fill="#8a2c25"/>
+          <rect x="0" y="-70" width="1000" height="3" fill="#3a4863" transform="rotate(-.34 0 -66)"/>
+          <text x="420" y="-26" class="svg-display" font-size="34" fill="#e8ecf2">CNIQ INDIA</text>
+          <circle cx="662" cy="-48" r="4.5" fill="#1d4eff"/>
+          <text x="900" y="-40" class="svg-mono" font-size="10" fill="#9aa6b8">CNIQ</text>
+          <g class="cap">
+            <path d="M760 -200 L800 -270 H1060" fill="none" stroke="#15171c" stroke-width="2"/>
+            <circle cx="760" cy="-200" r="5" fill="#15171c"/>
+            <text x="806" y="-282" class="svg-mono" font-size="21" fill="#15171c">SEA LEG · 14 BAYS · OUTBOUND</text>
+          </g>
+        </g>
+      </g>
+      <g id="wavesNear"></g>
+    </svg>
+  </div>
+</section>
+
+<!-- ============ CONTACT ============ -->
+<section class="contact" id="contact">
+  <div class="wrap contact-grid">
+    <div class="contact-intro">
+      <p class="eyebrow eyebrow-dark">06 · Contact</p>
+      <h2>Tell us what needs to move<i class="dot"></i></h2>
+      <p>Send the route and the cargo. We reply with a plan, a vehicle and a price.</p>
+      <dl class="contact-list">
+        <div>
+          <dt>Email</dt>
+          <dd><span class="selectable" id="contactEmail">navigation@compassnai.com</span><button class="copy" type="button" data-copy="navigation@compassnai.com">Copy</button></dd>
+        </div>
+        <div>
+          <dt>Phone</dt>
+          <dd><span class="selectable">+91 99958 81477</span><button class="copy" type="button" data-copy="+919995881477">Copy</button></dd>
+        </div>
+        <div>
+          <dt>Base</dt>
+          <dd>Thiruvananthapuram, Kerala, India</dd>
+        </div>
+      </dl>
+    </div>
+
+    <form class="quote" id="quoteForm" novalidate>
+      <p class="quote-title">Quote request</p>
+      <div class="field-row">
+        <label class="field"><span>Your name</span><input id="qName" name="name" autocomplete="name" required placeholder="Full name"></label>
+        <label class="field"><span>Company</span><input id="qCompany" name="company" autocomplete="organization" placeholder="Company"></label>
+      </div>
+      <div class="field-row">
+        <label class="field"><span>Pickup</span><input id="qFrom" name="from" required placeholder="City or port"></label>
+        <label class="field"><span>Drop</span><input id="qTo" name="to" required placeholder="City or port"></label>
+      </div>
+      <label class="field"><span>Cargo</span>
+        <select id="qCargo" name="cargo">
+          <option>40 ft container</option>
+          <option>20 ft container</option>
+          <option>Project cargo (oversized)</option>
+          <option>General cargo, full truckload</option>
+          <option>Sea or air freight</option>
+        </select>
+      </label>
+      <label class="field"><span>Notes</span><textarea id="qNotes" name="notes" rows="3" placeholder="Weight, dates, handling needs"></textarea></label>
+      <p class="form-msg" id="formMsg" role="status" aria-live="polite"></p>
+      <div class="quote-actions">
+        <button class="btn btn-gold" type="submit">Copy request</button>
+        <a class="btn btn-line-light" id="mailLink" href="mailto:navigation@compassnai.com">Open in email</a>
+      </div>
+    </form>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <p class="footer-mark" aria-hidden="true">CNIQ INDIA<i class="dot"></i></p>
+    <div class="footer-row">
+      <p>© <span id="year">2026</span> CNIQ India · Multimodal logistics</p>
+      <p>08°31′N 076°56′E · Thiruvananthapuram</p>
+      <a href="#fleet" data-film="lift">Back to the yard ↑</a>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+<script src="assets/js/main.js"></script>
+</body>
+</html>
