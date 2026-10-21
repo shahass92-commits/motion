@@ -752,6 +752,19 @@
         }
       }
     }
+    // rail-mounted gantries straddle each yard block and its truck lane
+    let gBeam = '', gLeg = '', gHouse = '', gRail = '', gCab = '';
+    for (let k = 0; k < 4; k++) {
+      const bx = -104 - k * 46, x0 = bx - 5.5, w = 29;
+      gRail += pR(x0, YARD.y, 0.45, YARD.h) + pR(x0 + w - 0.45, YARD.y, 0.45, YARD.h);
+      for (let i = 0; i < 7; i++) {
+        const y = YARD.y + 70 + i * 152 + (k % 2) * 64;
+        gBeam += pR(x0, y, w, 1.5) + pR(x0, y + 8.5, w, 1.5);
+        gLeg += pR(x0 - 1, y - 1.6, 2.6, 13) + pR(x0 + w - 1.6, y - 1.6, 2.6, 13);
+        gHouse += pR(bx + 5, y + 1.3, 6.4, 7.4);
+        gCab += pR(bx + 5, y + 1.3, 6.4, 1.1);
+      }
+    }
     const raster = toCanvas(YARD.w * YARD.ppm, YARD.h * YARD.ppm), rg = raster.getContext('2d');
     rg.setTransform(YARD.ppm, 0, 0, YARD.ppm, -YARD.x * YARD.ppm, -YARD.y * YARD.ppm);
     for (const b of yard) { rg.fillStyle = b.fill; rg.fillRect(b.x, b.y, b.w, b.h); }
@@ -759,6 +772,14 @@
       yard,
       near: yard.filter((b) => Math.abs(b.y - CRANE_Y) < 260),
       raster,
+      gantries: [
+        layer('#000', gBeam + gLeg, 0.26),
+        layer('#8e97a0', gRail),
+        layer('#dfe4e9', gBeam),
+        layer('#f3f6f8', gLeg),
+        layer('#cfd6dd', gHouse),
+        layer('#1d4eff', gCab)
+      ],
       ground: [
         layer('#a3a59f', pR(X0, Y0, w, Y1 - Y0)),
         layer('#000', joints, 0.06),
@@ -1127,6 +1148,28 @@ ${fairings}${engines}
     return c;
   }
 
+  // ASD harbour tug, 32 m by 13 m, bow towards +y: a fendered hull, the wheelhouse forward of
+  // midships, the funnel and mast behind it, and the towing winch on the open aft deck
+  function tugModel() {
+    const hull = 'M0 16.4C3.1 14.2 6.5 9.6 6.5 4.2L6.5 -13.2Q6.5 -14 5.7 -14L-5.7 -14Q-6.5 -14 -6.5 -13.2L-6.5 4.2C-6.5 9.6 -3.1 14.2 0 16.4Z';
+    const deck = 'M0 14.6C2.6 12.7 5.4 8.8 5.4 4.1L5.4 -12.5Q5.4 -13 4.9 -13L-4.9 -13Q-5.4 -13 -5.4 -12.5L-5.4 4.1C-5.4 8.8 -2.6 12.7 0 14.6Z';
+    return [
+      layer('#0a1724', hull),
+      layer(null, hull, 0.9, '#13202c', 1.5),
+      layer('#2b3946', deck),
+      layer('#e2581c', pR(-5.4, -13, 10.8, 2.4)),
+      layer('#1b2831', pR(-5.2, -9.6, 10.4, 3.4)),
+      layer('#e9edf1', pRR(-4.4, -3.2, 8.8, 8.4, 0.9)),
+      layer('#9db2c4', pR(-3.6, -2.4, 7.2, 3)),
+      layer('#1d4eff', pR(-4.4, -3.2, 8.8, 0.7)),
+      layer('#c6ced6', pRR(-1.6, 5.6, 3.2, 4.4, 0.6)),
+      layer('#1b1d20', pR(-1.1, 6.2, 2.2, 1)),
+      layer('#f2f4f6', pC(0, 11.6, 0.8) + pC(-3.4, -11.6, 0.6) + pC(3.4, -11.6, 0.6)),
+      layer('#6f7d8a', pR(-2.4, -6.6, 4.8, 1.2)),
+      layer('#d7dde3', pC(0, -7.6, 0.5))
+    ];
+  }
+
   // coconut palms from above, a 256 px tile at 2 px per metre: crowns lit from the upper left
   function palmTexture() {
     const S = 256, c = toCanvas(S, S), g = c.getContext('2d'), R = rng(404);
@@ -1167,7 +1210,28 @@ ${fairings}${engines}
       shadows += pR(x + 0.9, y + 0.9, w, h);
     }
     const road = 'M319 220' + along(roadX);
-    return [
+    // water shoals towards the beach: over sand it reads jade, then green-blue, then the deep
+    // gradient. Bands run seaward from the shoreline and stack, so the ramp smooths itself out.
+    // They start south of the port, since the harbour itself is dredged deep.
+    const bank = (d) => `M${shore(220)} 220` + along((y) => shore(y) - d * clamp((y - 220) / 220, 0, 1)) + 'L7000 4400L7000 220Z';
+    const shoal = [[300, 'rgba(22,86,132,.22)'], [210, 'rgba(26,112,152,.26)'], [140, 'rgba(34,142,166,.3)'],
+      [86, 'rgba(46,170,176,.32)'], [48, 'rgba(70,195,188,.34)'], [22, 'rgba(116,214,200,.4)'], [9, 'rgba(170,230,214,.45)']]
+      .map(([d, c]) => layer(c, bank(d)));
+    // reef and rock off the headland, dark under the shallows
+    let reef = '';
+    for (let i = 0; i < 90; i++) {
+      const y = 240 + Math.pow(R(), 1.4) * 1500, d = 10 + Math.pow(R(), 1.5) * 110;
+      reef += pE(shore(y) - d, y, 3 + R() * 11, 2 + R() * 7);
+    }
+    // the Vizhinjam fishing fleet: small FRP craft working off the beach, each with a short wake
+    const boats = [];
+    for (let i = 0; i < 44; i++) {
+      const y = 250 + Math.pow(R(), 1.25) * 2400, d = 24 + Math.pow(R(), 1.3) * 230;
+      boats.push({ x: shore(y) - d, y, a: (R() - 0.5) * 2.4, s: 0.82 + R() * 0.5, hull: R() < 0.5 ? '#2f6fb0' : '#e8e4da' });
+    }
+    return { boats, layers: [
+      ...shoal,
+      layer('#10483f', reef, 0.4),
       layer('#d9c9a1', land(0)),
       layer(palms, land(24)),
       layer('#000', shadows, 0.3),
@@ -1177,9 +1241,41 @@ ${fairings}${engines}
       layer('#6b8fb8', roofs[3]),
       layer(null, road, 1, '#3a3b3d', 12),
       layer(null, road, 0.5, '#e8e6dc', 0.3),
+      layer('#6c665c', pR(25, 212, 7000, 9)),
+      layer('#8e8880', pR(25, 212, 7000, 3)),
+      layer('#000', pR(25, 219, 7000, 2), 0.25),
       layer(null, 'M25 220' + along((y) => shore(y) - 6), 0.28, '#f4f8ff', 1.6),
       layer(null, 'M25 220' + along(shore), 0.6, '#f4f8ff', 2.6)
-    ];
+    ] };
+  }
+
+  // a 9 m fishing boat seen from above, bow towards +y: wake, hull, thwarts and an outboard
+  function drawBoat(g, b) {
+    g.save();
+    g.translate(b.x, b.y);
+    g.rotate(b.a);
+    g.scale(b.s, b.s);
+    g.globalAlpha = 0.5;
+    g.fillStyle = '#eaf4ff';
+    g.beginPath();
+    g.moveTo(-0.5, 2.2); g.lineTo(-3.4, -17); g.lineTo(3.4, -17); g.lineTo(0.5, 2.2);
+    g.fill();
+    g.globalAlpha = 1;
+    g.fillStyle = '#0e2436';
+    g.beginPath();
+    g.moveTo(0, 5.4); g.quadraticCurveTo(1.5, 1.4, 1.5, -1.6); g.lineTo(1.2, -4.2);
+    g.lineTo(-1.2, -4.2); g.lineTo(-1.5, -1.6); g.quadraticCurveTo(-1.5, 1.4, 0, 5.4);
+    g.fill();
+    g.fillStyle = b.hull;
+    g.beginPath();
+    g.moveTo(0, 4.8); g.quadraticCurveTo(1.15, 1.3, 1.15, -1.5); g.lineTo(0.95, -3.7);
+    g.lineTo(-0.95, -3.7); g.lineTo(-1.15, -1.5); g.quadraticCurveTo(-1.15, 1.3, 0, 4.8);
+    g.fill();
+    g.fillStyle = 'rgba(0,0,0,.35)';
+    for (const y of [1.6, -0.4, -2.4]) g.fillRect(-1.05, y, 2.1, 0.3);
+    g.fillStyle = '#1b1d20';
+    g.fillRect(-0.45, -4.6, 0.9, 1.2);
+    g.restore();
   }
 
   /* ---------- night harbour behind contact ---------- */
@@ -1885,7 +1981,7 @@ ${fairings}${engines}
   const O = {
     head: 0, grab: 0, lift: 0, trav: 0, rel: 0, truck: 0, jolt: 0, lines: 1,
     dep: 0, cam: 0, wake: 0, run: 0, cl: 0, cla: 0, pp: 0, z: 1, sy: 0.6, list: 0, out: 0,
-    lab: 0, map: 0, air: 0
+    lab: 0, map: 0, air: 0, tug: 0, cast: 0
   };
   // Vizhinjam International Seaport, 8°22′21″N 76°59′55″E; Thiruvananthapuram International Airport
   // lies about 15 km to its north-west, so the plane holds that heading (north is up)
@@ -1952,6 +2048,8 @@ ${fairings}${engines}
     const palms = oc.createPattern(palmTexture(), 'repeat');
     palms.setTransform(new DOMMatrix([0.5, 0, 0, 0.5, 0, 0]));
     SEA.coast = coastModel(palms);
+    SEA.tug = tugModel();
+    SEA.tugShadow = softShadow(new Path2D('M0 16.4C3.1 14.2 6.5 9.6 6.5 4.2L6.5 -13.2Q6.5 -14 5.7 -14L-5.7 -14Q-6.5 -14 -6.5 -13.2L-6.5 4.2C-6.5 9.6 -3.1 14.2 0 16.4Z'), -9, -17, 18, 36, 4, 3, 'rgba(0,6,22,.55)');
     SEA.calm = oc.createLinearGradient(0, PORT.top, 0, 240);
     SEA.calm.addColorStop(0, 'rgba(26,104,146,.5)');
     SEA.calm.addColorStop(0.72, 'rgba(26,104,146,.46)');
@@ -2119,7 +2217,10 @@ ${fairings}${engines}
     toWorld();
     if (seen(-150, PORT.top, 175, 240 - PORT.top)) { g.fillStyle = SEA.calm; g.fillRect(-150, PORT.top, 175, 240 - PORT.top); }
     if (seen(BW.x, BW.y, BW.w, BW.h)) g.drawImage(SEA.breakwater, BW.x, BW.y, BW.w, BW.h);
-    if (X(25) < W && (Y(PORT.bottom) < H || X(-PORT.left) < W)) paint(g, SEA.coast);
+    if (X(25) < W && (Y(PORT.bottom) < H || X(-PORT.left) < W)) {
+      paint(g, SEA.coast.layers);
+      for (const b of SEA.coast.boats) if (seen(b.x - 6, b.y - 18, 12, 36)) drawBoat(g, b);
+    }
     const quayOn = seen(23, PORT.top, -PORT.left - 23, PORT.bottom - PORT.top);
     if (quayOn) {
       g.save();
@@ -2127,6 +2228,7 @@ ${fairings}${engines}
       paint(g, P.ground);
       if (s >= 4) for (const b of P.near) { if (seen(-b.x - b.w, b.y, b.w, b.h)) { g.fillStyle = b.fill; g.fillRect(b.x, b.y, b.w, b.h); } }
       else g.drawImage(P.raster, YARD.x, YARD.y, YARD.w, YARD.h);
+      paint(g, P.gantries);
       g.restore();
     }
 
@@ -2143,6 +2245,23 @@ ${fairings}${engines}
       b.drawImage(SEA.mask, 0, 0);
       g.drawImage(SEA.buf, shipX + WAKE.x, shipY + WAKE.y, WAKE.w, WAKE.h);
       g.globalAlpha = 1;
+    }
+
+    // two tugs see her off the berth, then drop astern as she makes way
+    if (O.tug > 0.01) {
+      const back = O.cast * 150;
+      for (const [sx, oy, turn] of [[-1, 64, 0.26], [1, -104, -0.16]]) {
+        const tx = shipX + sx * (30 + O.cast * 26), ty = shipY + oy - back;
+        if (!seen(tx - 10, ty - 18, 20, 36)) continue;
+        g.globalAlpha = O.tug;
+        g.drawImage(SEA.tugShadow, tx - 9 + 1.8, ty - 17 + 1.4, 18, 36);
+        g.save();
+        g.translate(tx, ty);
+        g.rotate(turn * O.cast);
+        paint(g, SEA.tug);
+        g.restore();
+        g.globalAlpha = 1;
+      }
     }
 
     // the ship and its shadow, thrown down and right by a sun to the upper left
@@ -2340,6 +2459,9 @@ ${fairings}${engines}
     .to(O, { z: 2.6, sy: 0.5, duration: 1.6, ease: 'power2.inOut' }, 10.6)
     .to(O, { list: 1, duration: 4.4 }, 11.2)
     .to(O, { z: 1.5, sy: 0.42, out: 1, duration: 1, ease: 'power1.in' }, 15.6)
+    .to(O, { tug: 1, duration: 0.5 }, 3.7)
+    .to(O, { cast: 1, duration: 3.4, ease: 'power1.in' }, 4.4)
+    .to(O, { tug: 0, duration: 0.6 }, 7.4)
     .to(O, { lab: 1, duration: 0.4 }, 1.7)
     .to(O, { lab: 0, duration: 0.4 }, 4.5)
     .to(O, { map: 1, duration: 0.5 }, 5.6)
