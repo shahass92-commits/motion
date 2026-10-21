@@ -18,9 +18,9 @@ The page follows one working day, from the morning yard through to night and the
 
 | Chapter | Timeline label | What happens |
 | --- | --- | --- |
-| 01 The Lift · 06:40 | `lift` | Morning haze, sun rays and dust in the air. A reach stacker seen side-on telescopes its boom and sets a box on top of a door-end stack. The road train pulls into Bay 14, a second stacker (seen from the front) lowers the 40 ft CNIQ INDIA box onto the front trailer, the camera jolts as the twist-locks engage, and the spreader lifts away. On phones the camera opens on the side-on stacker and pans to the truck. |
-| 02 The Run · 11:20 → golden hour | `run` | The road train pulls out under twin-stack exhaust. The road rises and the six service cards slide past underneath. A port and palm skyline drifts behind in two parallax layers, the light turns gold, and the headlights and street lamps come on. |
-| 03 The Corridor · 18:05 | `aerial` | Clouds part over a satellite view. The articulated road train follows the highway through a junction to Port Gate 2 while evening falls: street lights, floodlights, headlight beams and traffic. A telemetry panel tracks it. |
+| 01 The Lift · 06:40 | `lift` | Morning haze, sun rays and dust in the air. A reach stacker seen side-on telescopes its boom and sets a box on top of a door-end stack. The tractor and its skeletal trailer pull into Bay 14, a second stacker (seen from the front) lowers the 40 ft CNIQ INDIA box onto the trailer, the camera jolts as the twist-locks engage, and the spreader lifts away. On phones the camera opens on the side-on stacker and pans to the truck. |
+| 02 The Run · 11:20 → golden hour | `run` | The truck pulls out under twin-stack exhaust. The road rises and the six service cards slide past underneath. A port and palm skyline drifts behind in two parallax layers, the light turns gold, and the headlights and street lamps come on. |
+| 03 The Corridor · 18:05 | `aerial` | Clouds part over a satellite view. The articulated unit follows the highway through a junction to Port Gate 2 while evening falls: street lights, floodlights, headlight beams and traffic. A telemetry panel tracks it. |
 | Sea & Air | — | Vizhinjam seen from straight above. A crane lifts the CNIQ INDIA box off a truck and lowers it into the last open slot on a container ship; the ship casts off, clears the breakwater and sails into the Arabian Sea trailing its wake. Clouds drift across and a four-engine freighter crosses north-west for the airport, then the camera closes in while five points on the shipment record scroll past. |
 | How a load moves | — | Desktop: a pinned horizontal journey where a container truck drives through the six steps. Phones: a vertical list. |
 | Contact | — | A night harbour skyline with floodlights and blinking crane lights, behind the quote form. |
@@ -29,7 +29,11 @@ Each chapter opens on a letterboxed title card. The KM/H readout, wheel motion b
 
 ## The truck
 
-The road train is drawn in the proportions of a Scania S-series 6×4 tractor: tall flat-fronted cab, dropped driver's window, twin vertical stacks and a roof light bar. It pulls a 40 ft skeletal trailer, a converter dolly and a 20 ft trailer, about 26 m in total. No manufacturer logos are reproduced. Add badging only if CNIQ actually runs that make and you have the right to use the mark.
+The truck is drawn in the proportions of a Scania S-series 6×4 tractor: tall flat-fronted cab, dropped driver's window, twin vertical stacks and a roof light bar. It pulls one 40 ft skeletal trailer carrying a single CNIQ INDIA container, about 16.5 m in total. No manufacturer logos are reproduced. Add badging only if CNIQ actually runs that make and you have the right to use the mark.
+
+The cab side is shaded as painted sheet metal rather than a flat panel: sky on the upper body, a bright crease along the body line, the slab sides falling away below it and bounce off the road at the very bottom, with a sun visor, door shut lines, a handle, a grab rail and a cab step over it.
+
+The wheels are one `#wheel` symbol reused six times, so every tyre is the same build: a tread band of 42 lugs, a shouldered sidewall shaded as a torus (dark at the bead, fullest across the sidewall bulge, dark again at the shoulder), moulded sidewall lettering, a bead ring, and a dished rim with five hand-holes, ten studs and a valve stem. The gradients are concentric because the wheel spins; the fixed light direction lives in the separate `#wheelLight` overlay, which does not rotate. `--sharp` fades the rim and tread detail into a motion-blurred disc with speed. Mudflaps hang behind each bogie and each tyre sits in its own contact shadow.
 
 ## The yard machines
 
@@ -77,11 +81,11 @@ assets/favicon.svg
 ## Accessibility and fallbacks
 
 - `prefers-reduced-motion`: no preloader animation, no smooth scrolling, no grain and no ambient motion (beacon, dust, traffic, waves, birds, light trails). The scroll story still follows the scrollbar directly.
-- If GSAP cannot load, the page switches to a static layout: hero, the loaded road train, all six services, then the rest of the page.
+- If GSAP cannot load, the page switches to a static layout: hero, the loaded truck, all six services, then the rest of the page.
 - Headings are real text and every scene has an SVG `<title>`. The menu works from the keyboard, Escape closes it, and focus states are visible.
 
 ## Details worth knowing
 
-- The container numbers carry valid ISO 6346 check digits: **CNIU 820149 0** (45G1, 40 ft high cube) and **CNIU 820150 4** (22G1, 20 ft).
+- The container number carries a valid ISO 6346 check digit: **CNIU 820149 0** (45G1, 40 ft high cube).
 - Map coordinates interpolate between Thiruvananthapuram (08.5241° N, 076.9366° E) and the Vizhinjam port area (08.38° N, 076.99° E). The Sea & Air scene names the port at 8.3725° N, 76.9986° E.
 - Libraries load from jsDelivr with pinned versions: `gsap@3.13.0` (core and ScrollTrigger) and `lenis@1.1.13`. Fonts are Archivo (variable width) and Martian Mono from Google Fonts.

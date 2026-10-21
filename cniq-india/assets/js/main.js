@@ -146,13 +146,26 @@
   }
 
   function buildWheel() {
+    // the tread is a ring of lugs with a groove between each; alternate tones give it depth
     const tread = $('#treadRing');
     tread.setAttribute('style', 'opacity: var(--sharp, 1)');
-    for (let k = 0; k < 28; k++) svg('rect', { x: -2.2, y: -26, width: 4.4, height: 3.4, transform: `rotate(${(k * 360) / 28})` }, tread);
+    for (let k = 0; k < 42; k++) {
+      svg('rect', { x: -1.5, y: -26.3, width: 3, height: 2.9, rx: 0.5, fill: k % 2 ? '#2a2e33' : '#1e2125', transform: `rotate(${(k * 360) / 42})` }, tread);
+    }
+    // moulded lettering around the sidewall, as dashes rather than legible text at this size
+    const side = $('#sidewall');
+    for (let k = 0; k < 34; k++) {
+      svg('rect', { x: -0.42, y: -20.5, width: 0.84, height: 1.5, rx: 0.3, transform: `rotate(${(k * 360) / 34})` }, side);
+    }
+    // five hand-holes in the rim dish, then the stud ring
+    const vents = $('#vents');
+    for (let k = 0; k < 5; k++) {
+      svg('ellipse', { cx: 0, cy: -11.3, rx: 1.9, ry: 2.6, transform: `rotate(${(k * 360) / 5 + 36})` }, vents);
+    }
     const lugs = $('#lugs');
-    for (let k = 0; k < 8; k++) {
-      const a = (k * Math.PI) / 4;
-      svg('circle', { cx: (Math.sin(a) * 7.6).toFixed(2), cy: (-Math.cos(a) * 7.6).toFixed(2), r: 1.15 }, lugs);
+    for (let k = 0; k < 10; k++) {
+      const a = (k * Math.PI) / 5;
+      svg('circle', { cx: (Math.sin(a) * 8.2).toFixed(2), cy: (-Math.cos(a) * 8.2).toFixed(2), r: 1.05 }, lugs);
     }
     const puffs = $('#puffs');
     for (let i = 0; i < 8; i++) svg('circle', { cx: 951, cy: 400, r: 0, opacity: 0 }, puffs);
@@ -1515,8 +1528,8 @@ ${fairings}${engines}
   const nightVeil = $('#nightVeil');
   const mapLights = $('#mapLights');
   const tv = {
-    cab: $('#tvCab'), t1: $('#tvTrailer'), t2: $('#tvTrailer2'),
-    sCab: $('#tvShadowCab'), s1: $('#tvShadowTrailer'), s2: $('#tvShadowTrailer2'),
+    cab: $('#tvCab'), t1: $('#tvTrailer'),
+    sCab: $('#tvShadowCab'), s1: $('#tvShadowTrailer'),
     lCab: $('#tvLightsCab'), lTail: $('#tvLightsTrailer')
   };
   const fencePing = $('#fencePing');
@@ -1768,21 +1781,16 @@ ${fairings}${engines}
   function renderMap() {
     const r = map.route;
     const s = lerp(ROUTE_START, r.len - 40, F.p);
-    // the road train articulates: cab, 40 ft trailer, then the dolly and 20 ft trailer
+    // the unit articulates about the kingpin: cab, then the 40 ft trailer behind it
     const K = laneAt(r, s, 72);
     const front = laneAt(r, s + 40, 72);
     const R1 = laneAt(r, s - 176, 72);
-    const D = laneAt(r, s - 200, 72);
-    const R2 = laneAt(r, s - 296, 72);
     const cabA = Math.atan2(front.y - K.y, front.x - K.x);
     const t1A = Math.atan2(K.y - R1.y, K.x - R1.x);
-    const t2A = Math.atan2(D.y - R2.y, D.x - R2.x);
     place(tv.cab, K.x, K.y, cabA);
     place(tv.t1, K.x, K.y, t1A);
-    place(tv.t2, D.x, D.y, t2A);
     place(tv.sCab, K.x + 10, K.y + 12, cabA);
     place(tv.s1, K.x + 10, K.y + 12, t1A);
-    place(tv.s2, D.x + 10, D.y + 12, t2A);
 
     // evening falls over the corridor: warm light, then blue hour and the lights come on
     const n = F.night;
@@ -1795,7 +1803,7 @@ ${fairings}${engines}
     mapLights.style.display = lightsOn ? '' : 'none';
     if (lightsOn) {
       place(tv.lCab, K.x, K.y, cabA);
-      place(tv.lTail, D.x, D.y, t2A);
+      place(tv.lTail, K.x, K.y, t1A);
       for (const c of map.cars) c.lit.setAttribute('transform', c.el.getAttribute('transform') || '');
     }
 

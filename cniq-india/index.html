@@ -123,8 +123,15 @@
               <stop offset=".8" stop-color="#fff" stop-opacity=".22"/><stop offset="1" stop-color="#fff" stop-opacity="0"/>
             </linearGradient>
             <linearGradient id="gCab" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" stop-color="#40444b"/><stop offset=".18" stop-color="#23252a"/>
-              <stop offset=".62" stop-color="#101114"/><stop offset="1" stop-color="#1b1c20"/>
+              <stop offset="0" stop-color="#4a4f57"/><stop offset=".08" stop-color="#2b2e34"/>
+              <stop offset=".2" stop-color="#1b1d21"/><stop offset=".47" stop-color="#15171a"/>
+              <stop offset=".54" stop-color="#2e3238"/><stop offset=".58" stop-color="#191b1f"/>
+              <stop offset=".86" stop-color="#0d0e10"/><stop offset=".96" stop-color="#20232a"/>
+              <stop offset="1" stop-color="#34383f"/>
+            </linearGradient>
+            <linearGradient id="gPanel" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#fff" stop-opacity=".1"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/>
+              <stop offset="1" stop-color="#000" stop-opacity=".25"/>
             </linearGradient>
             <linearGradient id="gSkyRefl" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0" stop-color="#e6eef6" stop-opacity=".55"/><stop offset="1" stop-color="#e6eef6" stop-opacity="0"/>
@@ -166,8 +173,19 @@
               <stop offset="0" stop-color="#9aa0a7"/><stop offset=".45" stop-color="#b9bec4"/>
               <stop offset=".8" stop-color="#8b9097"/><stop offset="1" stop-color="#3a3d42"/>
             </radialGradient>
+            <!-- a tyre seen side-on is a torus: dark at the bead, fullest and lightest across the
+                 sidewall bulge, dark again at the shoulder. Kept concentric, since the wheel spins. -->
             <radialGradient id="gTyre">
-              <stop offset=".6" stop-color="#191b1e"/><stop offset=".86" stop-color="#2b2e33"/><stop offset="1" stop-color="#141517"/>
+              <stop offset=".56" stop-color="#0e0f12"/><stop offset=".68" stop-color="#1a1c20"/>
+              <stop offset=".8" stop-color="#25282d"/><stop offset=".9" stop-color="#1b1d21"/>
+              <stop offset="1" stop-color="#0a0b0d"/>
+            </radialGradient>
+            <radialGradient id="gTreadBand">
+              <stop offset="0" stop-color="#17191c"/><stop offset=".78" stop-color="#202327"/><stop offset="1" stop-color="#0b0c0e"/>
+            </radialGradient>
+            <radialGradient id="gRimFace">
+              <stop offset="0" stop-color="#ccd1d7"/><stop offset=".5" stop-color="#a0a6ad"/>
+              <stop offset=".84" stop-color="#787e85"/><stop offset="1" stop-color="#474b51"/>
             </radialGradient>
             <radialGradient id="gWheelLight" cx=".32" cy=".25" r=".85">
               <stop offset="0" stop-color="#fff" stop-opacity=".18"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/>
@@ -204,22 +222,26 @@
 
             <!-- wheel, centred on 0,0. --sharp fades the rim detail into a motion-blurred disc. -->
             <g id="wheel">
-              <circle r="26" fill="#111214"/>
-              <g id="treadRing" fill="#24272b"></g>
-              <circle r="22" fill="url(#gTyre)"/>
+              <circle r="26" fill="url(#gTreadBand)"/>
+              <g id="treadRing"></g>
+              <circle r="23.8" fill="none" stroke="#060708" stroke-width="1.4"/>
+              <circle r="23.4" fill="url(#gTyre)"/>
               <g style="opacity: var(--sharp, 1)">
-                <circle r="15.5" fill="url(#gRim)"/>
-                <circle r="15.5" fill="none" stroke="#5f656c" stroke-width="1.2"/>
-                <circle r="12" fill="none" stroke="#e9ecef" stroke-width=".8" opacity=".7"/>
-                <g fill="#5d6269">
-                  <circle cx="0" cy="-10" r="2.7"/><circle cx="9.51" cy="-3.09" r="2.7"/><circle cx="5.88" cy="8.09" r="2.7"/>
-                  <circle cx="-5.88" cy="8.09" r="2.7"/><circle cx="-9.51" cy="-3.09" r="2.7"/>
-                </g>
-                <g id="lugs" fill="#3a3e44"></g>
-                <circle r="5.6" fill="url(#gHub)"/><circle r="2" fill="#2a2c30"/>
+                <circle r="19.8" fill="none" stroke="#000" stroke-opacity=".45" stroke-width="2.6"/>
+                <g id="sidewall" fill="#464b52"></g>
+                <circle r="16.8" fill="none" stroke="#08090a" stroke-width="2"/>
+                <circle r="15.8" fill="#70767d"/>
+                <circle r="15" fill="url(#gRimFace)"/>
+                <circle r="15" fill="none" stroke="#eef1f4" stroke-width=".7" opacity=".5"/>
+                <circle r="11.3" fill="none" stroke="#5b6067" stroke-width="2.8" opacity=".45"/>
+                <g id="vents" fill="#3c4046"></g>
+                <g id="lugs" fill="#4d525a"></g>
+                <circle r="5.8" fill="url(#gHub)"/>
+                <circle r="5.8" fill="none" stroke="#c2c7cd" stroke-width=".7" opacity=".8"/>
+                <circle r="2" fill="#24272b"/>
+                <rect x="-.75" y="-19.4" width="1.5" height="3.4" rx=".6" fill="#2e3237"/>
               </g>
-              <circle r="15.5" fill="url(#gRimBlur)" style="opacity: calc(1 - var(--sharp, 1))"/>
-              <rect x="-1" y="-25.5" width="2" height="4" fill="#3a3d42"/>
+              <circle r="15" fill="url(#gRimBlur)" style="opacity: calc(1 - var(--sharp, 1))"/>
             </g>
             <g id="wheelLight"><circle r="26" fill="url(#gWheelLight)"/></g>
 
@@ -496,9 +518,9 @@
             </g>
           </g>
 
-          <!-- ===== truck: Scania S-series style 6x4 tractor, 40 ft trailer, dolly and 20 ft trailer (≈26 m), facing right ===== -->
+          <!-- ===== truck: Scania S-series style 6x4 tractor and a 40 ft skeletal trailer (≈16.5 m), facing right ===== -->
           <g id="truck">
-            <ellipse cx="440" cy="641" rx="690" ry="10" fill="url(#gContact)"/>
+            <ellipse cx="650" cy="641" rx="450" ry="10" fill="url(#gContact)"/>
             <!-- exhaust and dust are left behind as the truck pulls away -->
             <g id="puffs" fill="url(#gSmoke)"></g>
             <g id="dust" fill="url(#gDust)"></g>
@@ -506,40 +528,6 @@
             <g id="truckBeam" opacity="0">
               <path d="M1077 572 L1560 534 L1560 646 L1077 584Z" fill="url(#gBeam)"/>
               <circle cx="1074" cy="575" r="22" fill="url(#gLamp)"/>
-            </g>
-
-            <!-- rear 20 ft trailer on a converter dolly -->
-            <rect x="-200" y="566" width="370" height="12" fill="#1b1c1f"/>
-            <rect x="-200" y="566" width="370" height="2" fill="#41454c"/>
-            <rect x="-170" y="578" width="330" height="5" fill="#232528"/>
-            <rect x="-170" y="583" width="330" height="9" fill="#000" opacity=".18"/>
-            <rect x="-206" y="566" width="10" height="38" fill="#2a2c30"/>
-            <rect x="-210" y="598" width="28" height="8" rx="1" fill="#3a3d42"/>
-            <rect x="-204" y="569" width="5" height="7" fill="#d13b2b"/>
-            <g fill="#ffa400"><rect x="-40" y="571" width="5" height="3"/><rect x="60" y="571" width="5" height="3"/></g>
-            <rect x="-186" y="582" width="104" height="6" fill="#121315"/>
-            <rect x="-190" y="582" width="5" height="34" fill="#121315"/>
-            <g fill="#1a1b1e"><rect x="-180" y="583" width="32" height="7" rx="3"/><rect x="-126" y="583" width="32" height="7" rx="3"/></g>
-            <rect x="-60" y="592" width="100" height="4" fill="url(#gAlu)"/>
-            <rect x="48" y="584" width="128" height="10" fill="#1d1f22"/>
-            <rect x="88" y="578" width="64" height="6" fill="#2b2e33"/>
-            <rect x="58" y="582" width="110" height="6" fill="#121315"/>
-            <path d="M176 586 L236 594 L236 598 L176 606Z" fill="#2a2c30"/>
-            <path d="M176 586 L236 596 M176 606 L236 596" stroke="#45494f" stroke-width="1.5"/>
-            <circle cx="236" cy="596" r="4" fill="#3a3d42"/>
-            <!-- the 20 ft box (CNIU 820150 4, 22G1) -->
-            <g id="box2" transform="translate(-180 424)">
-              <rect width="297" height="142" fill="url(#pRib)"/>
-              <rect width="297" height="142" fill="url(#gShade)"/>
-              <rect width="297" height="142" fill="url(#gGrime)"/>
-              <rect width="297" height="142" fill="url(#gSun)"/>
-              <rect width="297" height="7" fill="#b3b7bd"/><rect width="297" height="1.6" fill="#fff" opacity=".7"/>
-              <rect y="135" width="297" height="7" fill="#90959c"/>
-              <rect width="10" height="142" fill="#a4a9af"/><rect x="287" width="10" height="142" fill="#a4a9af"/>
-              <g fill="#5d6168"><rect width="12" height="9"/><rect x="285" width="12" height="9"/><rect y="133" width="12" height="9"/><rect x="285" y="133" width="12" height="9"/></g>
-              <text x="30" y="76" class="svg-display" font-size="34" fill="#15171c">CNIQ</text>
-              <circle cx="139" cy="51" r="4.5" class="fill-cobalt"/>
-              <text x="31" y="98" class="svg-mono" font-size="9.5" fill="#4b5058" letter-spacing=".5">CNIU 820150 4 · 22G1</text>
             </g>
 
             <!-- front 40 ft skeletal trailer -->
@@ -600,6 +588,19 @@
               <path d="M1056 452h12l-14 46h-6Z" fill="#fff" opacity=".22"/>
               <path d="M1074 452h4l-14 46h-4Z" fill="#fff" opacity=".14"/>
               <path d="M1046 444H1120L1128 520L1130 590H1046Z" fill="none" stroke="#2e3035" stroke-width="1.5"/>
+              <!-- sun visor over the screen, door shut line, handle, grab rail and cab step -->
+              <path d="M1118 434l26-5 1 9-26 5Z" fill="#191b1f"/>
+              <path d="M1118 434l26-5 1 3-27 5Z" fill="#43474e"/>
+              <path d="M1044 446V596" stroke="#000" stroke-opacity=".5" stroke-width="1.4"/>
+              <path d="M1045.6 446V596" stroke="#fff" stroke-opacity=".12" stroke-width="1"/>
+              <path d="M1122 450l6 70 2 72" fill="none" stroke="#000" stroke-opacity=".45" stroke-width="1.3"/>
+              <rect x="1100" y="524" width="16" height="5" rx="2.5" fill="#101215"/>
+              <rect x="1101" y="525" width="14" height="1.6" rx=".8" fill="#6a7079"/>
+              <rect x="1040" y="452" width="3.4" height="118" rx="1.7" fill="#2a2d33"/>
+              <rect x="1040.6" y="452" width="1.2" height="118" fill="#777d85"/>
+              <path d="M1038 576h22v8h-22Z" fill="#17191c"/>
+              <path d="M1038 576h22v2h-22Z" fill="#4c5159"/>
+              <rect x="1020" y="440" width="118" height="160" fill="url(#gPanel)"/>
               <rect x="1054" y="522" width="14" height="3" rx="1.5" fill="url(#gChrome)"/>
               <path d="M1118 458l26-4" stroke="#1d1f22" stroke-width="3"/>
               <rect x="1142" y="442" width="8" height="34" rx="2" fill="#1d1f22"/>
@@ -617,13 +618,27 @@
               <rect x="1024" y="604" width="26" height="4" fill="url(#gAlu)"/><rect x="1024" y="616" width="26" height="4" fill="url(#gAlu)"/>
               <path d="M1046 600a34 34 0 0 1 68 0Z" fill="#060708"/>
               <path d="M1044 600a36 36 0 0 1 72 0" fill="none" stroke="#33363b" stroke-width="2.5"/>
+              <path d="M1118 592h22l-2 26h-20Z" fill="#17191c"/>
+              <path d="M1118 592h22l-.5 6h-21.5Z" fill="#3d4148"/>
             </g></g>
 
+            <!-- mudflaps and spray guards behind each bogie, and the shadow each tyre sits in -->
+            <g>
+              <path d="M300 598h8v40h-8Z" fill="#17191c"/>
+              <path d="M268 600h34v36h-34Z" fill="#111214"/>
+              <path d="M268 600h34v2h-34Z" fill="#3a3e44"/>
+              <path d="M272 612h26v2h-26Z" fill="#2b2f35"/>
+              <path d="M818 596h8v44h-8Z" fill="#17191c"/>
+              <path d="M784 600h36v38h-36Z" fill="#111214"/>
+              <path d="M784 600h36v2h-36Z" fill="#3a3e44"/>
+              <path d="M788 613h28v2h-28Z" fill="#2b2f35"/>
+            </g>
+            <g fill="#000" opacity=".4">
+              <ellipse cx="334" cy="639" rx="21" ry="4"/><ellipse cx="390" cy="639" rx="21" ry="4"/>
+              <ellipse cx="446" cy="639" rx="21" ry="4"/><ellipse cx="852" cy="639" rx="21" ry="4"/>
+              <ellipse cx="916" cy="639" rx="21" ry="4"/><ellipse cx="1020" cy="639" rx="21" ry="4"/>
+            </g>
             <!-- wheels: the tyre spins, the light stays put -->
-            <g class="wheel" transform="translate(-164 614)"><use class="spin" href="#wheel"/><use href="#wheelLight"/></g>
-            <g class="wheel" transform="translate(-110 614)"><use class="spin" href="#wheel"/><use href="#wheelLight"/></g>
-            <g class="wheel" transform="translate(86 614)"><use class="spin" href="#wheel"/><use href="#wheelLight"/></g>
-            <g class="wheel" transform="translate(140 614)"><use class="spin" href="#wheel"/><use href="#wheelLight"/></g>
             <g class="wheel" transform="translate(334 614)"><use class="spin" href="#wheel"/><use href="#wheelLight"/></g>
             <g class="wheel" transform="translate(390 614)"><use class="spin" href="#wheel"/><use href="#wheelLight"/></g>
             <g class="wheel" transform="translate(446 614)"><use class="spin" href="#wheel"/><use href="#wheelLight"/></g>
@@ -784,20 +799,10 @@
           <g id="cars"></g>
           <g id="cloudShadows"></g>
           <g id="tvShadow" fill="#141a12" opacity=".28">
-            <g id="tvShadowTrailer2"><rect x="-96" y="-17" width="104" height="34" rx="3"/></g>
             <g id="tvShadowTrailer"><rect x="-176" y="-18" width="180" height="36" rx="3"/></g>
             <g id="tvShadowCab"><rect x="4" y="-18" width="70" height="36" rx="7"/></g>
           </g>
           <g id="tvTruck">
-            <g id="tvTrailer2">
-              <rect x="0" y="-3" width="22" height="6" fill="#2a2c30"/>
-              <rect x="-96" y="-17" width="100" height="34" rx="2" fill="#1d1f22"/>
-              <rect x="-92" y="-17" width="88" height="34" rx="2" fill="url(#pRoof)"/>
-              <rect x="-92" y="-17" width="88" height="34" rx="2" fill="none" stroke="#959aa1" stroke-width="1.5"/>
-              <rect x="-92" y="-17" width="88" height="5" fill="#fff" opacity=".35"/>
-              <text x="-48" y="5.5" text-anchor="middle" class="svg-display" font-size="13" fill="#15171c">CNIQ</text>
-              <circle cx="-14" cy="-5" r="2.4" class="fill-cobalt"/>
-            </g>
             <g id="tvTrailer">
               <rect x="-176" y="-18" width="180" height="36" rx="2" fill="url(#pRoof)"/>
               <rect x="-176" y="-18" width="180" height="36" rx="2" fill="none" stroke="#959aa1" stroke-width="1.5"/>
@@ -832,7 +837,7 @@
                 <circle cx="72" cy="-12" r="12" fill="url(#gGlowWhite)"/><circle cx="72" cy="12" r="12" fill="url(#gGlowWhite)"/>
               </g>
               <g id="tvLightsTrailer">
-                <circle cx="-98" cy="-13" r="16" fill="url(#gGlowRed)"/><circle cx="-98" cy="13" r="16" fill="url(#gGlowRed)"/>
+                <circle cx="-178" cy="-13" r="16" fill="url(#gGlowRed)"/><circle cx="-178" cy="13" r="16" fill="url(#gGlowRed)"/>
               </g>
             </g>
             <circle id="fenceGlow" cx="3000" cy="2000" r="170" fill="none" stroke="#5b82ff" stroke-width="5" opacity=".9"/>
