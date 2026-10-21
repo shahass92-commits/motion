@@ -23,7 +23,7 @@ The page follows one working day, from the morning yard through to night and the
 | 03 The Corridor · 18:05 | `aerial` | Clouds part over a satellite view. The articulated road train follows the highway through a junction to Port Gate 2 while evening falls: street lights, floodlights, headlight beams and traffic. A telemetry panel tracks it. |
 | Approach | — | A word-by-word manifesto over a long-exposure night highway. |
 | How a load moves | — | Desktop: a pinned horizontal journey where a container truck drives through the six steps. Phones: a vertical list. |
-| Sea & Air | — | Sunrise at sea with sun glitter, gulls, lit clouds, a container ship and a freighter. |
+| Sea & Air | — | The open ocean seen from straight above. A container ship sails down the frame trailing its wake, a four-engine freighter flies low over it, then the camera closes in on the deck while five points on the shipment record scroll past. |
 | Contact | — | A night harbour skyline with floodlights and blinking crane lights, behind the quote form. |
 
 Each chapter opens on a letterboxed title card. The KM/H readout, wheel motion blur and telemetry panel are driven by the scroll itself. The panel is labelled **Simulated feed**: it shows illustration data, not live vehicle data.
@@ -40,12 +40,23 @@ The road train is drawn in the proportions of a Scania S-series 6×4 tractor: ta
 
 The machines carry CNIQ marks only. No manufacturer branding or container owner codes from the reference images are reproduced.
 
+## The ocean scene
+
+Sea & Air is drawn on a canvas, not in SVG. The ship (260 × 44 m, seven hatch groups of two 40 ft bays across sixteen rows) and the plane (70 m, four engines) are built as SVG in `shipMarkup` and `planeMarkup`, rasterised once at the largest size they are shown, and then only ever scaled down. Each frame composes:
+
+1. the deep-water gradient and a tiling wind-wave texture fixed to the water, so it slides up the frame as the ship sails down it;
+2. the Kelvin ripples, fixed to the ship;
+3. churned foam flowing back through a wake mask (along the hull, two diverging arms and the propeller wash);
+4. the ship and its shadow, then the plane's small shadow on the water and the plane itself, far nearer the camera, with anti-collision and strobe lights.
+
+The `O` object holds the scroll state and the timeline sits next to `drawOcean` in `main.js`. The five points are the `.ocean-points` list in `index.html`. Their copy comes from the services and operating model already on the page: one shipment record, live position, checks before billing, flagged exceptions and an audit trail. Check it against how you actually run sea and air legs before launch.
+
 ## Files
 
 ```
 index.html            markup and the inline SVG scenes
 assets/css/main.css   tokens, layout, responsive rules, fallbacks
-assets/js/main.js     scroll film, time of day, generated skylines, map, sea, night and harbour scenes, HUD, quote form
+assets/js/main.js     scroll film, time of day, generated skylines, map, ocean, night and harbour scenes, HUD, quote form
 assets/favicon.svg
 ```
 

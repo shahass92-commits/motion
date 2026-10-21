@@ -758,7 +758,7 @@ html.has-motion .manifesto-text .w { color: rgba(255, 255, 255, .2); }
     var(--paper-2);
 }
 .model-head { display: grid; gap: 14px; margin-bottom: clamp(28px, 6vh, 64px); max-width: 1440px; }
-.model-head h2, .contact h2, .voyage-head h2 {
+.model-head h2, .contact h2 {
   max-width: 18ch;
   font-family: var(--f-display);
   font-weight: 800;
@@ -804,19 +804,94 @@ html.has-motion .manifesto-text .w { color: rgba(255, 255, 255, .2); }
 .steps h3 { font-family: var(--f-display); font-weight: 800; font-stretch: 125%; font-size: var(--t-h3); text-transform: uppercase; }
 .steps p { max-width: 30ch; font-size: var(--t-small); color: var(--graphite); }
 
-/* ---------- sea & air: sunrise ---------- */
-.voyage { position: relative; background: var(--dawn); color: #fff; }
-.voyage-stage { position: relative; height: 100vh; height: 100svh; overflow: hidden; background: var(--dawn); }
-.voyage-svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-.voyage-head {
-  display: grid;
-  gap: 14px;
-  padding-block: clamp(96px, 16vh, 180px) clamp(36px, 7vh, 72px);
-  background: linear-gradient(#0b1220, var(--dawn));
+/* ---------- sea & air: open ocean from above ---------- */
+.ocean { position: relative; background: #061638; color: #fff; }
+.ocean-stage {
+  position: relative;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+  background: radial-gradient(120% 80% at 50% 35%, #13438f 0%, #0b2c68 45%, #04122f 100%);
 }
-.voyage-head h2 { color: #fff; }
-.voyage-head .dot { background: var(--gold); }
-.voyage-head p:last-child { max-width: 46ch; color: rgba(255, 255, 255, .7); font-size: var(--t-lead); }
+.ocean-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.ocean-shade, .ocean-fade { position: absolute; inset: 0; pointer-events: none; }
+.ocean-shade {
+  background: linear-gradient(180deg, rgba(3, 12, 34, .62) 0%, rgba(3, 12, 34, 0) 38%, rgba(3, 12, 34, 0) 72%, rgba(3, 12, 34, .5) 100%);
+}
+.ocean-fade { background: linear-gradient(180deg, rgba(13, 14, 16, 0) 25%, #0d0e10 100%); opacity: 0; }
+.ocean-head {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(var(--safe-top) + var(--header-h) + clamp(12px, 5vh, 56px));
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  text-align: center;
+  will-change: transform, opacity;
+}
+.ocean-head h2 {
+  max-width: 18ch;
+  font-family: var(--f-display);
+  font-weight: 800;
+  font-stretch: 125%;
+  font-size: var(--t-h2);
+  line-height: 1;
+  letter-spacing: -.025em;
+  text-shadow: 0 2px 30px rgba(2, 10, 30, .55);
+}
+.ocean-head .dot { background: var(--gold); }
+.ocean-head p { text-shadow: 0 1px 14px rgba(2, 10, 30, .9), 0 0 2px rgba(2, 10, 30, .7); }
+.ocean-head .eyebrow { color: rgba(255, 255, 255, .72); }
+.ocean-head p:last-child { max-width: 46ch; color: rgba(255, 255, 255, .86); font-size: var(--t-lead); }
+.ocean-points {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  display: grid;
+  gap: 58vh;
+  list-style: none;
+  will-change: transform;
+}
+.ocean-points li {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  max-width: 30ch;
+  margin-inline: auto;
+  text-align: center;
+  text-shadow: 0 2px 20px rgba(2, 10, 30, .95), 0 0 3px rgba(2, 10, 30, .7);
+}
+.ocean-points h3 {
+  font-family: var(--f-display);
+  font-weight: 800;
+  font-stretch: 125%;
+  font-size: clamp(1.45rem, 2.4vw, 2.2rem);
+  line-height: 1.04;
+  text-transform: uppercase;
+}
+.ocean-points p { color: rgba(255, 255, 255, .84); font-size: var(--t-lead); }
+.ocean-points .pix { width: 62px; height: 62px; filter: drop-shadow(0 2px 8px rgba(2, 10, 30, .8)); }
+.ocean-points .pix circle { transform: scale(0); transform-box: fill-box; transform-origin: center; transition: transform .4s cubic-bezier(.2, .9, .3, 1.35); }
+.ocean-points .pix circle.lo { fill: rgba(255, 255, 255, .22); }
+.ocean-points li.is-on .pix circle { transform: scale(1); }
+@media (max-width: 899px) {
+  /* on phones the copy sits over the ship, so each point gets a soft halo */
+  .ocean-points li { position: relative; isolation: isolate; }
+  .ocean-points li::before {
+    content: '';
+    position: absolute;
+    inset: -28px -24px;
+    z-index: -1;
+    background: radial-gradient(closest-side, rgba(3, 12, 34, .62), rgba(3, 12, 34, 0));
+  }
+}
+@media (min-width: 900px) {
+  .ocean-points { padding-inline: max(var(--pad-l), 7vw) max(var(--pad-r), 7vw); }
+  .ocean-points li { justify-items: start; margin-inline: 0 auto; text-align: left; max-width: min(34ch, 32vw); }
+  .ocean-points li:nth-child(even) { justify-items: end; margin-inline: auto 0; text-align: right; }
+}
 
 /* ---------- contact: night harbour ---------- */
 .contact {
@@ -967,7 +1042,7 @@ html.has-motion .manifesto-text .w { color: rgba(255, 255, 255, .2); }
     gap: 10px;
   }
   .tl-body { grid-template-columns: minmax(0, 1fr); }
-  .compass, .voyage-svg .cap { display: none; }
+  .compass { display: none; }
   .tl-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
   .tl-grid dd { font-size: 11px; }
   .tl-events { display: none; }
@@ -985,8 +1060,13 @@ html.no-gsap .lanes, html.no-gsap .kerb, html.no-gsap .aerial, html.no-gsap .scr
 html.no-gsap .track { position: relative; top: auto; flex-wrap: wrap; row-gap: 40px; }
 html.no-gsap .steps { flex-wrap: wrap; width: auto; row-gap: 40px; }
 html.no-gsap .journey-line { display: none; }
+html.no-gsap .ocean-stage { height: auto; padding-block: calc(var(--header-h) + 80px) 120px; }
+html.no-gsap .ocean-canvas, html.no-gsap .ocean-fade { display: none; }
+html.no-gsap .ocean-head, html.no-gsap .ocean-points { position: relative; top: auto; }
+html.no-gsap .ocean-points { gap: 64px; margin-top: 80px; }
+html.no-gsap .ocean-points .pix circle { transform: none; }
 
 @media (prefers-reduced-motion: reduce) {
   .scroll-cue i, .hud-line i, .tl-live i, .grain, .footer-mark .fl, .blink { animation: none; }
-  .btn, .nav a::after, .menu-btn i { transition: none; }
+  .btn, .nav a::after, .menu-btn i, .ocean-points .pix circle { transition: none; }
 }
