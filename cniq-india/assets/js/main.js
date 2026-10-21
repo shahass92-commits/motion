@@ -574,9 +574,10 @@
     }
   }
 
-  /* ---------- sea & air: open ocean seen from above ---------- */
-  // The ship and the plane are drawn once as SVG in metres, rasterised, then composed on a
-  // canvas every frame with the sea, the Kelvin ripples and the foam flowing back through the wake.
+  /* ---------- sea & air: from the quay to open water, seen from above ---------- */
+  // Everything is in metres. The ship, quay and cranes are vectors so they stay sharp from quay level
+  // to open water; the plane is SVG rasterised once. Each frame composes them on one canvas with the
+  // sea, the Kelvin ripples, the foam flowing back through the wake and the clouds.
 
   const toCanvas = (w, h) => {
     const c = document.createElement('canvas');
@@ -615,72 +616,280 @@
   // half the beam at y; the bow tapers from y 72 to the stem at y 130
   const hullHalf = (y) => (y <= 72 ? 22 : 22 * (1 - Math.pow(Math.min(1, (y - 72) / 58.5), 1.6)));
 
-  // container ship, bow down, 260 × 44 m: bridge and accommodation aft, seven hatch groups of
-  // two 40 ft bays, sixteen rows across
-  function shipMarkup(w, h) {
+  // Path2D helpers in metres, and painted layers: a fill and/or a stroke over one combined path
+  const pR = (x, y, w, h) => `M${x} ${y}h${w}v${h}h${-w}Z`;
+  const pC = (cx, cy, r) => `M${cx - r} ${cy}a${r} ${r} 0 1 0 ${2 * r} 0a${r} ${r} 0 1 0 ${-2 * r} 0Z`;
+  const pE = (cx, cy, rx, ry) => `M${cx - rx} ${cy}a${rx} ${ry} 0 1 0 ${2 * rx} 0a${rx} ${ry} 0 1 0 ${-2 * rx} 0Z`;
+  const pRR = (x, y, w, h, r) => `M${x + r} ${y}h${w - 2 * r}a${r} ${r} 0 0 1 ${r} ${r}v${h - 2 * r}a${r} ${r} 0 0 1 ${-r} ${r}h${2 * r - w}a${r} ${r} 0 0 1 ${-r} ${-r}v${2 * r - h}a${r} ${r} 0 0 1 ${r} ${-r}Z`;
+  const layer = (fill, d, a = 1, stroke, lw) => ({ fill, path: new Path2D(d), a, stroke, lw });
+  const paint = (g, layers) => {
+    for (const l of layers) {
+      g.globalAlpha = l.a;
+      if (l.fill) { g.fillStyle = l.fill; g.fill(l.path); }
+      if (l.stroke) { g.strokeStyle = l.stroke; g.lineWidth = l.lw; g.stroke(l.path); }
+    }
+    g.globalAlpha = 1;
+  };
+  const shade = (c, k) => rgb(mix(hex(c), k > 0 ? [255, 255, 255] : [0, 0, 0], Math.abs(k)));
+  // a soft, tinted cast shadow of a Path2D, drawn at ppm pixels per metre over the box x0, y0, w, h
+  const softShadow = (path, x0, y0, w, h, ppm, blur, colour) => {
+    const a = toCanvas(w * ppm, h * ppm), g = a.getContext('2d');
+    g.setTransform(ppm, 0, 0, ppm, -x0 * ppm, -y0 * ppm);
+    g.fill(path);
+    return shadowOf(a, a.width, a.height, blur, colour);
+  };
+
+  // the one slot left open for the box the crane brings aboard: hatch group 2, forward bay, row 10
+  const SLOT = { x: 4.88, y: -24.9, w: 2.44, h: 12.3 };
+
+  // container ship, bow down, 260 × 44 m: bridge and accommodation aft, seven hatch groups of two
+  // 40 ft bays, sixteen rows across. Kept as vectors so it stays sharp from quay level to open water.
+  function shipModel() {
     const R = rng(2207);
     const pal = ['#1f4aa8', '#c8322c', '#2f8f4e', '#e8e8e3', '#e08a2e', '#c23d86', '#d9b43c', '#86919b', '#203566', '#4a8fd6', '#e8e8e3', '#c8322c', '#1f4aa8', '#2f8f4e'];
     const pick = () => pal[Math.floor(R() * pal.length)];
     const RW = 2.44, ROWS = 16, X0 = -ROWS * RW / 2;
-    let cargo = '', clip = '', bridges = '';
+    const boxes = [];
+    let hatch = '', seams = '', bridges = '', bridgeHi = '';
     for (let g = 0; g < 7; g++) {
-      const y0 = (-92 + g * 27.2).toFixed(1), half = hullHalf(+y0 + 25) - 1.4;
-      bridges += `<rect x="-20.8" y="${(y0 - 2.2).toFixed(1)}" width="41.6" height="2.2" fill="#33414f"/><rect x="-20.8" y="${(y0 - 2.2).toFixed(1)}" width="41.6" height=".35" fill="#8a99a8"/>`;
+      const y0 = -92 + g * 27.2, half = hullHalf(y0 + 25) - 1.4;
+      bridges += pR(-20.8, y0 - 2.2, 41.6, 2.2);
+      bridgeHi += pR(-20.8, y0 - 2.2, 41.6, 0.35);
       for (let r = 0; r < ROWS;) {
         const run = Math.min(ROWS - r, 1 + Math.floor(R() * 3));
-        const empty = R() < 0.07, c1 = pick(), c2 = R() < 0.75 ? c1 : pick(), tone = R();
+        const empty = R() < 0.07, c1 = pick(), c2 = R() < 0.75 ? c1 : pick(), tone = (R() - 0.5) * 0.26;
         for (let k = 0; k < run; k++) {
           const x = X0 + (r + k) * RW;
           if (x < -half || x + RW > half) continue;
-          const at = `x="${x.toFixed(2)}" width="${RW}"`;
-          clip += `<rect ${at} y="${y0}" height="25"/>`;
-          if (empty) { cargo += `<rect ${at} y="${y0}" height="25" fill="#2b5f93"/>`; continue; }
-          cargo += `<rect ${at} y="${y0}" height="12.3" fill="${c1}"/><rect ${at} y="${(+y0 + 12.7).toFixed(1)}" height="12.3" fill="${c2}"/>`;
-          // taller stacks catch more light
-          cargo += `<rect ${at} y="${y0}" height="25" fill="${tone > 0.5 ? '#fff' : '#000'}" opacity="${(Math.abs(tone - 0.5) * 0.26).toFixed(2)}"/>`;
+          seams += pR(x, y0, 0.16, 25);
+          if (empty) { hatch += pR(x, y0, RW, 25); continue; }
+          for (const b of [0, 1]) {
+            const y = y0 + b * 12.7;
+            if (g === 2 && r + k === 10 && b === 1) { hatch += pR(x, y, RW, 12.3); continue; }
+            boxes.push({ x, y, w: RW, h: 12.3, fill: shade(b ? c2 : c1, tone) });
+          }
         }
         r += run;
       }
     }
     const hull = 'M-20 -130Q-22 -130 -22 -127L-22 72C-22 101 -10 122 0 131C10 122 22 101 22 72L22 -127Q22 -130 20 -130Z';
     const deck = 'M-19.6 -128.8Q-21.2 -128.8 -21.2 -126.6L-21.2 72C-21.2 100.4 -9.6 120.8 0 129.6C9.6 120.8 21.2 100.4 21.2 72L21.2 -126.6Q21.2 -128.8 19.6 -128.8Z';
-    return `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="-26 -134 52 268">
-<defs>
-<pattern id="rows" x="${X0}" width="${RW}" height="4" patternUnits="userSpaceOnUse"><rect width=".16" height="4" fill="#000" opacity=".45"/></pattern>
-<pattern id="ribs" width="2" height=".6" patternUnits="userSpaceOnUse"><rect width="2" height=".22" fill="#fff" opacity=".1"/></pattern>
-<linearGradient id="sun" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity=".12"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".16"/></linearGradient>
-<clipPath id="cargo">${clip}</clipPath>
-</defs>
-<path d="${hull}" fill="#0c2034"/>
-<path d="${deck}" fill="#1c4c7c"/>
-<path d="${deck}" fill="none" stroke="#5d8fbf" stroke-width=".3"/>
-<g fill="#2a5684"><rect x="-21.2" y="-95" width="1.2" height="168"/><rect x="20" y="-95" width="1.2" height="168"/></g>
-${bridges}${cargo}
-<g clip-path="url(#cargo)"><rect x="-20" y="-92" width="40" height="190" fill="url(#rows)"/><rect x="-20" y="-92" width="40" height="190" fill="url(#ribs)"/><rect x="-20" y="-92" width="40" height="190" fill="url(#sun)"/></g>
-<path d="M-19.5 100.5L0 105L19.5 100.5" fill="none" stroke="#e4e9ee" stroke-width=".8"/>
-<g fill="#5c6a77"><rect x="-8" y="110" width="4.2" height="6" rx="1"/><rect x="3.8" y="110" width="4.2" height="6" rx="1"/></g>
-<g fill="#6f7f8e"><circle cx="-12" cy="104.5" r="1.6"/><circle cx="12" cy="104.5" r="1.6"/><circle cx="-4" cy="122" r="1.1"/><circle cx="4" cy="122" r="1.1"/></g>
-<path d="M-5.9 116L-9 121.5M5.9 116L9 121.5" stroke="#1b2229" stroke-width=".55"/>
-<g fill="#d7dde3"><circle cx="-16" cy="108" r=".55"/><circle cx="16" cy="108" r=".55"/><circle cx="-13" cy="116" r=".55"/><circle cx="13" cy="116" r=".55"/></g>
-<circle cx="0" cy="114" r="1" fill="#f1f4f6"/><circle cx="0" cy="128.4" r=".55" fill="#fff"/>
-<g fill="#6f7f8e"><circle cx="-13" cy="-127.4" r="1.4"/><circle cx="13" cy="-127.4" r="1.4"/><circle cx="-6" cy="-128" r=".9"/><circle cx="6" cy="-128" r=".9"/></g>
-<rect x="-14.5" y="-126" width="29" height="22" rx="1" fill="#24598b"/>
-<rect x="-12.6" y="-124.2" width="25.2" height="18.2" fill="#2f6aa3"/>
-<rect x="-14.5" y="-126" width="29" height=".5" fill="#7fb0dc"/>
-<g fill="#9fb1c2"><rect x="-11" y="-122" width="3" height="2"/><rect x="-11" y="-118.6" width="3" height="2"/><rect x="-11" y="-115.2" width="3" height="2"/></g>
-<path d="M0 -121.5L1.3 -117.3L5.5 -116L1.3 -114.7L0 -110.5L-1.3 -114.7L-5.5 -116L-1.3 -117.3Z" fill="#fff"/>
-<circle cx="0" cy="-116" r="3.2" fill="none" stroke="#fff" stroke-width=".35"/>
-<rect x="7.4" y="-125" width="5.4" height="7.4" rx="1.4" fill="#18212b"/>
-<rect x="7.4" y="-122.2" width="5.4" height="1.4" fill="#1d4eff"/>
-<g fill="#05070a"><ellipse cx="9" cy="-123.6" rx=".8" ry="1.1"/><ellipse cx="11.2" cy="-123.6" rx=".8" ry="1.1"/></g>
-<rect x="-22.6" y="-105.2" width="45.2" height="4.2" rx=".4" fill="#eef1f3"/>
-<rect x="-22.6" y="-101" width="45.2" height=".9" fill="#000" opacity=".28"/>
-<rect x="-7" y="-108.6" width="14" height=".45" fill="#dfe4e9"/>
-<g fill="#dfe4e9"><rect x="-4.5" y="-109.6" width="3" height=".5"/><rect x="2" y="-109.4" width="2.4" height=".4"/></g>
-<rect x="-20.9" y="-124.4" width="3.5" height="11" rx="1.75" fill="#e2581c"/>
-<rect x="-20.5" y="-123.4" width="2.7" height="9" rx="1.35" fill="#ff8a4a"/>
-<rect x="17.8" y="-121" width="2.8" height="6" rx="1.4" fill="#e2581c"/>
-</svg>`;
+    return {
+      boxes,
+      hull: new Path2D(hull),
+      deck: new Path2D(deck),
+      under: [
+        layer('#0c2034', hull),
+        layer('#1c4c7c', deck),
+        layer(null, deck, 1, '#5d8fbf', 0.3),
+        layer('#2a5684', pR(-21.2, -95, 1.2, 168) + pR(20, -95, 1.2, 168)),
+        layer('#33414f', bridges),
+        layer('#8a99a8', bridgeHi),
+        layer('#2b5f93', hatch)
+      ],
+      over: [
+        layer('#000', seams, 0.45),
+        // forecastle: breakwater, windlasses, chain, winches, bollards, foremast
+        layer(null, 'M-19.5 100.5L0 105L19.5 100.5', 1, '#e4e9ee', 0.8),
+        layer('#5c6a77', pRR(-8, 110, 4.2, 6, 1) + pRR(3.8, 110, 4.2, 6, 1)),
+        layer(null, 'M-5.9 116L-9 121.5M5.9 116L9 121.5', 1, '#1b2229', 0.55),
+        layer('#6f7f8e', pC(-12, 104.5, 1.6) + pC(12, 104.5, 1.6) + pC(-4, 122, 1.1) + pC(4, 122, 1.1) + pC(-13, -127.4, 1.4) + pC(13, -127.4, 1.4) + pC(-6, -128, 0.9) + pC(6, -128, 0.9)),
+        layer('#d7dde3', pC(-16, 108, 0.55) + pC(16, 108, 0.55) + pC(-13, 116, 0.55) + pC(13, 116, 0.55)),
+        layer('#f1f4f6', pC(0, 114, 1) + pC(0, 128.4, 0.55)),
+        // accommodation, bridge wings, compass star on the roof, funnel, radar, lifeboats
+        layer('#24598b', pRR(-14.5, -126, 29, 22, 1)),
+        layer('#2f6aa3', pR(-12.6, -124.2, 25.2, 18.2)),
+        layer('#7fb0dc', pR(-14.5, -126, 29, 0.5)),
+        layer('#9fb1c2', pR(-11, -122, 3, 2) + pR(-11, -118.6, 3, 2) + pR(-11, -115.2, 3, 2)),
+        layer('#fff', 'M0 -121.5L1.3 -117.3L5.5 -116L1.3 -114.7L0 -110.5L-1.3 -114.7L-5.5 -116L-1.3 -117.3Z'),
+        layer(null, pC(0, -116, 3.2), 1, '#fff', 0.35),
+        layer('#18212b', pRR(7.4, -125, 5.4, 7.4, 1.4)),
+        layer('#1d4eff', pR(7.4, -122.2, 5.4, 1.4)),
+        layer('#05070a', pE(9, -123.6, 0.8, 1.1) + pE(11.2, -123.6, 0.8, 1.1)),
+        layer('#eef1f3', pRR(-22.6, -105.2, 45.2, 4.2, 0.4)),
+        layer('#000', pR(-22.6, -101, 45.2, 0.9), 0.28),
+        layer('#dfe4e9', pR(-7, -108.6, 14, 0.45) + pR(-4.5, -109.6, 3, 0.5) + pR(2, -109.4, 2.4, 0.4)),
+        layer('#e2581c', pRR(-20.9, -124.4, 3.5, 11, 1.75) + pRR(17.8, -121, 2.8, 6, 1.4)),
+        layer('#ff8a4a', pRR(-20.5, -123.4, 2.7, 9, 1.35))
+      ]
+    };
+  }
+
+  // the quay seen from above, in the moored ship's metres. Vizhinjam faces the Arabian Sea, so with
+  // north up the land lies east of the ship: the port, cranes and yard are modelled with the land
+  // towards −x and drawn mirrored, putting the quay face on x 25 with the yard behind it.
+  const CRANE_Y = SLOT.y + SLOT.h / 2; // the working crane stands over the open slot
+  const LANE_X = 45; // truck lane between the crane legs, in drawn (unmirrored) metres
+  const PORT = { left: -700, top: -900, bottom: 220 };
+  const YARD = { x: -250, y: PORT.top + 14, w: 168, h: 1120 - 28, ppm: 2 };
+  function portModel() {
+    const R = rng(515);
+    const { left: X0, top: Y0, bottom: Y1 } = PORT, w = -25 - X0;
+    let joints = '', fend = '', boll = '', lanes = '', roofs = '', ridges = '', caps = '', shed = '';
+    for (let y = Y0; y < Y1; y += 10) joints += pR(X0, y, w, 0.12);
+    for (let x = X0 + 5; x < -25; x += 10) joints += pR(x, Y0, 0.12, Y1 - Y0);
+    for (let y = Y0 + 5; y < Y1 - 4; y += 15) { fend += pR(-25.3, y, 1.4, 3.2); boll += pC(-27, y + 1.6, 0.5); }
+    for (let y = Y0; y < Y1; y += 9) lanes += pR(-40.1, y, 0.2, 4.5) + pR(-50.1, y, 0.2, 4.5) + pR(-68.1, y, 0.2, 4.5);
+    // warehouses and the port road beyond the yard
+    for (let y = Y0 + 30; y < Y1 - 60; y += 150) {
+      const h = 90 + R() * 40;
+      roofs += pR(-470, y, 120, h) + pR(-640, y + 20, 140, h - 20);
+      for (let x = -466; x < -350; x += 6) ridges += pR(x, y, 0.6, h);
+      for (let x = -636; x < -500; x += 6) ridges += pR(x, y + 20, 0.6, h - 20);
+      caps += pR(-410, y, 1.6, h) + pR(-570, y + 20, 1.6, h - 20);
+      shed += pR(-473, y + 3, 123, 3) + pR(-643, y + 23, 143, 3);
+    }
+    // the yard: blocks of containers seven rows wide, kept as data for close views and drawn once
+    // into a raster for distant ones
+    const pal = ['#1f4aa8', '#c8322c', '#2f8f4e', '#e8e8e3', '#e08a2e', '#86919b', '#203566', '#4a8fd6'];
+    const yard = [];
+    for (let k = 0; k < 4; k++) {
+      const bx = -104 - k * 46;
+      for (let y = YARD.y; y < YARD.y + YARD.h - 12; y += 14.2) {
+        for (let row = 0; row < 7; row++) {
+          if (R() < 0.12) continue;
+          yard.push({ x: bx + row * 2.9, y, w: 2.44, h: 12.2, fill: shade(pal[Math.floor(R() * pal.length)], (R() - 0.5) * 0.24) });
+        }
+      }
+    }
+    const raster = toCanvas(YARD.w * YARD.ppm, YARD.h * YARD.ppm), rg = raster.getContext('2d');
+    rg.setTransform(YARD.ppm, 0, 0, YARD.ppm, -YARD.x * YARD.ppm, -YARD.y * YARD.ppm);
+    for (const b of yard) { rg.fillStyle = b.fill; rg.fillRect(b.x, b.y, b.w, b.h); }
+    return {
+      yard,
+      near: yard.filter((b) => Math.abs(b.y - CRANE_Y) < 260),
+      raster,
+      ground: [
+        layer('#a3a59f', pR(X0, Y0, w, Y1 - Y0)),
+        layer('#000', joints, 0.06),
+        layer('#2c2e31', pR(-330, Y0, 22, Y1 - Y0)),
+        layer('#e8e6dc', pR(-319.15, Y0, 0.3, Y1 - Y0), 0.6),
+        layer('#000', shed, 0.28),
+        layer('#b9bdb8', roofs),
+        layer('#000', ridges, 0.16),
+        layer('#e6e8e4', caps),
+        layer('#4f5452', pR(-26, Y0, 1, Y1 - Y0)),
+        layer('#d9b43c', pR(-28.6, Y0, 0.3, Y1 - Y0)),
+        layer('#5a5d60', pR(-30.2, Y0, 0.4, Y1 - Y0) + pR(-60.2, Y0, 0.4, Y1 - Y0)),
+        layer('#f2f2ee', lanes, 0.7),
+        layer('#141516', fend),
+        layer('#2a2c2f', boll)
+      ]
+    };
+  }
+
+  // ship-to-shore crane from above: legs on the rails, portal beams, the boom out over the water
+  // with its machinery house and A-frame. Idle cranes keep the boom raised, so it reads short.
+  function craneModel(yc, working) {
+    const end = working ? 32 : -22;
+    const girders = pR(-80, yc - 3.4, end + 80, 1.1) + pR(-80, yc + 2.3, end + 80, 1.1);
+    let brace = '';
+    for (let x = -78; x < end - 3; x += 4) brace += `M${x} ${yc - 2.3}L${x + 4} ${yc + 2.3}`;
+    const legs = pR(-32, yc - 10, 3, 3) + pR(-32, yc + 7, 3, 3) + pR(-62, yc - 10, 3, 3) + pR(-62, yc + 7, 3, 3);
+    const portal = pR(-61, yc - 9.2, 31, 1.2) + pR(-61, yc + 8, 31, 1.2) + pR(-31.5, yc - 8.5, 2, 17) + pR(-61.5, yc - 8.5, 2, 17);
+    const house = pR(-77, yc - 4.6, 13, 9.2);
+    return {
+      shadow: new Path2D(girders + legs + portal + house),
+      layers: [
+        layer('#c3ccd5', portal),
+        layer('#e9edf1', legs),
+        layer('#eef1f4', girders + pR(end - 1.5, yc - 3.4, 1.5, 6.8)),
+        layer(null, brace, 0.8, '#a9b3bd', 0.18),
+        layer('#f6f8fa', house),
+        layer('#1d4eff', pR(-77, yc - 4.6, 13, 0.9)),
+        layer('#dfe4ea', pR(-49, yc - 3.6, 5, 7.2)),
+        layer(null, `M-46.5 ${yc - 2.6}L-79 ${yc - 2.8}M-46.5 ${yc + 2.6}L-79 ${yc + 2.8}M-44 ${yc - 2.6}L${end} ${yc - 2.8}M-44 ${yc + 2.6}L${end} ${yc + 2.8}`, 0.55, '#7f8a95', 0.12)
+      ]
+    };
+  }
+
+  // paints the ship in its own metres; inView (when given) culls boxes off screen and adds the
+  // corrugated roofs that only show close up. The CNIQ box is aboard unless the crane still has it.
+  function drawShipVector(g, S, inView) {
+    paint(g, S.under);
+    for (const b of S.boxes) {
+      if (inView && !inView(b)) continue;
+      g.fillStyle = b.fill;
+      g.fillRect(b.x, b.y, b.w, b.h);
+      if (inView) { g.fillStyle = SEA.ribPat; g.fillRect(b.x, b.y, b.w, b.h); }
+    }
+    if (!inView || O.rel > 0) drawBox(g, SLOT.x, SLOT.y, inView && SEA.ribPat);
+    paint(g, S.over);
+    g.save();
+    g.clip(S.deck);
+    g.fillStyle = SEA.sun;
+    g.fillRect(-22, -131, 44, 262);
+    g.restore();
+  }
+
+  // the CNIQ box seen from above: white roof, cobalt band and wordmark, corner castings
+  function drawBox(g, x, y, ribs) {
+    g.fillStyle = '#eceef0';
+    g.fillRect(x, y, 2.44, 12.3);
+    if (ribs) { g.fillStyle = ribs; g.fillRect(x, y, 2.44, 12.3); }
+    g.fillStyle = '#1d4eff';
+    g.fillRect(x, y + 11.2, 2.44, 0.8);
+    g.fillStyle = '#3a3e44';
+    for (const [cx, cy] of [[0, 0], [2.04, 0], [0, 11.9], [2.04, 11.9]]) g.fillRect(x + cx, y + cy, 0.4, 0.4);
+    g.save();
+    g.translate(x + 1.22, y + 5.6);
+    g.rotate(-Math.PI / 2);
+    g.font = '800 1.2px Archivo, "Arial Black", sans-serif';
+    g.textAlign = 'center';
+    g.textBaseline = 'middle';
+    g.fillStyle = '#15171c';
+    g.fillText('CNIQ INDIA', 0, 0);
+    g.restore();
+  }
+
+  // tractor and skeletal trailer from above, cab towards +y
+  function drawTruck(g, x, yc) {
+    g.globalAlpha = 0.25;
+    g.fillStyle = '#000';
+    g.fillRect(x - 1 + 1.2, yc - 6.6 + 0.9, 2.4, 18.2);
+    g.globalAlpha = 1;
+    g.fillStyle = '#1a1c20';
+    g.fillRect(x - 1.05, yc - 6.6, 0.35, 13.6);
+    g.fillRect(x + 0.7, yc - 6.6, 0.35, 13.6);
+    for (const ay of [-6.1, -4.8, -3.5]) g.fillRect(x - 1.3, yc + ay, 2.6, 0.55);
+    g.fillRect(x - 1.05, yc + 6.4, 2.1, 4.8);
+    g.fill(new Path2D(pRR(x - 1.3, yc + 9.4, 2.6, 2.4, 0.3)));
+    g.fillStyle = '#3d434b';
+    g.fillRect(x - 1.15, yc + 11.35, 2.3, 0.3);
+    g.fillStyle = '#f4ecc8';
+    g.fillRect(x - 0.9, yc + 9.55, 1.8, 0.14);
+    g.fillStyle = '#121316';
+    g.fillRect(x - 1.6, yc + 10.4, 0.3, 0.6);
+    g.fillRect(x + 1.3, yc + 10.4, 0.3, 0.6);
+  }
+
+  // a cumulus seen from above: lobes of densely packed puffs, each with a shaded crease below it,
+  // so the mass has firm, lumpy edges and depth between the billows
+  function cloudSprite(seed) {
+    const W = 1024, H = 672, c = toCanvas(W, H), g = c.getContext('2d'), R = rng(seed);
+    const puff = (x, y, r, stops) => {
+      const rg = g.createRadialGradient(x, y, 0, x, y, r);
+      for (const [o, col] of stops) rg.addColorStop(o, col);
+      g.fillStyle = rg;
+      g.fillRect(x - r, y - r, r * 2, r * 2);
+    };
+    const gauss = () => (R() + R() + R() - 1.5) / 1.5;
+    const lobes = [];
+    for (let i = 0; i < 6; i++) lobes.push([W * (0.3 + R() * 0.4), H * (0.3 + R() * 0.4), 0.6 + R() * 0.5]);
+    const tops = [];
+    for (let i = 0; i < 240; i++) {
+      const [lx, ly, ls] = lobes[i % lobes.length];
+      const x = lx + gauss() * W * 0.16 * ls, y = ly + gauss() * H * 0.16 * ls;
+      const edge = Math.hypot((x - W / 2) / (W * 0.4), (y - H / 2) / (H * 0.4));
+      if (edge > 1) continue;
+      tops.push([x, y, (20 + R() * 46) * (1.3 - edge * 0.6)]);
+    }
+    // each puff throws its shadow down-right onto the ones drawn before it, which opens up creases
+    for (const [x, y, r] of tops) {
+      puff(x + r * 0.3, y + r * 0.38, r * 1.08, [[0, 'rgba(120,136,168,.34)'], [0.7, 'rgba(120,136,168,.13)'], [1, 'rgba(120,136,168,0)']]);
+      puff(x, y, r, [[0, 'rgba(255,255,255,.95)'], [0.6, 'rgba(247,250,254,.82)'], [0.86, 'rgba(236,241,249,.3)'], [1, 'rgba(236,241,249,0)']]);
+    }
+    return c;
   }
 
   // four-engine freighter, nose up, 70 m long and 64 m across, in plain white with a gold cheatline
@@ -850,39 +1059,127 @@ ${fairings}${engines}
     return c;
   }
 
-  /* ---------- night highway behind the manifesto ---------- */
-
-  const night = { trails: [] };
-
-  function buildNight() {
-    const R = rng(99);
-    const stars = $('#nightStars');
-    for (let i = 0; i < 140; i++) svg('circle', { cx: (R() * 1600).toFixed(0), cy: (R() * 430).toFixed(0), r: (0.4 + R() * 1.1).toFixed(2), fill: '#fff', opacity: (0.15 + R() * 0.6).toFixed(2) }, stars);
-    const city = $('#nightCity');
-    for (let x = -20; x < 1640;) {
-      const w = 30 + R() * 80, h = 40 + R() * (x > 900 && x < 1400 ? 230 : 140);
-      svg('rect', { x, y: 560 - h, width: w, height: h, fill: '#0c1320' }, city);
-      for (let wy = 560 - h + 8; wy < 552; wy += 9) for (let wx = x + 5; wx < x + w - 6; wx += 8) {
-        if (R() < 0.18) svg('rect', { x: wx.toFixed(0), y: wy.toFixed(0), width: 3, height: 4, fill: R() > 0.2 ? '#ffcf7a' : '#bcd4ff', opacity: (0.4 + R() * 0.5).toFixed(2) }, city);
+  // the breakwater west of the berth, as a raster at 3 px per metre: surf along the seaward toe,
+  // concrete armour units, a wave wall and crest road, rock on the harbour side, a light on the head
+  const BW = { x: -206, y: -600, w: 62, h: 752, ppm: 3, head: 120 };
+  function breakwater() {
+    const R = rng(908), c = toCanvas(BW.w * BW.ppm, BW.h * BW.ppm), g = c.getContext('2d');
+    g.setTransform(BW.ppm, 0, 0, BW.ppm, -BW.x * BW.ppm, -BW.y * BW.ppm);
+    const gauss = () => (R() + R() + R() - 1.5) / 1.5;
+    // the mound d metres in from its toe: straight along x −192 … −150, closed by a round head
+    const mound = (d) => new Path2D(`M${-192 + d} ${BW.y}V${BW.head}A${21 - d} ${21 - d} 0 0 0 ${-150 - d} ${BW.head}V${BW.y}Z`);
+    // a point d metres seaward of the toe: u 0…0.8 runs down the seaward face, 0.8…1 round the head
+    const toe = (u, d) => {
+      if (u < 0.8) return [-192 - d, BW.y + (BW.head - BW.y) * u / 0.8];
+      const a = Math.PI * (1 - (u - 0.8) / 0.2 * 0.85);
+      return [-171 + Math.cos(a) * (21 + d), BW.head + Math.sin(a) * (21 + d)];
+    };
+    g.filter = `blur(${BW.ppm * 3}px)`;
+    g.fillStyle = 'rgba(232,244,255,.4)';
+    g.fill(mound(-5));
+    g.filter = 'none';
+    for (let i = 0; i < 3200; i++) {
+      const [x, y] = toe(R(), Math.abs(gauss()) * 8);
+      g.fillStyle = `rgba(255,255,255,${(0.2 + R() * 0.55).toFixed(2)})`;
+      g.beginPath(); g.ellipse(x, y, 0.4 + R() * 1.2, 0.8 + R() * 2.2, 0, 0, 6.283); g.fill();
+    }
+    g.fillStyle = '#7f7b73';
+    g.fill(mound(0));
+    // rock on the harbour side, then the crest road and the wave wall that shelters it
+    g.fillStyle = '#77716a';
+    g.fillRect(-163, BW.y, 13, BW.head - BW.y);
+    for (let i = 0; i < 1800; i++) {
+      g.fillStyle = R() < 0.5 ? '#958f84' : '#5e5951';
+      g.beginPath(); g.arc(-162.6 + R() * 12.2, BW.y + R() * (BW.head - BW.y), 0.35 + R() * 0.7, 0, 6.283); g.fill();
+    }
+    g.fillStyle = '#a8a49b';
+    g.fillRect(-174.6, BW.y, 11.6, BW.head - BW.y);
+    g.beginPath(); g.arc(-171, BW.head, 9, 0, 6.283); g.fill();
+    g.fillStyle = 'rgba(0,0,0,.12)';
+    for (let y = BW.y + 6; y < BW.head - 6; y += 12) g.fillRect(-174.6, y, 11.6, 0.15);
+    g.fillStyle = '#e3e0d7';
+    g.fillRect(-177, BW.y, 2.4, BW.head - BW.y - 4);
+    g.fillStyle = 'rgba(0,0,0,.3)';
+    g.fillRect(-174.6, BW.y, 1, BW.head - BW.y - 4);
+    // armour units: interlocking concrete blocks, each lit from the upper left
+    const unit = (x, y) => {
+      const rot = R() * 3.14, rx = 0.9 + R() * 0.35, ry = 0.8 + R() * 0.3, t = (R() - 0.5) * 0.14;
+      g.fillStyle = '#4f4c46';
+      g.beginPath(); g.ellipse(x + 0.35, y + 0.35, rx, ry, rot, 0, 6.283); g.fill();
+      g.fillStyle = shade('#cbc8bf', t);
+      g.beginPath(); g.ellipse(x, y, rx, ry, rot, 0, 6.283); g.fill();
+    };
+    for (let y = BW.y; y < BW.head; y += 2.3) for (let x = -191; x < -177.5; x += 2.3) unit(x + gauss() * 0.4, y + gauss() * 0.4);
+    for (let r = 8.5; r < 21; r += 2.3) {
+      const n = Math.ceil(Math.PI * r / 2.3);
+      for (let i = 0; i <= n; i++) {
+        const a = Math.PI * (1 - i / n);
+        unit(-171 + Math.cos(a) * r + gauss() * 0.4, BW.head + Math.sin(a) * r + gauss() * 0.4);
       }
-      if (h > 200) svg('circle', { cx: x + w / 2, cy: 560 - h - 6, r: 2.4, fill: '#ff4a3a', class: 'blink' }, city);
-      x += w + 2;
     }
-    const bokeh = $('#nightBokeh');
-    for (let i = 0; i < 36; i++) svg('circle', { cx: (R() * 1600).toFixed(0), cy: (500 + R() * 260).toFixed(0), r: (16 + R() * 54).toFixed(0), fill: R() > 0.4 ? 'url(#gBokehW)' : 'url(#gBokehR)', opacity: (0.35 + R() * 0.45).toFixed(2) }, bokeh);
-    // long-exposure lanes converging on the horizon
-    const trails = $('#nightTrails');
-    svg('path', { d: 'M-300 900L1180 566L1290 566L1900 900Z', fill: '#0a0d14', opacity: 0.85 }, trails);
-    for (let i = 0; i < 10; i++) {
-      const inbound = i < 5;
-      const sx = -320 + i * 230, ex = 1190 + i * 10;
-      const d = `M${sx} 940C${400 + i * 40} ${760 - i * 6},${900 + i * 16} ${612 - i * 2},${ex} 568`;
-      const color = inbound ? '#fff1c9' : '#ff4a36';
-      const dash = `${(180 + R() * 220).toFixed(0)} ${(90 + R() * 260).toFixed(0)} ${(40 + R() * 80).toFixed(0)} ${(160 + R() * 200).toFixed(0)}`;
-      const glow = svg('path', { d, fill: 'none', stroke: color, 'stroke-width': 9, opacity: 0.12, 'stroke-linecap': 'round', 'stroke-dasharray': dash }, trails);
-      const core = svg('path', { d, fill: 'none', stroke: color, 'stroke-width': 2.4, opacity: 0.9, 'stroke-linecap': 'round', 'stroke-dasharray': dash }, trails);
-      night.trails.push({ els: [glow, core], v: (inbound ? -1 : 1) * (240 + R() * 200), off: R() * 1000 });
+    // the head light: a white tower, red for the port hand of the entrance
+    g.fillStyle = 'rgba(0,0,0,.35)';
+    g.beginPath(); g.arc(-170, BW.head + 2.8, 1.6, 0, 6.283); g.fill();
+    g.fillStyle = '#f2f2ee';
+    g.beginPath(); g.arc(-171, BW.head + 2, 1.6, 0, 6.283); g.fill();
+    g.fillStyle = '#e5322b';
+    g.beginPath(); g.arc(-171, BW.head + 2, 0.8, 0, 6.283); g.fill();
+    return c;
+  }
+
+  // coconut palms from above, a 256 px tile at 2 px per metre: crowns lit from the upper left
+  function palmTexture() {
+    const S = 256, c = toCanvas(S, S), g = c.getContext('2d'), R = rng(404);
+    g.fillStyle = '#2b4725';
+    g.fillRect(0, 0, S, S);
+    for (let i = 0; i < 560; i++) {
+      const x = R() * S, y = R() * S, r = 4 + R() * 7, light = R() < 0.5;
+      wrapped(S, x, y, r * 1.4, (px, py) => {
+        g.fillStyle = 'rgba(8,20,6,.42)';
+        g.beginPath(); g.arc(px + r * 0.35, py + r * 0.35, r, 0, 6.283); g.fill();
+        const rg = g.createRadialGradient(px - r * 0.3, py - r * 0.3, 0, px, py, r);
+        rg.addColorStop(0, light ? '#76a04c' : '#5f8b3f');
+        rg.addColorStop(1, light ? '#2f5527' : '#274821');
+        g.fillStyle = rg;
+        g.beginPath(); g.arc(px, py, r, 0, 6.283); g.fill();
+      });
     }
+    return c;
+  }
+
+  // the Kerala coast south of the port, in drawn metres: the shore runs south-east from the port's
+  // corner, with a beach, surf, coconut palms and village roofs inland, and the road out of the port
+  function coastModel(palms) {
+    const R = rng(613);
+    const shore = (y) => 25 + 0.86 * (y - 220) + clamp((y - 220) / 80, 0, 1) * (6 * Math.sin(y * 0.021) + 3 * Math.sin(y * 0.067));
+    const roadX = (y) => Math.max(319, shore(y) + 180);
+    const ys = [];
+    for (let y = 220; y <= 4400; y += 20) ys.push(y);
+    const along = (fx) => ys.map((y) => `L${fx(y).toFixed(1)} ${y}`).join('');
+    const land = (d) => `M${25 + d} -1200` + along((y) => shore(y) + d) + 'L7000 4400V-1200Z';
+    const roofs = ['', '', '', ''];
+    let shadows = '';
+    for (let i = 0; i < 420; i++) {
+      const y = 240 + Math.pow(R(), 1.3) * 2600, x = shore(y) + 40 + Math.pow(R(), 1.6) * 360;
+      const w = 6 + R() * 6, h = 7 + R() * 7, k = Math.floor(R() * 4);
+      if (Math.abs(x + w / 2 - roadX(y)) < 10 + w / 2) continue;
+      roofs[k] += pR(x, y, w, h);
+      shadows += pR(x + 0.9, y + 0.9, w, h);
+    }
+    const road = 'M319 220' + along(roadX);
+    return [
+      layer('#d9c9a1', land(0)),
+      layer(palms, land(24)),
+      layer('#000', shadows, 0.3),
+      layer('#b4573a', roofs[0]),
+      layer('#9c4a31', roofs[1]),
+      layer('#cdc9bf', roofs[2]),
+      layer('#6b8fb8', roofs[3]),
+      layer(null, road, 1, '#3a3b3d', 12),
+      layer(null, road, 0.5, '#e8e6dc', 0.3),
+      layer(null, 'M25 220' + along((y) => shore(y) - 6), 0.28, '#f4f8ff', 1.6),
+      layer(null, 'M25 220' + along(shore), 0.6, '#f4f8ff', 2.6)
+    ];
   }
 
   /* ---------- night harbour behind contact ---------- */
@@ -1041,7 +1338,6 @@ ${fairings}${engines}
   buildTextures();
   buildWheel();
   buildFar();
-  buildNight();
   buildHarbour();
   splitFooter();
   initContact();
@@ -1147,7 +1443,6 @@ ${fairings}${engines}
   const L = {};
   let filmTl = null;
   let oceanOn = false;
-  let nightOn = false;
   const OVERVIEW = { x: 2700, y: 1760 };
   const RUN_X = 300;
 
@@ -1572,47 +1867,495 @@ ${fairings}${engines}
     }
     if (!reduceMotion && F.aerA > 0.001) moveCars(time);
     if (oceanOn && (oDirty || !reduceMotion)) { drawOcean(time); oDirty = false; }
-    if (nightOn) renderNight(time);
   });
 
-  /* ---------- manifesto over the night highway ---------- */
-  const mt = $('#manifestoText');
-  mt.innerHTML = mt.textContent.trim().split(/\s+/).map((w) => `<span class="w">${w}</span>`).join(' ');
-  gsap.to('#manifestoText .w', {
-    color: '#ffffff',
-    stagger: 0.08,
-    ease: 'none',
-    scrollTrigger: { trigger: mt, start: 'top 80%', end: 'bottom 45%', scrub: true }
-  });
-  gsap.from('.principles article', {
-    y: 40,
-    stagger: 0.12,
-    ease: 'none',
-    scrollTrigger: { trigger: '.principles', start: 'top 98%', end: 'top 72%', scrub: true }
-  });
-  gsap.fromTo('#nightSvg', { scale: 1.16 }, {
-    scale: 1,
-    ease: 'none',
-    scrollTrigger: { trigger: '#approach', start: 'top bottom', end: 'bottom top', scrub: true }
-  });
-  let nightScroll = 0;
-  function renderNight(time) {
-    const live = reduceMotion ? 0 : time;
-    for (const tr of night.trails) {
-      const o = (tr.off + live * tr.v + nightScroll * tr.v * 2).toFixed(0);
-      tr.els[0].setAttribute('stroke-dashoffset', o);
-      tr.els[1].setAttribute('stroke-dashoffset', o);
+  /* ---------- sea & air: from the quay to open water, seen from above ---------- */
+  const oStage = $('#oceanStage');
+  const oCanvas = $('#oceanCanvas');
+  const oc = oCanvas.getContext('2d');
+  const oHead = $('#oceanHead');
+  const oList = $('#oceanPoints');
+  const oFade = $('#oceanFade');
+  const oItems = $$('#oceanPoints li');
+  // head: title out · grab, lift, trav, rel: the crane takes the box off the truck and sets it in the
+  // open slot · truck: the truck leaves · jolt: the box lands · lines: mooring lines · dep: the ship
+  // casts off · cam: quay framing → following the ship · wake · run: distance sailed with the scroll
+  // · cl, cla: clouds crossing · pp: the plane's pass · z, sy: zoom and the ship's height in frame
+  // · list: the points · out: fade into the next section · lab, map, air: the place names
+  const O = {
+    head: 0, grab: 0, lift: 0, trav: 0, rel: 0, truck: 0, jolt: 0, lines: 1,
+    dep: 0, cam: 0, wake: 0, run: 0, cl: 0, cla: 0, pp: 0, z: 1, sy: 0.6, list: 0, out: 0,
+    lab: 0, map: 0, air: 0
+  };
+  // Vizhinjam International Seaport, 8°22′21″N 76°59′55″E; Thiruvananthapuram International Airport
+  // lies about 15 km to its north-west, so the plane holds that heading (north is up)
+  const PLACE = {
+    port: ['VIZHINJAM INTERNATIONAL SEAPORT', 'THIRUVANANTHAPURAM, KERALA', '8.3725° N   76.9986° E'],
+    pin: ['VIZHINJAM PORT', 'KERALA, INDIA'],
+    air: ['AIR LEG · TRV', 'THIRUVANANTHAPURAM INTERNATIONAL AIRPORT', '15 KM NORTH-WEST OF THE PORT']
+  };
+  const HEADING = -0.7;
+  const MONO = '"Martian Mono", ui-monospace, monospace';
+  const OL = {};
+  const SEA = { ready: false };
+  const CLOUDS = [
+    { i: 0, x: 0.18, y: 0.22, s: 0.95, v: 1, a: 0.95 },
+    { i: 1, x: 0.78, y: 0.5, s: 1.15, v: 1.3, a: 0.92 },
+    { i: 2, x: 0.32, y: 0.82, s: 0.85, v: 0.85, a: 0.88 },
+    { i: 0, x: 0.95, y: 0.12, s: 0.7, v: 1.15, a: 0.8 },
+    { i: 1, x: -0.12, y: 0.62, s: 0.9, v: 1.2, a: 0.9 }
+  ];
+  let oDirty = true, sailed = 0, lastT = 0;
+
+  // icon dots light up from the top-left corner
+  oItems.forEach((li) => $$('circle', li).forEach((c) => {
+    c.style.transitionDelay = `${Math.round((+c.getAttribute('cx') + +c.getAttribute('cy')) * 22)}ms`;
+  }));
+
+  function measureOcean() {
+    OL.W = oStage.clientWidth;
+    OL.H = oStage.clientHeight;
+    OL.dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    oCanvas.width = Math.round(OL.W * OL.dpr);
+    oCanvas.height = Math.round(OL.H * OL.dpr);
+    OL.s0 = (OL.H * 0.3) / 260; // px per metre at sea: the ship fills 30% of the frame
+    // at the quay the frame spans the truck lane to the open slot; phones see a tighter window
+    const narrow = OL.W / OL.H < 0.9;
+    OL.sPort = Math.min(OL.W / (narrow ? 56 : 92), OL.H / 56);
+    OL.portX = narrow ? 26 : 24;
+    OL.fs = OL.W < 600 ? 10.5 : 12;
+    OL.padX = parseFloat(getComputedStyle(oHead).paddingLeft) || 20;
+    OL.top = ($('.site-header')?.offsetHeight || 68) + 22;
+    OL.Lp = OL.H * 0.98; // the plane, far nearer the camera than the sea
+    const cx = OL.W / 2, cy = OL.H * 0.35;
+    const g = oc.createRadialGradient(cx, cy, 0, cx, cy, Math.hypot(OL.W, OL.H) * 0.72);
+    g.addColorStop(0, '#13438f');
+    g.addColorStop(0.45, '#0b2c68');
+    g.addColorStop(1, '#04122f');
+    OL.grad = g;
+    OL.listH = oList.offsetHeight;
+    OL.items = oItems.map((li) => ({ li, mid: li.offsetTop + li.offsetHeight / 2, on: null, a: -1 }));
+    oDirty = true;
+  }
+
+  async function buildSea() {
+    SEA.seaPat = oc.createPattern(seaTexture(), 'repeat');
+    SEA.buf = toCanvas(WAKE.w * 2, WAKE.h * 2);
+    SEA.bctx = SEA.buf.getContext('2d');
+    SEA.foamPat = SEA.bctx.createPattern(foamTexture(), 'repeat');
+    SEA.mask = wakeMask();
+    SEA.kelvin = kelvinRipples();
+    SEA.ship = shipModel();
+    SEA.shipShadow = softShadow(SEA.ship.hull, -26, -134, 52, 268, 3, 4, 'rgba(0,6,22,.6)');
+    SEA.port = portModel();
+    SEA.breakwater = breakwater();
+    const palms = oc.createPattern(palmTexture(), 'repeat');
+    palms.setTransform(new DOMMatrix([0.5, 0, 0, 0.5, 0, 0]));
+    SEA.coast = coastModel(palms);
+    SEA.calm = oc.createLinearGradient(0, PORT.top, 0, 240);
+    SEA.calm.addColorStop(0, 'rgba(26,104,146,.5)');
+    SEA.calm.addColorStop(0.72, 'rgba(26,104,146,.46)');
+    SEA.calm.addColorStop(1, 'rgba(26,104,146,0)');
+    SEA.cranes = [craneModel(CRANE_Y - 78, false), craneModel(CRANE_Y, true), craneModel(CRANE_Y + 82, false)];
+    SEA.clouds = [cloudSprite(11), cloudSprite(23), cloudSprite(37)];
+    SEA.cloudShadows = SEA.clouds.map((c) => shadowOf(c, 256, 168, 5, 'rgba(0,8,26,.55)'));
+    // container roofs are corrugated across their width: a stripe every 0.6 m, used when close
+    const rib = toCanvas(8, 8), rg = rib.getContext('2d');
+    rg.fillStyle = 'rgba(255,255,255,.12)';
+    rg.fillRect(0, 0, 8, 3);
+    rg.fillStyle = 'rgba(0,0,0,.12)';
+    rg.fillRect(0, 3, 8, 1);
+    SEA.ribPat = oc.createPattern(rib, 'repeat');
+    SEA.ribPat.setTransform(new DOMMatrix([0.075, 0, 0, 0.075, 0, 0]));
+    SEA.sun = oc.createLinearGradient(-22, 0, 22, 0);
+    SEA.sun.addColorStop(0, 'rgba(255,255,255,.12)');
+    SEA.sun.addColorStop(0.5, 'rgba(255,255,255,0)');
+    SEA.sun.addColorStop(1, 'rgba(0,0,0,.16)');
+    // from a distance the ship is drawn from a cached image, with the CNIQ box already aboard
+    const ppm = 3 * Math.min(window.devicePixelRatio || 1, 1.5);
+    SEA.shipImg = toCanvas(52 * ppm, 268 * ppm);
+    const sg = SEA.shipImg.getContext('2d');
+    sg.setTransform(ppm, 0, 0, ppm, 26 * ppm, 134 * ppm);
+    drawShipVector(sg, SEA.ship, null);
+    // the plane is drawn once at the largest size it is shown, then only ever scaled down
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5), tall = Math.max(innerHeight, 820);
+    const planeH = Math.min(2400, Math.round(tall * dpr)), planeW = Math.round(planeH * 66 / 72);
+    const plane = await rasterSvg(planeMarkup(planeW, planeH), planeW, planeH);
+    if (!plane) return;
+    SEA.plane = plane;
+    SEA.planeShadow = shadowOf(plane, 132, 144, 1.2, 'rgba(0,6,22,.8)');
+    SEA.ready = true;
+    oDirty = true;
+  }
+
+  const strobe = (x, y, r, rgb, a) => {
+    const rg = oc.createRadialGradient(x, y, 0, x, y, r);
+    rg.addColorStop(0, `rgba(${rgb},${a})`);
+    rg.addColorStop(1, `rgba(${rgb},0)`);
+    oc.fillStyle = rg;
+    oc.fillRect(x - r, y - r, r * 2, r * 2);
+  };
+
+  // place names, drawn on the canvas in screen pixels: a block of lines, the first in white and the
+  // rest dimmer, set left from x or right-aligned to it, shrunk to fit the frame; returns its height
+  const lineY = (i, sz) => (i ? sz * 1.5 + (i - 1) * sz * 1.3 : 0);
+  function nameBlock(x, y, lines, a, right, measureOnly) {
+    const g = oc, room = (right ? x : OL.W - x) - OL.padX;
+    const font = (i, sz) => `${i ? 500 : 600} ${i ? sz * 0.86 : sz}px ${MONO}`;
+    g.letterSpacing = '0.06em';
+    let sz = OL.fs;
+    const widest = Math.max(...lines.map((l, i) => { g.font = font(i, sz); return g.measureText(l).width; }));
+    if (widest > room) sz *= room / widest;
+    const h = lineY(lines.length - 1, sz) + sz * (lines.length > 1 ? 0.86 : 1);
+    if (!measureOnly) {
+      g.textAlign = right ? 'right' : 'left';
+      g.textBaseline = 'top';
+      g.shadowColor = 'rgba(2,10,30,.9)';
+      g.shadowBlur = 10;
+      lines.forEach((l, i) => {
+        g.font = font(i, sz);
+        g.fillStyle = `rgba(255,255,255,${((i ? 0.78 : 1) * a).toFixed(3)})`;
+        g.fillText(l, x, y + lineY(i, sz));
+      });
+      g.shadowBlur = 0;
+      g.shadowColor = 'transparent';
+    }
+    g.letterSpacing = '0px';
+    return h;
+  }
+  const pinDot = (x, y, a) => {
+    const g = oc;
+    g.globalAlpha = a;
+    g.fillStyle = 'rgba(2,10,30,.55)';
+    g.beginPath(); g.arc(x, y, 6, 0, 6.283); g.fill();
+    g.fillStyle = '#e2b100';
+    g.beginPath(); g.arc(x, y, 3.6, 0, 6.283); g.fill();
+    g.globalAlpha = 1;
+  };
+  // where the frame is, under the header on the left
+  function chip(a, lines) {
+    const g = oc, x = OL.padX, y = OL.top, h = nameBlock(x + 20, y, lines, a, false, true);
+    g.globalAlpha = a * 0.5;
+    g.fillStyle = '#030c20';
+    g.filter = 'blur(9px)';
+    g.fillRect(x - 4, y - 10, Math.min(OL.W - OL.padX * 2, 360), h + 20);
+    g.filter = 'none';
+    g.globalAlpha = 1;
+    pinDot(x + 6, y + OL.fs * 0.5, a);
+    nameBlock(x + 20, y, lines, a, false);
+  }
+  // a point on the map: gold pin, a leader up (or down near the top) and the name at its end
+  function pin(x, y, a, lines) {
+    if (x < -40 || x > OL.W + 40 || y < OL.top + 16 || y > OL.H + 40) return;
+    const g = oc, right = x > OL.W * 0.62, len = 30;
+    const h = nameBlock(x, 0, lines, a, right, true), up = y - len - 8 - h > OL.top;
+    g.globalAlpha = a * 0.8;
+    g.strokeStyle = '#fff';
+    g.lineWidth = 1;
+    g.beginPath(); g.moveTo(x + 0.5, y + (up ? -7 : 7)); g.lineTo(x + 0.5, y + (up ? -len : len)); g.stroke();
+    g.globalAlpha = 1;
+    pinDot(x, y, a);
+    nameBlock(x + (right ? 0.5 : 0), up ? y - len - 6 - h : y + len + 6, lines, a, right);
+  }
+  // an open-water name, widely spaced, kept inside the frame
+  function waterName(x, y, a, name) {
+    const g = oc;
+    g.font = `500 ${OL.fs * 1.1}px ${MONO}`;
+    g.letterSpacing = '0.42em';
+    const w = g.measureText(name).width;
+    g.textAlign = 'left';
+    g.textBaseline = 'middle';
+    g.fillStyle = `rgba(214,232,255,${(0.7 * a).toFixed(3)})`;
+    g.shadowColor = 'rgba(2,10,30,.7)';
+    g.shadowBlur = 8;
+    g.fillText(name, clamp(x - w / 2, OL.padX, OL.W - OL.padX - w), y);
+    g.shadowBlur = 0;
+    g.shadowColor = 'transparent';
+    g.letterSpacing = '0px';
+  }
+
+  function drawOcean(time) {
+    if (!SEA.ready) return;
+    const { W, H, dpr } = OL;
+    const g = oc, P = SEA.port, S = SEA.ship;
+    const t = reduceMotion ? 0 : time;
+    const dt = clamp(time - lastT, 0, 0.1);
+    lastT = time;
+    if (!reduceMotion) sailed += dt * 11 * O.wake;
+
+    // the ship: alongside, then off the quay, past the breakwater and out into the Arabian Sea
+    const shipX = -110 * smooth(clamp(O.dep * 1.6, 0, 1));
+    const shipY = 380 * O.dep * O.dep + O.run * 900 + sailed;
+    // the camera: quay framing → following the ship, zoom eased in log space
+    const k = smooth(O.cam);
+    const s = Math.exp(lerp(Math.log(OL.sPort), Math.log(OL.s0 * O.z), k));
+    const fx = lerp(OL.portX, shipX, k), fy = lerp(CRANE_Y, shipY, k);
+    const cx = W / 2 + Math.sin(t * 90) * O.jolt * 2, cy = H * O.sy + Math.cos(t * 77) * O.jolt * 1.5;
+    const X = (wx) => cx + (wx - fx) * s, Y = (wy) => cy + (wy - fy) * s;
+    const close = s > 3;
+    const seen = (x, y, w, h) => X(x) < W && Y(y) < H && X(x + w) > 0 && Y(y + h) > 0;
+    const toScreen = () => g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const toWorld = () => g.setTransform(dpr * s, 0, 0, dpr * s, dpr * (cx - fx * s), dpr * (cy - fy * s));
+
+    toScreen();
+    g.globalAlpha = 1;
+    g.globalCompositeOperation = 'source-over';
+    g.fillStyle = OL.grad;
+    g.fillRect(0, 0, W, H);
+    // wind waves are fixed to the water; two octaves cross-fade so they keep detail at any zoom
+    const L = Math.log2(s / (2 * OL.s0)), f = L - Math.floor(L), ox = X(0), oy = Y(0);
+    g.fillStyle = SEA.seaPat;
+    for (const [sc, a] of [[0.5 * Math.pow(2, f), 1 - f], [0.25 * Math.pow(2, f), f]]) {
+      if (a < 0.01) continue;
+      const tile = 1024 * sc;
+      SEA.seaPat.setTransform(new DOMMatrix([sc, 0, 0, sc, ox % tile, oy % tile]));
+      g.globalAlpha = a * lerp(0.85, 0.7, clamp((O.z - 1) / 1.6, 0, 1));
+      g.fillRect(0, 0, W, H);
+    }
+    g.globalAlpha = 1;
+
+    // the harbour: calmer water inside the breakwater, the coast running south-east, then the port,
+    // which is modelled with its land towards −x and mirrored onto the east side of the berth
+    toWorld();
+    if (seen(-150, PORT.top, 175, 240 - PORT.top)) { g.fillStyle = SEA.calm; g.fillRect(-150, PORT.top, 175, 240 - PORT.top); }
+    if (seen(BW.x, BW.y, BW.w, BW.h)) g.drawImage(SEA.breakwater, BW.x, BW.y, BW.w, BW.h);
+    if (X(25) < W && (Y(PORT.bottom) < H || X(-PORT.left) < W)) paint(g, SEA.coast);
+    const quayOn = seen(23, PORT.top, -PORT.left - 23, PORT.bottom - PORT.top);
+    if (quayOn) {
+      g.save();
+      g.scale(-1, 1);
+      paint(g, P.ground);
+      if (s >= 4) for (const b of P.near) { if (seen(-b.x - b.w, b.y, b.w, b.h)) { g.fillStyle = b.fill; g.fillRect(b.x, b.y, b.w, b.h); } }
+      else g.drawImage(P.raster, YARD.x, YARD.y, YARD.w, YARD.h);
+      g.restore();
+    }
+
+    // wake: Kelvin ripples ride with the ship; the foam flows back through the wake mask
+    if (O.wake > 0.01) {
+      g.globalAlpha = O.wake;
+      g.drawImage(SEA.kelvin, shipX + WAKE.x, shipY + WAKE.y, WAKE.w, WAKE.h);
+      const b = SEA.bctx;
+      b.globalCompositeOperation = 'copy';
+      SEA.foamPat.setTransform(new DOMMatrix([1, 0, 0, 1, 0, -((shipY * 2) % 256)]));
+      b.fillStyle = SEA.foamPat;
+      b.fillRect(0, 0, SEA.buf.width, SEA.buf.height);
+      b.globalCompositeOperation = 'destination-in';
+      b.drawImage(SEA.mask, 0, 0);
+      g.drawImage(SEA.buf, shipX + WAKE.x, shipY + WAKE.y, WAKE.w, WAKE.h);
+      g.globalAlpha = 1;
+    }
+
+    // the ship and its shadow, thrown down and right by a sun to the upper left
+    g.globalAlpha = 0.7;
+    g.drawImage(SEA.shipShadow, shipX - 26 + 2.6, shipY - 134 + 2, 52, 268);
+    g.globalAlpha = 1;
+    if (close) {
+      g.save();
+      g.translate(shipX, shipY);
+      drawShipVector(g, S, (b) => seen(shipX + b.x, shipY + b.y, b.w, b.h));
+      g.restore();
+    } else {
+      g.drawImage(SEA.shipImg, shipX - 26, shipY - 134, 52, 268);
+    }
+
+    if (quayOn) {
+      // the truck leaves once the box is up; mooring lines are cast off before the ship moves
+      drawTruck(g, LANE_X, CRANE_Y + 95 * O.truck * O.truck);
+      if (O.lines > 0.01) {
+        g.globalAlpha = O.lines;
+        g.strokeStyle = '#e8e1cf';
+        g.lineWidth = 0.2;
+        g.beginPath();
+        for (const [sy, qy] of [[-112, -124], [-100, -130], [70, 82], [96, 112]]) { g.moveTo(shipX + 21.2, shipY + sy); g.lineTo(27, qy); }
+        g.stroke();
+        g.globalAlpha = 1;
+      }
+      // the box on the spreader, then the cranes over everything below them
+      const slotCx = SLOT.x + 1.22;
+      const tx = O.rel > 0 ? lerp(slotCx, LANE_X, O.rel) : lerp(LANE_X, slotCx, O.trav);
+      if (O.rel <= 0) {
+        const h = O.lift, sc = 1 + 0.07 * h;
+        g.globalAlpha = 0.3 * h;
+        g.fillStyle = '#000';
+        g.fillRect(tx - 1.22 + 3 * h, CRANE_Y - 6.15 + 2.4 * h, 2.44, 12.3);
+        g.globalAlpha = 1;
+        g.save();
+        g.translate(tx, CRANE_Y);
+        g.scale(sc, sc);
+        drawBox(g, -1.22, -6.15, close && SEA.ribPat);
+        g.restore();
+      }
+      const sp = O.rel > 0 ? 1 - O.rel : O.grab;
+      if (sp > 0.01) {
+        const sc = 1 + 0.07 * (O.rel > 0 ? 1 : O.lift) + 0.3 * (1 - sp);
+        g.save();
+        g.translate(tx, CRANE_Y);
+        g.scale(sc, sc);
+        g.globalAlpha = sp;
+        g.strokeStyle = '#e2b100';
+        g.lineWidth = 0.32;
+        g.strokeRect(-1.4, -6.4, 2.8, 12.8);
+        g.fillStyle = '#1b1c1f';
+        for (const [x, y] of [[-1.5, -6.5], [1.1, -6.5], [-1.5, 6.1], [1.1, 6.1]]) g.fillRect(x, y, 0.4, 0.4);
+        g.restore();
+        g.globalAlpha = 1;
+      }
+      g.save();
+      g.translate(4, 3);
+      g.scale(-1, 1);
+      g.globalAlpha = 0.18;
+      g.fillStyle = '#000';
+      for (const c of SEA.cranes) g.fill(c.shadow);
+      g.restore();
+      g.save();
+      g.scale(-1, 1);
+      for (const c of SEA.cranes) paint(g, c.layers);
+      g.restore();
+      // the trolley runs on top of the boom; the operator's cab hangs on its seaward side
+      g.fillStyle = '#2b3a4a';
+      g.fillRect(tx - 3, CRANE_Y - 3.7, 6, 1.3);
+      g.fillRect(tx - 3, CRANE_Y + 2.4, 6, 1.3);
+      g.fillRect(tx - 3, CRANE_Y - 3.7, 0.7, 7.4);
+      g.fillRect(tx + 2.3, CRANE_Y - 3.7, 0.7, 7.4);
+      g.fillStyle = '#1d4eff';
+      g.fillRect(tx - 3, CRANE_Y - 3.7, 6, 0.45);
+      g.fillStyle = '#9fc2e0';
+      g.fillRect(tx - 4.6, CRANE_Y - 1.1, 1.6, 2.2);
+    }
+
+    // clouds cross well below the plane: their shadows on the water first
+    toScreen();
+    const cloudXY = (c) => {
+      const w = Math.max(W, H * 0.9) * c.s;
+      return [W * c.x + lerp(0.9, -0.9, O.cl) * c.v * W, H * (c.y + O.cl * 0.12), w, w * 672 / 1024];
+    };
+    if (O.cla > 0.01) {
+      for (const c of CLOUDS) {
+        const [x, y, w, h] = cloudXY(c);
+        g.globalAlpha = O.cla * 0.3;
+        g.drawImage(SEA.cloudShadows[c.i], x - w / 2 + W * 0.06, y - h / 2 + H * 0.09, w, h);
+      }
+      g.globalAlpha = 1;
+    }
+    // the plane holds its heading for the airport: its shadow crosses the water beside the ship
+    const flying = O.pp > 0 && O.pp < 1, hx = Math.sin(HEADING), hy = -Math.cos(HEADING);
+    if (flying) {
+      toWorld();
+      const u = lerp(-170, 170, O.pp);
+      g.save();
+      g.translate(shipX + 20 + hx * u, shipY + 40 + hy * u);
+      g.rotate(HEADING);
+      g.globalAlpha = 0.5;
+      g.drawImage(SEA.planeShadow, -33, -36, 66, 72);
+      g.restore();
+      toScreen();
+    }
+    if (O.cla > 0.01) {
+      for (const c of CLOUDS) {
+        const [x, y, w, h] = cloudXY(c);
+        g.globalAlpha = O.cla * c.a;
+        g.drawImage(SEA.clouds[c.i], x - w / 2, y - h / 2, w, h);
+      }
+      g.globalAlpha = 1;
+    }
+
+    // the names: where the berth is while at the quay, a map as the camera pulls back, the air leg
+    if (O.lab > 0.01) chip(O.lab, PLACE.port);
+    if (O.map > 0.01) {
+      waterName(X(shipX) * 0.46, H * 0.68, O.map, 'ARABIAN SEA');
+      pin(X(-171), Y(BW.head + 2), O.map, ['BREAKWATER']);
+      pin(X(50), Y(40), O.map, PLACE.pin);
+    }
+    if (O.air > 0.01) chip(O.air, PLACE.air);
+
+    if (flying) {
+      const m = OL.Lp / 72, reach = Math.hypot(W, H) / 2 + OL.Lp * 0.45, u = lerp(-reach, reach, O.pp);
+      g.save();
+      g.translate(W * 0.55 + hx * u, H * 0.5 + hy * u);
+      g.rotate(HEADING);
+      g.drawImage(SEA.plane, -33 * m, -36 * m, 66 * m, 72 * m);
+      if (!reduceMotion) {
+        g.globalCompositeOperation = 'lighter';
+        if (t % 1.1 < 0.12) strobe(0, 4 * m, 3.2 * m, '255,70,55', 0.9);
+        const st = t % 1.4;
+        if (st < 0.06 || (st > 0.14 && st < 0.2)) {
+          strobe(-32 * m, 17.8 * m, 4 * m, '255,255,255', 1);
+          strobe(32 * m, 17.8 * m, 4 * m, '255,255,255', 1);
+        }
+      }
+      g.restore();
     }
   }
+
+  function renderOceanDom() {
+    const H = OL.H;
+    oHead.style.opacity = (1 - O.head).toFixed(3);
+    oHead.style.transform = `translate3d(0, ${(-O.head * 60).toFixed(1)}px, 0)`;
+    oHead.style.visibility = O.head > 0.999 ? 'hidden' : '';
+    const y = lerp(H, H * 0.46 - OL.listH, O.list);
+    oList.style.transform = `translate3d(0, ${y.toFixed(1)}px, 0)`;
+    for (const it of OL.items) {
+      const c = y + it.mid;
+      const on = c < H * 0.8;
+      if (on !== it.on) { it.on = on; it.li.classList.toggle('is-on', on); }
+      const a = clamp((c - H * 0.1) / (H * 0.16), 0, 1) * clamp((H * 1.02 - c) / (H * 0.2), 0, 1);
+      if (Math.abs(a - it.a) > 0.01) { it.a = a; it.li.style.opacity = a.toFixed(2); }
+    }
+    oFade.style.opacity = O.out.toFixed(3);
+    oDirty = true;
+  }
+
+  measureOcean();
+  buildSea();
+  gsap.timeline({
+    defaults: { ease: 'none' },
+    onUpdate: renderOceanDom,
+    scrollTrigger: {
+      trigger: oStage,
+      start: 'top top',
+      end: () => '+=' + Math.round(innerHeight * 8.3),
+      pin: true,
+      scrub: reduceMotion ? true : 0.6,
+      anticipatePin: 1
+    }
+  })
+    .to(O, { head: 1, duration: 0.9, ease: 'power2.in' }, 0.8)
+    .to(O, { grab: 1, duration: 0.6, ease: 'power2.out' }, 0.5)
+    .to(O, { lift: 1, duration: 0.5, ease: 'power1.inOut' }, 1.1)
+    .to(O, { trav: 1, duration: 1.3, ease: 'power1.inOut' }, 1.6)
+    .to(O, { truck: 1, duration: 1.6, ease: 'power1.in' }, 1.8)
+    .to(O, { lift: 0, duration: 0.5, ease: 'power1.inOut' }, 2.9)
+    .to(O, { jolt: 1, duration: 0.08 }, 3.4)
+    .to(O, { jolt: 0, duration: 0.3 }, 3.48)
+    .to(O, { rel: 1, duration: 0.7, ease: 'power1.inOut' }, 3.6)
+    .to(O, { lines: 0, duration: 0.4 }, 4.0)
+    .to(O, { dep: 1, duration: 2.8, ease: 'power1.in' }, 4.2)
+    .to(O, { cam: 1, duration: 2.4, ease: 'power2.inOut' }, 4.4)
+    .to(O, { wake: 1, duration: 1.6 }, 4.8)
+    .to(O, { run: 1, duration: 9.6 }, 7)
+    .to(O, { cla: 1, duration: 0.7 }, 6.4)
+    .to(O, { cl: 1, duration: 4.4 }, 6.4)
+    .to(O, { pp: 1, duration: 3.6 }, 6.9)
+    .to(O, { cla: 0, duration: 0.8 }, 10)
+    .to(O, { z: 2.6, sy: 0.5, duration: 1.6, ease: 'power2.inOut' }, 10.6)
+    .to(O, { list: 1, duration: 4.4 }, 11.2)
+    .to(O, { z: 1.5, sy: 0.42, out: 1, duration: 1, ease: 'power1.in' }, 15.6)
+    .to(O, { lab: 1, duration: 0.4 }, 1.7)
+    .to(O, { lab: 0, duration: 0.4 }, 4.5)
+    .to(O, { map: 1, duration: 0.5 }, 5.6)
+    .to(O, { map: 0, duration: 0.5 }, 7.3)
+    .to(O, { air: 1, duration: 0.4 }, 8.1)
+    .to(O, { air: 0, duration: 0.4 }, 10.2);
   ScrollTrigger.create({
-    trigger: '#approach',
+    trigger: '#sea-air',
     start: 'top bottom',
     end: 'bottom top',
-    onToggle: (s) => { nightOn = s.isActive; if (s.isActive) renderNight(gsap.ticker.time); },
-    onUpdate: (s) => { nightScroll = s.progress; }
+    onToggle: (s) => { oceanOn = s.isActive; oDirty = true; }
   });
-  renderNight(0);
-  ScrollTrigger.create({ trigger: '#approach', start: 'top 60%', endTrigger: '#model', end: 'bottom 40%', onToggle: (s) => s.isActive && setNav('approach') });
+  ScrollTrigger.addEventListener('refreshInit', measureOcean);
+  ScrollTrigger.addEventListener('refresh', renderOceanDom);
+  renderOceanDom();
+  ScrollTrigger.create({ trigger: '#sea-air', start: 'top 60%', end: 'bottom 40%', onToggle: (s) => s.isActive && setNav('sea-air') });
 
   /* ---------- operating model: the load travels the six steps ---------- */
   const stepsEl = $('#steps');
@@ -1683,187 +2426,6 @@ ${fairings}${engines}
     }));
     return () => triggers.forEach((t) => t.kill());
   });
-
-  /* ---------- sea & air: open ocean from above ---------- */
-  const oStage = $('#oceanStage');
-  const oCanvas = $('#oceanCanvas');
-  const oc = oCanvas.getContext('2d');
-  const oHead = $('#oceanHead');
-  const oList = $('#oceanPoints');
-  const oFade = $('#oceanFade');
-  const oItems = $$('#oceanPoints li');
-  // p: whole section · head: title out · pp: the plane's pass · z, sy: camera zoom and the ship's
-  // height in frame · list: the points scrolling up · out: fade into the next section
-  const O = { p: 0, head: 0, pp: 0, z: 1, sy: 0.6, list: 0, out: 0 };
-  const OL = {};
-  const SEA = { ready: false };
-  let oDirty = true;
-
-  // icon dots light up from the top-left corner
-  oItems.forEach((li) => $$('circle', li).forEach((c) => {
-    c.style.transitionDelay = `${Math.round((+c.getAttribute('cx') + +c.getAttribute('cy')) * 22)}ms`;
-  }));
-
-  function measureOcean() {
-    OL.W = oStage.clientWidth;
-    OL.H = oStage.clientHeight;
-    OL.dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-    oCanvas.width = Math.round(OL.W * OL.dpr);
-    oCanvas.height = Math.round(OL.H * OL.dpr);
-    OL.s0 = (OL.H * 0.3) / 260; // px per metre at the opening zoom: the ship fills 30% of the frame
-    OL.Lp = OL.H * 1.3; // the plane, far nearer the camera than the sea
-    const cx = OL.W / 2, cy = OL.H * 0.35;
-    const g = oc.createRadialGradient(cx, cy, 0, cx, cy, Math.hypot(OL.W, OL.H) * 0.72);
-    g.addColorStop(0, '#13438f');
-    g.addColorStop(0.45, '#0b2c68');
-    g.addColorStop(1, '#04122f');
-    OL.grad = g;
-    OL.listH = oList.offsetHeight;
-    OL.items = oItems.map((li) => ({ li, mid: li.offsetTop + li.offsetHeight / 2, on: null, a: -1 }));
-    oDirty = true;
-  }
-
-  async function buildSea() {
-    SEA.seaPat = oc.createPattern(seaTexture(), 'repeat');
-    SEA.buf = toCanvas(WAKE.w * 2, WAKE.h * 2);
-    SEA.bctx = SEA.buf.getContext('2d');
-    SEA.foamPat = SEA.bctx.createPattern(foamTexture(), 'repeat');
-    SEA.mask = wakeMask();
-    SEA.kelvin = kelvinRipples();
-    // rasterise at the largest size each sprite is shown, then only ever scale down
-    const dpr = Math.min(window.devicePixelRatio || 1, 1.5), tall = Math.max(innerHeight, 820);
-    const shipH = Math.min(2400, Math.round(tall * 0.3 * 2.6 * dpr * 268 / 260)), shipW = Math.round(shipH * 52 / 268);
-    const planeH = Math.min(2400, Math.round(tall * 1.3 * dpr)), planeW = Math.round(planeH * 66 / 72);
-    const [ship, plane] = await Promise.all([
-      rasterSvg(shipMarkup(shipW, shipH), shipW, shipH),
-      rasterSvg(planeMarkup(planeW, planeH), planeW, planeH)
-    ]);
-    if (!ship || !plane) return;
-    SEA.ship = ship;
-    SEA.shipShadow = shadowOf(ship, shipW / 4, shipH / 4, 2, 'rgba(0,6,22,.6)');
-    SEA.plane = plane;
-    SEA.planeShadow = shadowOf(plane, 132, 144, 1.2, 'rgba(0,6,22,.8)');
-    SEA.ready = true;
-    oDirty = true;
-  }
-
-  const strobe = (x, y, r, rgb, a) => {
-    const rg = oc.createRadialGradient(x, y, 0, x, y, r);
-    rg.addColorStop(0, `rgba(${rgb},${a})`);
-    rg.addColorStop(1, `rgba(${rgb},0)`);
-    oc.fillStyle = rg;
-    oc.fillRect(x - r, y - r, r * 2, r * 2);
-  };
-
-  function drawOcean(time) {
-    if (!SEA.ready) return;
-    const { W, H, dpr } = OL;
-    const g = oc;
-    const t = reduceMotion ? 0 : time;
-    const s = OL.s0 * O.z; // px per metre on the water
-    const sx = W / 2, sy = H * O.sy;
-    const D = t * 11 + O.p * 520; // metres sailed: steady way plus the scroll
-    g.setTransform(dpr, 0, 0, dpr, 0, 0);
-    g.globalAlpha = 1;
-    g.globalCompositeOperation = 'source-over';
-    g.fillStyle = OL.grad;
-    g.fillRect(0, 0, W, H);
-    // wind waves belong to the water, so they slide up the frame as the ship sails down it
-    const k = O.z / 2, tile = 1024 * k;
-    SEA.seaPat.setTransform(new DOMMatrix([k, 0, 0, k, sx % tile, (sy - D * s) % tile]));
-    g.fillStyle = SEA.seaPat;
-    g.globalAlpha = lerp(1, 0.7, clamp((O.z - 1) / 1.6, 0, 1));
-    g.fillRect(0, 0, W, H);
-    g.globalAlpha = 1;
-
-    // wake: Kelvin ripples ride with the ship; the foam flows back through the wake mask
-    const wx = sx + WAKE.x * s, wy = sy + WAKE.y * s, ww = WAKE.w * s, wh = WAKE.h * s;
-    g.drawImage(SEA.kelvin, wx, wy, ww, wh);
-    const b = SEA.bctx;
-    b.globalCompositeOperation = 'copy';
-    SEA.foamPat.setTransform(new DOMMatrix([1, 0, 0, 1, 0, -((D * 2) % 256)]));
-    b.fillStyle = SEA.foamPat;
-    b.fillRect(0, 0, SEA.buf.width, SEA.buf.height);
-    b.globalCompositeOperation = 'destination-in';
-    b.drawImage(SEA.mask, 0, 0);
-    g.drawImage(SEA.buf, wx, wy, ww, wh);
-
-    // the ship, its shadow thrown down and right by a sun to the upper left
-    const hx = sx - 26 * s, hy = sy - 134 * s, hw = 52 * s, hh = 268 * s;
-    g.globalAlpha = 0.7;
-    g.drawImage(SEA.shipShadow, hx + 2.6 * s, hy + 2 * s, hw, hh);
-    g.globalAlpha = 1;
-    g.drawImage(SEA.ship, hx, hy, hw, hh);
-
-    // the plane: its shadow crosses the water and the deck at sea scale, the aircraft fills the frame
-    if (O.pp > 0 && O.pp < 1) {
-      const px = sx + 14 * s, py = sy + lerp(190, -120, O.pp) * s;
-      g.globalAlpha = 0.5;
-      g.drawImage(SEA.planeShadow, px - 33 * s, py - 36 * s, 66 * s, 72 * s);
-      g.globalAlpha = 1;
-      const m = OL.Lp / 72, cy = lerp(H + OL.Lp / 2, -OL.Lp / 2, O.pp);
-      g.drawImage(SEA.plane, W / 2 - 33 * m, cy - 36 * m, 66 * m, 72 * m);
-      if (!reduceMotion) {
-        g.globalCompositeOperation = 'lighter';
-        if (t % 1.1 < 0.12) strobe(W / 2, cy + 4 * m, 3.2 * m, '255,70,55', 0.9);
-        const st = t % 1.4;
-        if (st < 0.06 || (st > 0.14 && st < 0.2)) {
-          strobe(W / 2 - 32 * m, cy + 17.8 * m, 4 * m, '255,255,255', 1);
-          strobe(W / 2 + 32 * m, cy + 17.8 * m, 4 * m, '255,255,255', 1);
-        }
-        g.globalCompositeOperation = 'source-over';
-      }
-    }
-  }
-
-  function renderOceanDom() {
-    const H = OL.H;
-    oHead.style.opacity = (1 - O.head).toFixed(3);
-    oHead.style.transform = `translate3d(0, ${(-O.head * 60).toFixed(1)}px, 0)`;
-    oHead.style.visibility = O.head > 0.999 ? 'hidden' : '';
-    const y = lerp(H, H * 0.46 - OL.listH, O.list);
-    oList.style.transform = `translate3d(0, ${y.toFixed(1)}px, 0)`;
-    for (const it of OL.items) {
-      const c = y + it.mid;
-      const on = c < H * 0.8;
-      if (on !== it.on) { it.on = on; it.li.classList.toggle('is-on', on); }
-      const a = clamp((c - H * 0.1) / (H * 0.16), 0, 1) * clamp((H * 1.02 - c) / (H * 0.2), 0, 1);
-      if (Math.abs(a - it.a) > 0.01) { it.a = a; it.li.style.opacity = a.toFixed(2); }
-    }
-    oFade.style.opacity = O.out.toFixed(3);
-    oDirty = true;
-  }
-
-  measureOcean();
-  buildSea();
-  gsap.timeline({
-    defaults: { ease: 'none' },
-    onUpdate: renderOceanDom,
-    scrollTrigger: {
-      trigger: oStage,
-      start: 'top top',
-      end: () => '+=' + Math.round(innerHeight * 5),
-      pin: true,
-      scrub: reduceMotion ? true : 0.6,
-      anticipatePin: 1
-    }
-  })
-    .to(O, { p: 1, duration: 10 }, 0)
-    .to(O, { head: 1, duration: 1, ease: 'power2.in' }, 1)
-    .to(O, { pp: 1, duration: 3.6 }, 0.7)
-    .to(O, { z: 2.6, sy: 0.5, duration: 1.6, ease: 'power2.inOut' }, 4.1)
-    .to(O, { list: 1, duration: 4.4 }, 4.7)
-    .to(O, { z: 1.5, sy: 0.42, out: 1, duration: 1, ease: 'power1.in' }, 9);
-  ScrollTrigger.create({
-    trigger: '#sea-air',
-    start: 'top bottom',
-    end: 'bottom top',
-    onToggle: (s) => { oceanOn = s.isActive; oDirty = true; }
-  });
-  ScrollTrigger.addEventListener('refreshInit', measureOcean);
-  ScrollTrigger.addEventListener('refresh', renderOceanDom);
-  renderOceanDom();
-  ScrollTrigger.create({ trigger: '#sea-air', start: 'top 60%', end: 'bottom 40%', onToggle: (s) => s.isActive && setNav('sea-air') });
 
   /* ---------- contact harbour and footer ---------- */
   gsap.fromTo('#harbourSvg', { yPercent: 14 }, {

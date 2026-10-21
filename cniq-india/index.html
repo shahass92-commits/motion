@@ -35,7 +35,6 @@
     <a href="#fleet" data-film="lift">Yard</a>
     <a href="#services" data-film="run">Services</a>
     <a href="#telemetry" data-film="aerial">Telemetry</a>
-    <a href="#approach">Approach</a>
     <a href="#sea-air">Sea &amp; Air</a>
   </nav>
   <a class="header-cta" href="#contact">Get a quote</a>
@@ -49,9 +48,8 @@
     <a href="#fleet" data-film="lift"><small>01</small>Yard</a>
     <a href="#services" data-film="run"><small>02</small>Services</a>
     <a href="#telemetry" data-film="aerial"><small>03</small>Telemetry</a>
-    <a href="#approach"><small>04</small>Approach</a>
-    <a href="#sea-air"><small>05</small>Sea &amp; Air</a>
-    <a href="#contact"><small>06</small>Contact</a>
+    <a href="#sea-air"><small>04</small>Sea &amp; Air</a>
+    <a href="#contact"><small>05</small>Contact</a>
   </nav>
   <p class="drawer-foot">Thiruvananthapuram, Kerala · 08°31′N 076°56′E</p>
 </div>
@@ -888,85 +886,13 @@
   </div>
 </section>
 
-<!-- ============ MANIFESTO (night highway) ============ -->
-<section class="manifesto" id="approach">
-  <div class="night" aria-hidden="true">
-    <svg id="nightSvg" class="night-svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
-      <defs>
-        <linearGradient id="gNightSky" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="#05070b"/><stop offset=".55" stop-color="#0b1220"/><stop offset="1" stop-color="#121a2a"/>
-        </linearGradient>
-        <radialGradient id="gBokehW"><stop offset="0" stop-color="#fff2d6" stop-opacity=".55"/><stop offset=".7" stop-color="#ffd38a" stop-opacity=".15"/><stop offset="1" stop-color="#ffd38a" stop-opacity="0"/></radialGradient>
-        <radialGradient id="gBokehR"><stop offset="0" stop-color="#ff7a62" stop-opacity=".5"/><stop offset="1" stop-color="#ff3b2a" stop-opacity="0"/></radialGradient>
-        <linearGradient id="gRoadGlow" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="#ffb35c" stop-opacity="0"/><stop offset="1" stop-color="#ffb35c" stop-opacity=".12"/>
-        </linearGradient>
-      </defs>
-      <rect width="1600" height="900" fill="url(#gNightSky)"/>
-      <g id="nightStars"></g>
-      <g id="nightCity"></g>
-      <rect y="520" width="1600" height="380" fill="url(#gRoadGlow)"/>
-      <g id="nightBokeh"></g>
-      <g id="nightTrails"></g>
-    </svg>
-    <div class="night-fade"></div>
-  </div>
-  <div class="wrap manifesto-inner">
-    <p class="eyebrow eyebrow-dark">04 · Approach</p>
-    <p class="manifesto-text" id="manifestoText">We move containers, project cargo and everyday freight across India with one rule. Every kilometre is visible, every handover is recorded, and every trip is verified before it is billed.</p>
-    <div class="principles">
-      <article>
-        <h3>Verified before billed</h3>
-        <p>Trips are checked against the booking, the GPS trace and the handover record before they reach an invoice.</p>
-      </article>
-      <article>
-        <h3>One record per shipment</h3>
-        <p>Road, port, sea and air legs share a single shipment record that your team can open at any time.</p>
-      </article>
-      <article>
-        <h3>Every change on the record</h3>
-        <p>Corrections keep the old value, the new value, who made the change and why. Nothing is overwritten silently.</p>
-      </article>
-    </div>
-  </div>
-</section>
-
-<!-- ============ OPERATING MODEL (journey) ============ -->
-<section class="model" id="model">
-  <div class="model-pin" id="modelPin">
-    <div class="wrap model-head">
-      <p class="eyebrow">How a load moves</p>
-      <h2>Six steps from booking to proof of delivery<i class="dot"></i></h2>
-    </div>
-    <div class="journey" id="journey">
-      <svg class="journey-line" id="journeyLine" aria-hidden="true">
-        <path id="jBase" class="j-base"/>
-        <path id="jFill" class="j-fill"/>
-        <g id="jTruck">
-          <rect x="-26" y="-9" width="40" height="18" rx="2" fill="#d9dce0" stroke="#0d0e10" stroke-width="1.5"/>
-          <rect x="16" y="-9" width="12" height="18" rx="3" fill="#0d0e10"/>
-          <circle cx="-3" cy="-3" r="2.2" fill="#1d4eff"/>
-        </g>
-      </svg>
-      <ol class="steps" id="steps">
-        <li><span class="step-no">01</span><h3>Book</h3><p>Your request is logged against your account and contract, with pickup, drop and cargo details.</p></li>
-        <li><span class="step-no">02</span><h3>Assign</h3><p>A compliant vehicle and a verified driver are matched to the load. Permits and documents are checked.</p></li>
-        <li><span class="step-no">03</span><h3>Dispatch</h3><p>The route, stops and handover points are planned and shared before the wheels turn.</p></li>
-        <li><span class="step-no">04</span><h3>Track</h3><p>GPS, geofences and exception alerts follow the load in real time.</p></li>
-        <li><span class="step-no">05</span><h3>Verify</h3><p>Distance, timings and handovers are reconciled against the booking and locked.</p></li>
-        <li><span class="step-no">06</span><h3>Deliver</h3><p>Proof of delivery, trip sheet and invoice reach you as one linked package.</p></li>
-      </ol>
-    </div>
-  </div>
-</section>
-
-<!-- ============ SEA & AIR (open ocean, seen from above) ============ -->
+<!-- ============ SEA & AIR (quay to open ocean, seen from above) ============ -->
 <section class="ocean" id="sea-air" aria-labelledby="oceanTitle">
   <div class="ocean-stage" id="oceanStage">
-    <canvas class="ocean-canvas" id="oceanCanvas" role="img" aria-label="Seen from above, a container ship sails across a deep blue ocean trailing a white wake while a four-engine cargo plane flies low over it."></canvas>
+    <canvas class="ocean-canvas" id="oceanCanvas" role="img" aria-label="Seen from above at the quay, a crane lifts the CNIQ INDIA container off a truck and lowers it into the last open slot on a container ship. The fully loaded ship casts off and sails out to sea trailing a white wake, while clouds drift across and a four-engine cargo plane flies over them."></canvas>
     <i class="ocean-shade" aria-hidden="true"></i>
     <div class="ocean-head wrap" id="oceanHead">
-      <p class="eyebrow eyebrow-dark">05 · Sea &amp; Air</p>
+      <p class="eyebrow eyebrow-dark">04 · Sea &amp; Air</p>
       <h2 id="oceanTitle">Berth to runway, on the same record<i class="dot"></i></h2>
       <p>Ocean and air freight are booked, tracked and handed over on the shipment record that already holds your road legs. One trail of documents, from gate-in to wheels-up.</p>
     </div>
@@ -1001,6 +927,35 @@
   </div>
 </section>
 
+<!-- ============ OPERATING MODEL (journey) ============ -->
+<section class="model" id="model">
+  <div class="model-pin" id="modelPin">
+    <div class="wrap model-head">
+      <p class="eyebrow">How a load moves</p>
+      <h2>Six steps from booking to proof of delivery<i class="dot"></i></h2>
+    </div>
+    <div class="journey" id="journey">
+      <svg class="journey-line" id="journeyLine" aria-hidden="true">
+        <path id="jBase" class="j-base"/>
+        <path id="jFill" class="j-fill"/>
+        <g id="jTruck">
+          <rect x="-26" y="-9" width="40" height="18" rx="2" fill="#d9dce0" stroke="#0d0e10" stroke-width="1.5"/>
+          <rect x="16" y="-9" width="12" height="18" rx="3" fill="#0d0e10"/>
+          <circle cx="-3" cy="-3" r="2.2" fill="#1d4eff"/>
+        </g>
+      </svg>
+      <ol class="steps" id="steps">
+        <li><span class="step-no">01</span><h3>Book</h3><p>Your request is logged against your account and contract, with pickup, drop and cargo details.</p></li>
+        <li><span class="step-no">02</span><h3>Assign</h3><p>A compliant vehicle and a verified driver are matched to the load. Permits and documents are checked.</p></li>
+        <li><span class="step-no">03</span><h3>Dispatch</h3><p>The route, stops and handover points are planned and shared before the wheels turn.</p></li>
+        <li><span class="step-no">04</span><h3>Track</h3><p>GPS, geofences and exception alerts follow the load in real time.</p></li>
+        <li><span class="step-no">05</span><h3>Verify</h3><p>Distance, timings and handovers are reconciled against the booking and locked.</p></li>
+        <li><span class="step-no">06</span><h3>Deliver</h3><p>Proof of delivery, trip sheet and invoice reach you as one linked package.</p></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
 <!-- ============ CONTACT (night harbour) ============ -->
 <section class="contact" id="contact">
   <div class="harbour" aria-hidden="true">
@@ -1008,7 +963,7 @@
   </div>
   <div class="wrap contact-grid">
     <div class="contact-intro">
-      <p class="eyebrow eyebrow-dark">06 · Contact</p>
+      <p class="eyebrow eyebrow-dark">05 · Contact</p>
       <h2>Tell us what needs to move<i class="dot"></i></h2>
       <p>Send the route and the cargo. We reply with a plan, a vehicle and a price.</p>
       <dl class="contact-list">
