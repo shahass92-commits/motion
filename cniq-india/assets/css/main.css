@@ -977,7 +977,7 @@ html.has-motion .manifesto-text .w { color: rgba(255, 255, 255, .2); }
 
 /* ---------- fallbacks ---------- */
 html.no-gsap .loader { display: none; }
-html.no-gsap .stage { height: auto; min-height: 100svh; overflow: visible; }
+html.no-gsap .stage { height: auto; min-height: 100svh; overflow: visible; overflow-x: clip; }
 html.no-gsap .hero { position: relative; top: auto; padding-top: calc(var(--safe-top) + var(--header-h) + 40px); }
 html.no-gsap .rig { position: relative; top: auto; height: auto; transform: none; margin-top: calc(var(--side-h) + 40px); padding-block: 80px 60px; }
 html.no-gsap .road { position: relative; inset: auto; }

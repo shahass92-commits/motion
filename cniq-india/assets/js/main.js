@@ -871,6 +871,7 @@
   const motes = $('#motes');
   const hero = $('#hero');
   const cue = $('#scrollCue');
+  const chart = $('.chart');
   const giant = $('#giant');
   const rig = $('#rig');
   const far = $('#far');
@@ -887,6 +888,10 @@
   const boomCol = $('#boomCol');
   const boomHi = $('#boomHi');
   const cyl = [[$('#cylBarrelL'), $('#cylRodL'), 522, 538], [$('#cylBarrelR'), $('#cylRodR'), 598, 582]];
+  const reach = {
+    boom: $('#rBoom'), inner: $('#rInner'), head: $('#rHead'), crate: $('#rCrate'),
+    barrel: $('#rBarrel'), rod: $('#rRod'), rodHi: $('#rRodHi'), pin: $('#rPin')
+  };
   const wheels = $$('#truck .wheel use.spin');
   const puffs = $$('#puffs circle');
   const dust = $$('#dust ellipse');
@@ -920,7 +925,7 @@
   // Everything the film animates. Units: svg units for the yard, 0–1 or 0–2 stops elsewhere.
   const F = {
     hero: 0, sz: 0, pan: 0, tod: 0, shake: 0, puff: 0,
-    tx: -2300, clunk: 0, S: 180, by: 196, call: 0,
+    tx: -2300, clunk: 0, S: 180, by: 196, call: 0, sp: 0,
     world: 0, d: 0, odo: 0,
     rig: 0, track: 0, trackA: 1, giant: 0, giantA: 0,
     bars: 0, c1: 0, c2: 0, c3: 0,
@@ -977,10 +982,12 @@
     L.W = stage.clientWidth;
     L.H = stage.clientHeight;
     L.narrow = L.W / L.H < 0.9;
-    // phones see a 900-unit window; a pan keeps the stacker, then the departing rig, framed
+    // phones see a 900-unit window; a pan frames the reach stacker at the stack, then the
+    // front stacker and the arriving road train, then the departing rig
     const vbX = L.narrow ? 350 : 0, vbW = L.narrow ? 900 : 1600;
     side.setAttribute('viewBox', `${vbX} 0 ${vbW} 640`);
     L.sideScale = Math.min(sideWrap.clientWidth / vbW, sideWrap.clientHeight / 640);
+    L.panHero = L.narrow ? (800 - 1290) * L.sideScale : 0;
     L.panLift = L.narrow ? (800 - 700) * L.sideScale : 0;
     L.panRun = L.narrow ? (800 - (659 + RUN_X)) * L.sideScale : 0;
     L.ground = clamp(L.H * 0.022, 14, 24);
@@ -1011,6 +1018,34 @@
       rod.setAttribute('x1', mx.toFixed(2)); rod.setAttribute('y1', my.toFixed(2));
       rod.setAttribute('x2', tx); rod.setAttribute('y2', ty.toFixed(2));
     }
+  }
+
+  // side-on reach stacker, posed by where its boom tip is: sp 0 holds a box aloft,
+  // 1 sets it on row 3 of the first column, 2 lifts the spreader clear.
+  // Boom pivot (-330, 456); the spreader hangs 104 units below the tip.
+  const REACH_TIP = [[0, [10, 104]], [0.7, [112, 124]], [1, [130, 152]], [1.25, [130, 124]], [2, [40, 100]]];
+  const setLine = (el, x1, y1, x2, y2) => {
+    el.setAttribute('x1', x1.toFixed(1)); el.setAttribute('y1', y1.toFixed(1));
+    el.setAttribute('x2', x2.toFixed(1)); el.setAttribute('y2', y2.toFixed(1));
+  };
+  function renderReach(s) {
+    const [x, y] = keyed(REACH_TIP, s);
+    const dx = x + 330, dy = 456 - y, l = Math.hypot(dx, dy), c = dx / l, n = dy / l;
+    reach.boom.setAttribute('transform', `translate(-330 456) rotate(${(-deg(Math.atan2(dy, dx))).toFixed(2)})`);
+    reach.inner.setAttribute('transform', `translate(${(l - 450).toFixed(2)} 0)`);
+    reach.head.setAttribute('transform', `translate(${x.toFixed(2)} ${y.toFixed(2)})`);
+    // the box rides the spreader until it lands, then stays on the stack
+    const [bx, by] = keyed(REACH_TIP, Math.min(s, 1));
+    reach.crate.setAttribute('transform', `translate(${(bx - 60).toFixed(2)} ${(by + 104).toFixed(2)})`);
+    // lift cylinder: frame pin (-20, 536) to a pin 230 along the boom
+    const ax = -330 + 230 * c + 18 * n, ay = 456 - 230 * n + 18 * c;
+    const len = Math.hypot(ax + 20, ay - 536), k = Math.min(160, len - 24) / len;
+    const mx = -20 + (ax + 20) * k, my = 536 + (ay - 536) * k;
+    setLine(reach.barrel, -20, 536, mx, my);
+    setLine(reach.rod, mx, my, ax, ay);
+    setLine(reach.rodHi, mx, my, ax, ay);
+    reach.pin.setAttribute('cx', ax.toFixed(1));
+    reach.pin.setAttribute('cy', ay.toFixed(1));
   }
 
   const STATUS = [
@@ -1061,13 +1096,14 @@
     hero.style.opacity = 1 - F.hero;
     hero.style.visibility = F.hero > 0.999 ? 'hidden' : '';
     cue.style.opacity = 1 - Math.min(1, F.hero * 2);
+    chart.style.opacity = 1 - F.hero;
     hudStatus.style.setProperty('--hud-a', F.hero.toFixed(3));
     renderSky(F.tod);
 
     // camera on the yard, with a jolt when the box lands
     const wrapScale = along(F.sz, [L.heroScale, L.liftScale, L.runScale]);
     const sx = Math.sin(t * 157) * F.shake * 4, sy = Math.cos(t * 131) * F.shake * 3;
-    sideWrap.style.transform = `translate3d(${(lerp(L.panLift, L.panRun, F.pan) + sx).toFixed(1)}px, ${sy.toFixed(1)}px, 0) scale(${wrapScale.toFixed(4)})`;
+    sideWrap.style.transform = `translate3d(${(along(F.pan, [L.panHero, L.panLift, L.panRun]) + sx).toFixed(1)}px, ${sy.toFixed(1)}px, 0) scale(${wrapScale.toFixed(4)})`;
     rig.style.transform = `translate3d(0, ${along(F.rig, [-L.ground, -L.rise, -L.H]).toFixed(1)}px, 0)`;
     renderFar();
 
@@ -1076,6 +1112,7 @@
     box.setAttribute('transform', `translate(${(260 + Math.max(0, F.tx)).toFixed(2)} ${(F.by + F.clunk).toFixed(2)})`);
     callout.style.opacity = F.call;
     renderLift(F.S);
+    renderReach(F.sp);
     const wt = `translate(${F.world.toFixed(1)} 0)`;
     worldBack.setAttribute('transform', wt);
     worldFront.setAttribute('transform', wt);
@@ -1216,6 +1253,9 @@
     .to(F, { bars: 1, c1: 1, duration: 0.4, ease: 'power2.out' }, 0.8)
     .to(F, { bars: 0, c1: 0, duration: 0.4, ease: 'power2.in' }, 2.2)
     .to(F, { tx: 0, d: 2300, odo: 14, duration: 2.2, ease: 'power2.out' }, 0.4)
+    .to(F, { sp: 1, duration: 1.8, ease: 'power1.inOut' }, 0.5)
+    .to(F, { sp: 2, duration: 1.1, ease: 'power1.inOut' }, 2.4)
+    .to(F, { pan: 1, duration: 1.3, ease: 'power2.inOut' }, 2.0)
     .to(F, { S: 408, by: 424, duration: 1.3, ease: 'power1.inOut' }, 2.7)
     .to(F, { call: 1, duration: 0.3 }, 3.9)
     .to(F, { clunk: 3, shake: 1, duration: 0.1, ease: 'power2.in' }, 4.0)
@@ -1224,7 +1264,7 @@
     .to(F, { S: 150, duration: 0.9, ease: 'power2.inOut' }, 4.7)
     .to(F, { call: 0, duration: 0.3 }, 5.6)
     .addLabel('depart', 5.4)
-    .to(F, { tx: RUN_X, pan: 1, duration: 1.4, ease: 'power1.inOut' }, 5.4)
+    .to(F, { tx: RUN_X, pan: 2, duration: 1.4, ease: 'power1.inOut' }, 5.4)
     .to(F, { puff: 1, duration: 1.6 }, 5.4)
     .to(F, { world: -400, d: 3000, odo: 22, duration: 1.2, ease: 'power2.in' }, 5.4)
     .to(F, { bars: 1, c2: 1, duration: 0.4, ease: 'power2.out' }, 5.7)
@@ -1263,6 +1303,7 @@
   /* ---------- ambient life (time-based, never tied to scroll) ---------- */
   if (!reduceMotion) {
     gsap.to('#beaconGlow', { opacity: 0.9, duration: 0.5, repeat: -1, yoyo: true, ease: 'sine.inOut' });
+    gsap.to('#rBeaconGlow', { opacity: 0.9, duration: 0.5, repeat: -1, yoyo: true, ease: 'sine.inOut', delay: 0.35 });
     gsap.to('#cabBody', { y: 0.6, duration: 0.14, repeat: -1, yoyo: true, ease: 'sine.inOut' });
     const R = rng(12);
     for (let i = 0; i < 18; i++) {

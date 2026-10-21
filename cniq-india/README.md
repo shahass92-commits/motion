@@ -18,7 +18,7 @@ The page follows one working day, from the morning yard through to night and the
 
 | Chapter | Timeline label | What happens |
 | --- | --- | --- |
-| 01 The Lift · 06:40 | `lift` | Morning haze, sun rays and dust in the air. The road train reverses into Bay 14, a reach stacker lowers the 40 ft CNIQ INDIA box onto the front trailer, the camera jolts as the twist-locks engage, and the spreader lifts away. |
+| 01 The Lift · 06:40 | `lift` | Morning haze, sun rays and dust in the air. A reach stacker seen side-on telescopes its boom and sets a box on top of a door-end stack. The road train pulls into Bay 14, a second stacker (seen from the front) lowers the 40 ft CNIQ INDIA box onto the front trailer, the camera jolts as the twist-locks engage, and the spreader lifts away. On phones the camera opens on the side-on stacker and pans to the truck. |
 | 02 The Run · 11:20 → golden hour | `run` | The road train pulls out under twin-stack exhaust. The road rises and the six service cards slide past underneath. A port and palm skyline drifts behind in two parallax layers, the light turns gold, and the headlights and street lamps come on. |
 | 03 The Corridor · 18:05 | `aerial` | Clouds part over a satellite view. The articulated road train follows the highway through a junction to Port Gate 2 while evening falls: street lights, floodlights, headlight beams and traffic. A telemetry panel tracks it. |
 | Approach | — | A word-by-word manifesto over a long-exposure night highway. |
@@ -31,6 +31,14 @@ Each chapter opens on a letterboxed title card. The KM/H readout, wheel motion b
 ## The truck
 
 The road train is drawn in the proportions of a Scania S-series 6×4 tractor: tall flat-fronted cab, dropped driver's window, twin vertical stacks and a roof light bar. It pulls a 40 ft skeletal trailer, a converter dolly and a 20 ft trailer, about 26 m in total. No manufacturer logos are reproduced. Add badging only if CNIQ actually runs that make and you have the right to use the mark.
+
+## The yard machines
+
+- **Side-on reach stacker**: light-blue body with counterweight, engine housing, cab with operator, large off-the-road tyres, and a black telescopic boom with a hazard-striped spreader. Script poses it by the boom tip (`REACH_TIP` in `main.js`): the boom angle, the telescope extension and the lift cylinder all follow from that point, so a pose change is one coordinate.
+- **Front-on reach stacker**: the boom, lift cylinders and spreader that lower the 40 ft box onto the trailer.
+- **Container door ends** (`#crateEnd` in `index.html`): corrugated leaves, four locking bars with cam keepers and handles, hinges, corner castings, a data plate and rust streaks. Each stack box sets its colour with `style="color:…"`.
+
+The machines carry CNIQ marks only. No manufacturer branding or container owner codes from the reference images are reproduced.
 
 ## Files
 
