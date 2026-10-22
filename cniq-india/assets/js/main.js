@@ -769,15 +769,15 @@
   // 40 ft bays, sixteen rows across. Kept as vectors so it stays sharp from quay level to open water.
   function shipModel() {
     const R = rng(2207);
-    const pal = ['#1f4aa8', '#c8322c', '#2f8f4e', '#e8e8e3', '#e08a2e', '#c23d86', '#d9b43c', '#86919b', '#203566', '#4a8fd6', '#e8e8e3', '#c8322c', '#1f4aa8', '#2f8f4e'];
+    const pal = ['#1b3fae', '#e03a22', '#3aa652', '#f0f0ec', '#f08a1e', '#d8357f', '#efb41f', '#8d99a4', '#1c2f78', '#5aa3e8', '#f0f0ec', '#e03a22', '#1b3fae', '#3aa652'];
     const pick = () => pal[Math.floor(R() * pal.length)];
     const RW = 2.44, ROWS = 16, X0 = -ROWS * RW / 2;
     const boxes = [];
     let hatch = '', seams = '', bridges = '', bridgeHi = '';
     for (let g = 0; g < 7; g++) {
       const y0 = -92 + g * 27.2, half = hullHalf(y0 + 25) - 1.4;
-      bridges += pR(-20.8, y0 - 2.2, 41.6, 2.2);
-      bridgeHi += pR(-20.8, y0 - 2.2, 41.6, 0.35);
+      bridges += pR(-20.8, y0 - 2.6, 41.6, 2.6);
+      bridgeHi += pR(-20.8, y0 - 2.6, 41.6, 0.5);
       for (let r = 0; r < ROWS;) {
         const run = Math.min(ROWS - r, 1 + Math.floor(R() * 3));
         const empty = R() < 0.07, c1 = pick(), c2 = R() < 0.75 ? c1 : pick(), tone = (R() - 0.5) * 0.26;
@@ -802,13 +802,13 @@
       hull: new Path2D(hull),
       deck: new Path2D(deck),
       under: [
-        layer('#0c2034', hull),
-        layer('#1c4c7c', deck),
+        layer('#10293f', hull),
+        layer('#2a6ba8', deck),
         layer(null, deck, 1, '#5d8fbf', 0.3),
-        layer('#2a5684', pR(-21.2, -95, 1.2, 168) + pR(20, -95, 1.2, 168)),
-        layer('#33414f', bridges),
-        layer('#8a99a8', bridgeHi),
-        layer('#2b5f93', hatch)
+        layer('#3d84c4', pR(-21.2, -95, 1.2, 168) + pR(20, -95, 1.2, 168)),
+        layer('#2c3b49', bridges),
+        layer('#9fb0c0', bridgeHi),
+        layer('#3576b4', hatch)
       ],
       over: [
         layer('#000', seams, 0.45),
@@ -864,7 +864,7 @@
     }
     // the yard: blocks of containers seven rows wide, kept as data for close views and drawn once
     // into a raster for distant ones
-    const pal = ['#1f4aa8', '#c8322c', '#2f8f4e', '#e8e8e3', '#e08a2e', '#86919b', '#203566', '#4a8fd6'];
+    const pal = ['#1b3fae', '#e03a22', '#3aa652', '#f0f0ec', '#f08a1e', '#8d99a4', '#1c2f78', '#5aa3e8'];
     const yard = [];
     for (let k = 0; k < 4; k++) {
       const bx = -104 - k * 46;
@@ -1019,19 +1019,21 @@
     };
     const gauss = () => (R() + R() + R() - 1.5) / 1.5;
     const lobes = [];
-    for (let i = 0; i < 6; i++) lobes.push([W * (0.3 + R() * 0.4), H * (0.3 + R() * 0.4), 0.6 + R() * 0.5]);
+    for (let i = 0; i < 7; i++) lobes.push([W * (0.3 + R() * 0.4), H * (0.3 + R() * 0.4), 0.6 + R() * 0.5]);
     const tops = [];
-    for (let i = 0; i < 240; i++) {
+    for (let i = 0; i < 320; i++) {
       const [lx, ly, ls] = lobes[i % lobes.length];
       const x = lx + gauss() * W * 0.16 * ls, y = ly + gauss() * H * 0.16 * ls;
       const edge = Math.hypot((x - W / 2) / (W * 0.4), (y - H / 2) / (H * 0.4));
       if (edge > 1) continue;
-      tops.push([x, y, (20 + R() * 46) * (1.3 - edge * 0.6)]);
+      tops.push([x, y, (22 + R() * 50) * (1.3 - edge * 0.62)]);
     }
-    // each puff throws its shadow down-right onto the ones drawn before it, which opens up creases
+    // a light base first, so the mass reads thick without closing up the gaps between billows
+    for (const [x, y, r] of tops) puff(x, y, r * 1.05, [[0, 'rgba(242,246,252,.26)'], [0.7, 'rgba(242,246,252,.12)'], [1, 'rgba(242,246,252,0)']]);
+    // then each billow with a deep crease beneath it, which is what gives cumulus their relief
     for (const [x, y, r] of tops) {
-      puff(x + r * 0.3, y + r * 0.38, r * 1.08, [[0, 'rgba(120,136,168,.34)'], [0.7, 'rgba(120,136,168,.13)'], [1, 'rgba(120,136,168,0)']]);
-      puff(x, y, r, [[0, 'rgba(255,255,255,.95)'], [0.6, 'rgba(247,250,254,.82)'], [0.86, 'rgba(236,241,249,.3)'], [1, 'rgba(236,241,249,0)']]);
+      puff(x + r * 0.26, y + r * 0.34, r * 1.04, [[0, 'rgba(104,122,158,.46)'], [0.62, 'rgba(104,122,158,.2)'], [1, 'rgba(104,122,158,0)']]);
+      puff(x - r * 0.08, y - r * 0.1, r, [[0, 'rgba(255,255,255,1)'], [0.52, 'rgba(252,253,255,.96)'], [0.8, 'rgba(240,245,252,.46)'], [1, 'rgba(236,241,249,0)']]);
     }
     return c;
   }
@@ -2178,9 +2180,10 @@ ${fairings}${engines}
     OL.Lp = OL.H * 0.98; // the plane, far nearer the camera than the sea
     const cx = OL.W / 2, cy = OL.H * 0.35;
     const g = oc.createRadialGradient(cx, cy, 0, cx, cy, Math.hypot(OL.W, OL.H) * 0.72);
-    g.addColorStop(0, '#13438f');
-    g.addColorStop(0.45, '#0b2c68');
-    g.addColorStop(1, '#04122f');
+    g.addColorStop(0, '#1d57ab');
+    g.addColorStop(0.3, '#15427f');
+    g.addColorStop(0.62, '#0d2c5c');
+    g.addColorStop(1, '#06162f');
     OL.grad = g;
     // the sun sits off the upper left, so its sheen pools there and the far water stays cool
     const sx = OL.W * 0.3, sy = OL.H * 0.26;
@@ -2571,15 +2574,6 @@ ${fairings}${engines}
       g.translate(W * 0.55 + hx * u, H * 0.5 + hy * u);
       g.rotate(HEADING);
       g.drawImage(SEA.plane, -33 * m, -36 * m, 66 * m, 72 * m);
-      // the sun that lays the glitter path also catches the top of the aircraft
-      g.globalCompositeOperation = 'lighter';
-      const gl = g.createLinearGradient(-16 * m, -20 * m, 18 * m, 24 * m);
-      gl.addColorStop(0, 'rgba(255,241,206,.26)');
-      gl.addColorStop(0.5, 'rgba(255,236,196,.06)');
-      gl.addColorStop(1, 'rgba(255,230,180,0)');
-      g.fillStyle = gl;
-      g.fillRect(-33 * m, -36 * m, 66 * m, 72 * m);
-      g.globalCompositeOperation = 'source-over';
       if (!reduceMotion) {
         g.globalCompositeOperation = 'lighter';
         if (t % 1.1 < 0.12) strobe(0, 4 * m, 3.2 * m, '255,70,55', 0.9);
