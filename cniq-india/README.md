@@ -43,6 +43,14 @@ The wheels are one `#wheel` symbol reused six times, so every tyre is the same b
 
 The machines carry CNIQ marks only. No manufacturer branding or container owner codes from the reference images are reproduced.
 
+## The road and the port
+
+The road surface is `--asphalt-tex`, generated once in `roadTexture()` as a 512 px tile: a bed of aggregate chips (nearly all dark, a scarce few catching the light), darker patch repairs laid first so their edges read as seams, crack sealing poured along the cracks, and old oil soaked into the lane. Every shape is drawn at its wrapped copies, so the tile has no seam. It is deliberately restrained — body copy sits on this surface, and a first version with brighter aggregate and a sheen on the crack sealing read as pale granite and fought the text.
+
+The markings sit on `.road::before`: a gravel shoulder under the kerb, the solid edge line, then two faint bands where the tyres have polished the surface smooth. They are masked to fade out before the service cards.
+
+The port on the horizon is two parallax layers built in `buildFar()`. `crane()` draws a ship-to-shore crane with legs on their rails, a portal beam and cross-bracing, the boom and its landside counterweight arm, the machine house, a trolley with its spreader hanging under the boom, the A-frame and stay ropes, and a ladder up the seaward leg. Beside them `stack()` fills a yard block with boxes, `mast()` raises a lighting mast with its head frame, and `tank()` sets down a storage tank. The `.haze` layer fades them into the distance.
+
 ## The Sea & Air scene
 
 Sea & Air is drawn on one canvas, not in SVG, and everything in it is measured in metres. The ship (260 × 44 m, seven hatch groups of two 40 ft bays across sixteen rows), the quay, the cranes and the yard are vectors, so they stay sharp from quay level to open water; the plane (70 m, four engines) is SVG rasterised once at the largest size it is shown and then only ever scaled down. Each frame composes:
