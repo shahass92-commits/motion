@@ -129,6 +129,16 @@
               <stop offset=".86" stop-color="#0d0e10"/><stop offset=".96" stop-color="#20232a"/>
               <stop offset="1" stop-color="#34383f"/>
             </linearGradient>
+            <linearGradient id="gWeb" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#0c0d0f"/><stop offset=".45" stop-color="#1a1d21"/><stop offset="1" stop-color="#0a0b0c"/>
+            </linearGradient>
+            <linearGradient id="gTank" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#8d939a"/><stop offset=".16" stop-color="#e7ebee"/><stop offset=".38" stop-color="#b7bdc3"/>
+              <stop offset=".72" stop-color="#8a9097"/><stop offset="1" stop-color="#4f545a"/>
+            </linearGradient>
+            <linearGradient id="gSeat" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#000" stop-opacity=".45"/><stop offset="1" stop-color="#000" stop-opacity="0"/>
+            </linearGradient>
             <linearGradient id="gPanel" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0" stop-color="#fff" stop-opacity=".1"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/>
               <stop offset="1" stop-color="#000" stop-opacity=".25"/>
@@ -530,45 +540,121 @@
               <circle cx="1074" cy="575" r="22" fill="url(#gLamp)"/>
             </g>
 
-            <!-- front 40 ft skeletal trailer -->
-            <rect x="244" y="566" width="636" height="12" fill="#1b1c1f"/>
-            <rect x="244" y="566" width="636" height="2" fill="#41454c"/>
-            <rect x="300" y="578" width="540" height="5" fill="#232528"/>
-            <rect x="300" y="583" width="540" height="10" fill="#000" opacity=".18"/>
-            <rect x="840" y="566" width="40" height="20" fill="#1b1c1f"/>
-            <rect x="238" y="566" width="10" height="34" fill="#2a2c30"/>
-            <rect x="240" y="569" width="5" height="7" fill="#d13b2b"/>
-            <g fill="#ffa400"><rect x="420" y="571" width="5" height="3"/><rect x="560" y="571" width="5" height="3"/><rect x="700" y="571" width="5" height="3"/></g>
-            <rect x="262" y="561" width="9" height="5" fill="#111"/><rect x="852" y="561" width="9" height="5" fill="#111"/>
-            <g fill="#26282c"><rect x="330" y="578" width="8" height="12"/><rect x="386" y="578" width="8" height="12"/><rect x="442" y="578" width="8" height="12"/></g>
-            <g fill="#1a1b1e"><rect x="318" y="583" width="32" height="7" rx="3"/><rect x="374" y="583" width="32" height="7" rx="3"/><rect x="430" y="583" width="32" height="7" rx="3"/></g>
-            <rect x="302" y="582" width="176" height="6" fill="#121315"/>
-            <rect x="298" y="582" width="5" height="36" fill="#121315"/>
-            <g fill="#26282c"><rect x="500" y="580" width="4" height="30"/><rect x="620" y="580" width="4" height="30"/><rect x="740" y="580" width="4" height="30"/></g>
-            <rect x="492" y="592" width="262" height="4" fill="url(#gAlu)"/>
-            <rect x="492" y="604" width="262" height="4" fill="url(#gAlu)"/>
-            <rect x="776" y="578" width="10" height="44" fill="#2a2c30"/>
-            <rect x="777" y="578" width="2" height="44" fill="#4a4e55"/>
-            <rect x="770" y="622" width="22" height="6" fill="#1d1f22"/>
-            <path d="M786 596h10v6" fill="none" stroke="#3a3d42" stroke-width="2"/>
+            <!-- 40 ft skeletal trailer: I-beam chassis, airbag bogie, landing legs, twist locks -->
+            <g id="trailer">
+              <!-- the chassis is an I-beam: top flange catching light, a shaded web, bottom flange -->
+              <rect x="244" y="578" width="636" height="16" fill="url(#gWeb)"/>
+              <rect x="244" y="566" width="636" height="12" fill="#1f2125"/>
+              <rect x="244" y="566" width="636" height="2.5" fill="#4a4f56"/>
+              <rect x="244" y="594" width="636" height="7" fill="#15171a"/>
+              <rect x="244" y="594" width="636" height="1.6" fill="#3a3e44"/>
+              <!-- cross members between the rails -->
+              <g fill="#000" opacity=".3">
+                <rect x="300" y="578" width="6" height="16"/><rect x="368" y="578" width="6" height="16"/>
+                <rect x="470" y="578" width="6" height="16"/><rect x="560" y="578" width="6" height="16"/>
+                <rect x="650" y="578" width="6" height="16"/><rect x="740" y="578" width="6" height="16"/>
+                <rect x="820" y="578" width="6" height="16"/>
+              </g>
+              <!-- twist locks clamp the box at its four lower castings -->
+              <g>
+                <rect x="258" y="560" width="14" height="8" rx="2" fill="#2b2f35"/>
+                <rect x="259" y="560" width="12" height="2" fill="#5e646c"/>
+                <rect x="262" y="554" width="7" height="7" rx="2" fill="#1b1e22"/>
+                <rect x="848" y="560" width="14" height="8" rx="2" fill="#2b2f35"/>
+                <rect x="849" y="560" width="12" height="2" fill="#5e646c"/>
+                <rect x="852" y="554" width="7" height="7" rx="2" fill="#1b1e22"/>
+                <rect x="520" y="561" width="12" height="6" rx="2" fill="#2b2f35"/>
+                <rect x="588" y="561" width="12" height="6" rx="2" fill="#2b2f35"/>
+              </g>
+              <!-- rear: underrun bar, light cluster, plate and reflective chevrons -->
+              <rect x="238" y="566" width="8" height="44" fill="#2a2d32"/>
+              <rect x="238" y="566" width="2.4" height="44" fill="#53585f"/>
+              <rect x="226" y="604" width="26" height="7" rx="2" fill="#1d2024"/>
+              <rect x="222" y="610" width="34" height="5" rx="1.5" fill="#2a2d32"/>
+              <rect x="222" y="610" width="34" height="1.4" fill="#596069"/>
+              <g>
+                <rect x="232" y="586" width="9" height="16" rx="2" fill="#15171a"/>
+                <rect x="233" y="588" width="7" height="5" rx="1.5" fill="#d13b2b"/>
+                <rect x="233" y="594" width="7" height="3" rx="1" fill="#e8a33a"/>
+                <rect x="233" y="598" width="7" height="3" rx="1" fill="#cdd3d9"/>
+              </g>
+              <rect x="245" y="595" width="23" height="11" rx="1.5" fill="#0f1113"/>
+              <rect x="246" y="596" width="21" height="9" rx="1" fill="#e8c23a"/>
+              <g fill="#15171a"><rect x="248" y="598" width="17" height="1.6"/><rect x="249" y="601" width="15" height="2"/></g>
+              <!-- suspension: the bogie rides on airbags off a lower beam -->
+              <g>
+                <rect x="312" y="601" width="156" height="5" fill="#1a1d20"/>
+                <g fill="#23262b">
+                  <rect x="322" y="594" width="16" height="10" rx="4"/><rect x="378" y="594" width="16" height="10" rx="4"/>
+                  <rect x="434" y="594" width="16" height="10" rx="4"/>
+                </g>
+                <g fill="#0f1113" opacity=".8">
+                  <rect x="326" y="596" width="8" height="2"/><rect x="382" y="596" width="8" height="2"/><rect x="438" y="596" width="8" height="2"/>
+                </g>
+                <g fill="#2e3238"><rect x="330" y="606" width="8" height="12" rx="2"/><rect x="386" y="606" width="8" height="12" rx="2"/><rect x="442" y="606" width="8" height="12" rx="2"/></g>
+              </g>
+              <!-- mudguards arch over the three axles -->
+              <path d="M310 614a24 24 0 0 1 48 0h-6a18 18 0 0 0-36 0Z" fill="#17191c"/>
+              <path d="M366 614a24 24 0 0 1 48 0h-6a18 18 0 0 0-36 0Z" fill="#17191c"/>
+              <path d="M422 614a24 24 0 0 1 48 0h-6a18 18 0 0 0-36 0Z" fill="#17191c"/>
+              <!-- landing legs with their foot pads and crank handle -->
+              <g>
+                <rect x="770" y="594" width="11" height="26" fill="#2b2f35"/>
+                <rect x="770" y="594" width="2.6" height="26" fill="#575d65"/>
+                <rect x="772" y="616" width="7" height="14" fill="#23272c"/>
+                <rect x="764" y="629" width="23" height="7" rx="1.5" fill="#1d2024"/>
+                <rect x="764" y="629" width="23" height="2" fill="#44494f"/>
+                <path d="M781 600h12v9" fill="none" stroke="#3f444a" stroke-width="2.4"/>
+                <circle cx="793" cy="610" r="2.6" fill="#2b2f35"/>
+              </g>
+              <!-- side guard rails -->
+              <g fill="url(#gAlu)"><rect x="486" y="592" width="276" height="4.5" rx="2"/><rect x="486" y="605" width="276" height="4.5" rx="2"/></g>
+              <g fill="#26282c"><rect x="500" y="592" width="4" height="18"/><rect x="620" y="592" width="4" height="18"/><rect x="740" y="592" width="4" height="18"/></g>
+              <!-- amber side markers down the rail -->
+              <g fill="#ffa400"><rect x="420" y="570" width="6" height="3.4" rx="1"/><rect x="560" y="570" width="6" height="3.4" rx="1"/><rect x="700" y="570" width="6" height="3.4" rx="1"/></g>
+              <!-- the box sits in its own shadow on the deck -->
+              <rect x="258" y="560" width="604" height="7" fill="url(#gSeat)"/>
+            </g>
 
-            <!-- tractor chassis: tandem drive, fifth wheel, tanks -->
-            <rect x="826" y="586" width="236" height="12" fill="#1b1c1f"/>
-            <rect x="826" y="586" width="236" height="2" fill="#3c4046"/>
-            <rect x="850" y="578" width="62" height="8" fill="#2b2e33"/>
-            <path d="M822 598Q852 570 884 578Q916 570 946 598Z" fill="#111214"/>
-            <rect x="944" y="586" width="5" height="34" fill="#111214"/>
-            <path d="M960 512 C940 514, 930 546, 912 552 S 884 566, 882 568" fill="none" stroke="#b33a2a" stroke-width="2.2"/>
-            <path d="M960 520 C944 524, 934 556, 916 558 S 888 570, 886 572" fill="none" stroke="#2c5fa8" stroke-width="2.2"/>
-            <path d="M960 528 C950 534, 940 562, 920 564 S 892 574, 890 576" fill="none" stroke="#111" stroke-width="2.4"/>
-            <rect x="946" y="588" width="38" height="30" rx="7" fill="url(#gAlu)"/>
-            <g fill="#7d8288"><rect x="956" y="588" width="3" height="30"/><rect x="972" y="588" width="3" height="30"/></g>
-            <rect x="950" y="592" width="30" height="2" fill="#fff" opacity=".7"/>
-            <!-- twin vertical stacks -->
-            <rect x="943" y="404" width="7" height="186" fill="url(#gChrome)"/>
-            <rect x="952" y="404" width="7" height="186" fill="url(#gChrome)"/>
-            <path d="M943 404l7-6v6Z M952 404l7-6v6Z" fill="#c9cdd2"/>
-            <g fill="#2a2c30" opacity=".5"><circle cx="946.5" cy="440" r="1.2"/><circle cx="946.5" cy="452" r="1.2"/><circle cx="955.5" cy="440" r="1.2"/><circle cx="955.5" cy="452" r="1.2"/></g>
+            <!-- tractor chassis: rails, fifth wheel and catwalk, tanks, tandem drive -->
+            <g id="tractorChassis">
+              <rect x="818" y="586" width="250" height="14" fill="#1f2125"/>
+              <rect x="818" y="586" width="250" height="2.5" fill="#484d54"/>
+              <rect x="818" y="600" width="250" height="6" fill="#15171a"/>
+              <!-- fifth wheel plate and the catwalk behind the cab -->
+              <path d="M824 586h76l-6 -9h-64Z" fill="#2e3237"/>
+              <path d="M824 577h64l-3 -3h-58Z" fill="#4a4f56"/>
+              <rect x="898" y="574" width="54" height="7" rx="1.5" fill="#2a2e33"/>
+              <g fill="#454a51"><rect x="902" y="575" width="46" height="1.6"/><rect x="902" y="578" width="46" height="1.2"/></g>
+              <!-- aluminium fuel tank, banded, tucked under the cab in the one clear bay -->
+              <rect x="942" y="589" width="52" height="34" rx="9" fill="url(#gTank)"/>
+              <rect x="947" y="593" width="42" height="3.4" rx="1.7" fill="#fff" opacity=".6"/>
+              <rect x="947" y="616" width="42" height="2.6" rx="1.3" fill="#000" opacity=".32"/>
+              <g fill="#6f757c"><rect x="956" y="589" width="3" height="34"/><rect x="978" y="589" width="3" height="34"/></g>
+              <circle cx="968" cy="591" r="3.6" fill="#8f959c"/><circle cx="968" cy="591" r="1.9" fill="#5c6268"/>
+              <!-- drive tandem: airbags, axles and the shaft between them -->
+              <g>
+                <rect x="826" y="600" width="116" height="5" fill="#1a1d20"/>
+                <g fill="#23262b"><rect x="840" y="596" width="18" height="11" rx="4.5"/><rect x="906" y="596" width="18" height="11" rx="4.5"/></g>
+                <rect x="862" y="609" width="44" height="6" rx="3" fill="#2a2e33"/>
+                <g fill="#2e3238"><rect x="848" y="606" width="9" height="12" rx="2"/><rect x="912" y="606" width="9" height="12" rx="2"/></g>
+              </g>
+              <path d="M824 614a30 30 0 0 1 60 0h-7a23 23 0 0 0-46 0Z" fill="#15171a"/>
+              <path d="M888 614a30 30 0 0 1 60 0h-7a23 23 0 0 0-46 0Z" fill="#15171a"/>
+              <!-- side skirt under the door -->
+              <path d="M1026 600h44l-3 20h-41Z" fill="#17191c"/>
+              <path d="M1026 600h44l-.4 2.6h-43.6Z" fill="#3a3f45"/>
+              <!-- air and electrical lines looping back to the trailer -->
+              <path d="M960 512 C940 514, 930 546, 912 552 S 884 566, 882 568" fill="none" stroke="#b33a2a" stroke-width="2.2"/>
+              <path d="M960 520 C944 524, 934 556, 916 558 S 888 570, 886 572" fill="none" stroke="#2c5fa8" stroke-width="2.2"/>
+              <path d="M960 528 C950 534, 940 562, 920 564 S 892 574, 890 576" fill="none" stroke="#111" stroke-width="2.4"/>
+              <!-- twin vertical stacks with their heat shields -->
+              <rect x="943" y="404" width="7" height="186" fill="url(#gChrome)"/>
+              <rect x="952" y="404" width="7" height="186" fill="url(#gChrome)"/>
+              <path d="M943 404l7-6v6Z M952 404l7-6v6Z" fill="#c9cdd2"/>
+              <g fill="#9ba1a8"><rect x="941" y="470" width="11" height="34" rx="2" opacity=".55"/><rect x="950" y="470" width="11" height="34" rx="2" opacity=".55"/></g>
+              <g fill="#2a2c30" opacity=".5"><circle cx="946.5" cy="440" r="1.2"/><circle cx="946.5" cy="452" r="1.2"/><circle cx="955.5" cy="440" r="1.2"/><circle cx="955.5" cy="452" r="1.2"/></g>
+            </g>
 
             <!-- Scania S-series style cab: tall, flat-fronted, dropped driver window -->
             <g transform="translate(-60 0)"><g id="cabBody">
@@ -624,11 +710,15 @@
 
             <!-- mudflaps and spray guards behind each bogie, and the shadow each tyre sits in -->
             <g>
+              <path d="M296 594h14v6h-14Z" fill="#2b2f35"/>
               <path d="M300 598h8v40h-8Z" fill="#17191c"/>
+              <path d="M268 598h34v4h-34Z" fill="#2b2f35"/>
               <path d="M268 600h34v36h-34Z" fill="#111214"/>
               <path d="M268 600h34v2h-34Z" fill="#3a3e44"/>
               <path d="M272 612h26v2h-26Z" fill="#2b2f35"/>
+              <path d="M814 592h14v6h-14Z" fill="#2b2f35"/>
               <path d="M818 596h8v44h-8Z" fill="#17191c"/>
+              <path d="M784 598h36v4h-36Z" fill="#2b2f35"/>
               <path d="M784 600h36v38h-36Z" fill="#111214"/>
               <path d="M784 600h36v2h-36Z" fill="#3a3e44"/>
               <path d="M788 613h28v2h-28Z" fill="#2b2f35"/>
