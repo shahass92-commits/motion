@@ -1043,6 +1043,41 @@ ${fairings}${engines}
     return c;
   }
 
+  // The sun glitter path: thousands of wave facets catching the sun along one axis. Built once as a
+  // sprite, speckles first, then faded from the centre by a mask, so a frame costs one drawImage.
+  function glintSprite() {
+    // built at device scale and drawn 1:1, because an upscaled facet is just a smear
+    const S = 1536, c = toCanvas(S, S), g = c.getContext('2d'), R = rng(5150);
+    g.lineCap = 'round';
+    for (let i = 0; i < 11000; i++) {
+      const x = R() * S, y = R() * S;
+      // facets lie along the swell, like the crests in the wind-wave texture
+      const a = -0.42 + (R() - 0.5) * 0.9, len = 2.2 + R() * R() * 20, lw = 1 + R() * 2.4;
+      const op = 0.3 + R() * 0.7;
+      g.strokeStyle = `rgba(255,${(246 - R() * 26).toFixed(0)},${(214 - R() * 44).toFixed(0)},${op.toFixed(3)})`;
+      g.lineWidth = lw;
+      g.beginPath();
+      g.moveTo(x - Math.cos(a) * len / 2, y - Math.sin(a) * len / 2);
+      g.lineTo(x + Math.cos(a) * len / 2, y + Math.sin(a) * len / 2);
+      g.stroke();
+    }
+    // the path is an ellipse stretched along the sun's bearing, brightest at its heart
+    g.globalCompositeOperation = 'destination-in';
+    g.save();
+    g.translate(S / 2, S / 2);
+    g.rotate(-0.62);
+    g.scale(1, 0.46);
+    const rg = g.createRadialGradient(0, 0, 0, 0, 0, S / 2);
+    rg.addColorStop(0, 'rgba(0,0,0,1)');
+    rg.addColorStop(0.34, 'rgba(0,0,0,.92)');
+    rg.addColorStop(0.66, 'rgba(0,0,0,.38)');
+    rg.addColorStop(1, 'rgba(0,0,0,0)');
+    g.fillStyle = rg;
+    g.fillRect(-S / 2, -S / 2, S, S);
+    g.restore();
+    return c;
+  }
+
   // the wake, in ship metres at 2 px per metre: x −100…100, y −560 (astern) … 150 (ahead of the bow)
   const WAKE = { x: -100, y: -560, w: 200, h: 710 };
   const wakePx = (x, y) => [(x - WAKE.x) * 2, (y - WAKE.y) * 2];
@@ -2037,6 +2072,19 @@ ${fairings}${engines}
     g.addColorStop(0.45, '#0b2c68');
     g.addColorStop(1, '#04122f');
     OL.grad = g;
+    // the sun sits off the upper left, so its sheen pools there and the far water stays cool
+    const sx = OL.W * 0.3, sy = OL.H * 0.26;
+    const sh = oc.createRadialGradient(sx, sy, 0, sx, sy, Math.hypot(OL.W, OL.H) * 0.78);
+    sh.addColorStop(0, 'rgba(255,238,198,.2)');
+    sh.addColorStop(0.42, 'rgba(255,226,170,.075)');
+    sh.addColorStop(1, 'rgba(255,214,150,0)');
+    OL.sheen = sh;
+    const cg = oc.createLinearGradient(OL.W, 0, 0, OL.H);
+    cg.addColorStop(0, 'rgba(6,22,56,.34)');
+    cg.addColorStop(0.55, 'rgba(6,22,56,.08)');
+    cg.addColorStop(1, 'rgba(6,22,56,0)');
+    OL.cool = cg;
+    OL.glintW = 1536 / OL.dpr; // one device pixel per sprite pixel
     OL.listH = oList.offsetHeight;
     OL.items = oItems.map((li) => ({ li, mid: li.offsetTop + li.offsetHeight / 2, on: null, a: -1 }));
     oDirty = true;
@@ -2049,6 +2097,7 @@ ${fairings}${engines}
     SEA.foamPat = SEA.bctx.createPattern(foamTexture(), 'repeat');
     SEA.mask = wakeMask();
     SEA.kelvin = kelvinRipples();
+    SEA.glint = glintSprite();
     SEA.ship = shipModel();
     SEA.shipShadow = softShadow(SEA.ship.hull, -26, -134, 52, 268, 3, 4, 'rgba(0,6,22,.6)');
     SEA.port = portModel();
@@ -2219,6 +2268,17 @@ ${fairings}${engines}
       g.fillRect(0, 0, W, H);
     }
     g.globalAlpha = 1;
+    // sun glitter, drifting with the water so the facets live
+    const gw = OL.glintW, gx = W * 0.3 + (ox % 160) * 0.12, gy = H * 0.26 + (oy % 160) * 0.12;
+    g.globalCompositeOperation = 'lighter';
+    g.globalAlpha = lerp(0.95, 0.5, clamp((O.z - 1) / 1.6, 0, 1));
+    g.drawImage(SEA.glint, gx - gw / 2, gy - gw / 2, gw, gw);
+    g.globalCompositeOperation = 'source-over';
+    g.globalAlpha = 1;
+    g.fillStyle = OL.cool;
+    g.fillRect(0, 0, W, H);
+    g.fillStyle = OL.sheen;
+    g.fillRect(0, 0, W, H);
 
     // the harbour: calmer water inside the breakwater, the coast running south-east, then the port,
     // which is modelled with its land towards −x and mirrored onto the east side of the berth
@@ -2401,6 +2461,15 @@ ${fairings}${engines}
       g.translate(W * 0.55 + hx * u, H * 0.5 + hy * u);
       g.rotate(HEADING);
       g.drawImage(SEA.plane, -33 * m, -36 * m, 66 * m, 72 * m);
+      // the sun that lays the glitter path also catches the top of the aircraft
+      g.globalCompositeOperation = 'lighter';
+      const gl = g.createLinearGradient(-16 * m, -20 * m, 18 * m, 24 * m);
+      gl.addColorStop(0, 'rgba(255,241,206,.26)');
+      gl.addColorStop(0.5, 'rgba(255,236,196,.06)');
+      gl.addColorStop(1, 'rgba(255,230,180,0)');
+      g.fillStyle = gl;
+      g.fillRect(-33 * m, -36 * m, 66 * m, 72 * m);
+      g.globalCompositeOperation = 'source-over';
       if (!reduceMotion) {
         g.globalCompositeOperation = 'lighter';
         if (t % 1.1 < 0.12) strobe(0, 4 * m, 3.2 * m, '255,70,55', 0.9);
