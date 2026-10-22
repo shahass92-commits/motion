@@ -116,10 +116,7 @@
     };
     try {
       doc.style.setProperty('--grain-tex', make(140, 'image/png', (R) => { const v = R() * 255; return [v, v, v, 255]; }));
-      doc.style.setProperty('--asphalt-tex', make(256, 'image/jpeg', (R) => {
-        const v = 16 + R() * 22 + (R() > 0.985 ? 46 : 0);
-        return [v, v, v + 2, 255];
-      }));
+      doc.style.setProperty('--asphalt-tex', roadTexture());
       doc.style.setProperty('--wear-tex', make(128, 'image/png', (R) => [0, 0, 0, R() > 0.14 ? 255 : 110 + R() * 100]));
       // sun rays baked once, falloff included, so moving them never repaints
       const c = document.createElement('canvas');
@@ -146,13 +143,26 @@
   }
 
   function buildWheel() {
+    // the tread is a ring of lugs with a groove between each; alternate tones give it depth
     const tread = $('#treadRing');
     tread.setAttribute('style', 'opacity: var(--sharp, 1)');
-    for (let k = 0; k < 28; k++) svg('rect', { x: -2.2, y: -26, width: 4.4, height: 3.4, transform: `rotate(${(k * 360) / 28})` }, tread);
+    for (let k = 0; k < 42; k++) {
+      svg('rect', { x: -1.5, y: -26.3, width: 3, height: 2.9, rx: 0.5, fill: k % 2 ? '#2a2e33' : '#1e2125', transform: `rotate(${(k * 360) / 42})` }, tread);
+    }
+    // moulded lettering around the sidewall, as dashes rather than legible text at this size
+    const side = $('#sidewall');
+    for (let k = 0; k < 34; k++) {
+      svg('rect', { x: -0.42, y: -20.5, width: 0.84, height: 1.5, rx: 0.3, transform: `rotate(${(k * 360) / 34})` }, side);
+    }
+    // five hand-holes in the rim dish, then the stud ring
+    const vents = $('#vents');
+    for (let k = 0; k < 5; k++) {
+      svg('ellipse', { cx: 0, cy: -11.3, rx: 1.9, ry: 2.6, transform: `rotate(${(k * 360) / 5 + 36})` }, vents);
+    }
     const lugs = $('#lugs');
-    for (let k = 0; k < 8; k++) {
-      const a = (k * Math.PI) / 4;
-      svg('circle', { cx: (Math.sin(a) * 7.6).toFixed(2), cy: (-Math.cos(a) * 7.6).toFixed(2), r: 1.15 }, lugs);
+    for (let k = 0; k < 10; k++) {
+      const a = (k * Math.PI) / 5;
+      svg('circle', { cx: (Math.sin(a) * 8.2).toFixed(2), cy: (-Math.cos(a) * 8.2).toFixed(2), r: 1.05 }, lugs);
     }
     const puffs = $('#puffs');
     for (let i = 0; i < 8; i++) svg('circle', { cx: 951, cy: 400, r: 0, opacity: 0 }, puffs);
@@ -162,17 +172,127 @@
 
   /* ---------- silhouettes on the horizon: port cranes, sheds, Kerala palms ---------- */
 
+  // Asphalt as it actually looks: a bed of aggregate, darker patch repairs where the surface has
+  // been cut and relaid, crack sealing wandering across it, and old oil soaked into the lane.
+  // 512 px tile, drawn once; every shape is drawn at its wrapped copies so the tile has no seam.
+  function roadTexture() {
+    const S = 512, c = document.createElement('canvas');
+    c.width = c.height = S;
+    const g = c.getContext('2d'), R = rng(8171);
+    const wrap = (x, y, r, fn) => {
+      for (const dx of [-S, 0, S]) for (const dy of [-S, 0, S]) {
+        if (x + dx > -r && x + dx < S + r && y + dy > -r && y + dy < S + r) fn(x + dx, y + dy);
+      }
+    };
+    g.fillStyle = '#131517';
+    g.fillRect(0, 0, S, S);
+    // patch repairs, laid before the aggregate so their edges read as seams
+    for (let i = 0; i < 4; i++) {
+      const x = R() * S, y = R() * S, w = 70 + R() * 160, h = 50 + R() * 120;
+      wrap(x, y, Math.max(w, h), (px, py) => {
+        g.fillStyle = R() < 0.5 ? '#171a1c' : '#101214';
+        g.fillRect(px, py, w, h);
+        g.strokeStyle = 'rgba(0,0,0,.5)';
+        g.lineWidth = 1.4;
+        g.strokeRect(px, py, w, h);
+      });
+    }
+    // aggregate: chips of stone, nearly all of them dark, a scarce few catching the light
+    for (let i = 0; i < 15000; i++) {
+      const x = R() * S, y = R() * S, r = 0.4 + R() * 1.2, t = R();
+      g.fillStyle = t > 0.997 ? `rgba(150,153,158,${(0.14 + R() * 0.16).toFixed(2)})`
+        : t > 0.94 ? `rgba(84,88,94,${(0.07 + R() * 0.1).toFixed(2)})`
+          : `rgba(4,5,6,${(0.1 + R() * 0.3).toFixed(2)})`;
+      g.beginPath();
+      g.ellipse(x, y, r, r * (0.7 + R() * 0.6), R() * 3.14, 0, 6.283);
+      g.fill();
+    }
+    // crack sealing: tar poured into the cracks, darker than the surface and never lighter
+    g.lineCap = 'round';
+    for (let i = 0; i < 6; i++) {
+      let x = R() * S, y = R() * S;
+      const pts = [[x, y]];
+      let a = R() * 6.283;
+      for (let k = 0; k < 7; k++) {
+        a += (R() - 0.5) * 1.5;
+        x += Math.cos(a) * (18 + R() * 40);
+        y += Math.sin(a) * (18 + R() * 40);
+        pts.push([x, y]);
+      }
+      wrap(pts[0][0], pts[0][1], 320, (px, py) => {
+        const ox = px - pts[0][0], oy = py - pts[0][1];
+        g.strokeStyle = 'rgba(3,4,5,.7)';
+        g.lineWidth = 3;
+        g.beginPath();
+        g.moveTo(pts[0][0] + ox, pts[0][1] + oy);
+        for (const [qx, qy] of pts.slice(1)) g.lineTo(qx + ox, qy + oy);
+        g.stroke();
+      });
+    }
+    // oil soaked in where the traffic runs
+    for (let i = 0; i < 18; i++) {
+      const x = R() * S, y = R() * S, r = 24 + R() * 70;
+      wrap(x, y, r, (px, py) => {
+        const rg = g.createRadialGradient(px, py, 0, px, py, r);
+        rg.addColorStop(0, `rgba(0,0,0,${(0.1 + R() * 0.16).toFixed(2)})`);
+        rg.addColorStop(1, 'rgba(0,0,0,0)');
+        g.fillStyle = rg;
+        g.fillRect(px - r, py - r, r * 2, r * 2);
+      });
+    }
+    return `url("${c.toDataURL('image/jpeg', 0.84)}")`;
+  }
+
   function crane(g, x, h, fill) {
     const y0 = 300, leg = 9, span = 64;
     const p = svg('g', { fill, stroke: fill }, g);
+    // legs on their rails, with the portal beam and cross-bracing between them
     svg('rect', { x, y: y0 - h, width: leg, height: h, stroke: 'none' }, p);
     svg('rect', { x: x + span, y: y0 - h, width: leg, height: h, stroke: 'none' }, p);
+    svg('rect', { x: x - 14, y: y0 - 7, width: span + leg + 28, height: 7, stroke: 'none' }, p);
     svg('path', { d: `M${x + leg} ${y0 - h * 0.3}L${x + span} ${y0 - h * 0.66}M${x + leg} ${y0 - h * 0.66}L${x + span} ${y0 - h * 0.3}`, fill: 'none', 'stroke-width': 3 }, p);
+    svg('rect', { x: x + leg, y: y0 - h * 0.72, width: span - leg, height: 5, stroke: 'none' }, p);
+    // the boom out over the water, its landside counterweight arm, and the girder depth
     svg('rect', { x: x - 150, y: y0 - h - 10, width: span + leg + 300, height: 10, stroke: 'none' }, p);
+    svg('rect', { x: x - 150, y: y0 - h - 2, width: span + leg + 300, height: 3, stroke: 'none' }, p);
+    // machine house on the landside, and the trolley with its spreader hanging under the boom
     svg('rect', { x: x - 8, y: y0 - h - 32, width: 62, height: 22, stroke: 'none' }, p);
+    svg('rect', { x: x - 2, y: y0 - h - 40, width: 18, height: 8, stroke: 'none' }, p);
+    const tx = x - 96;
+    svg('rect', { x: tx, y: y0 - h - 18, width: 26, height: 8, stroke: 'none' }, p);
+    svg('path', { d: `M${tx + 6} ${y0 - h - 10}V${y0 - h + 24}M${tx + 20} ${y0 - h - 10}V${y0 - h + 24}`, fill: 'none', 'stroke-width': 1.4 }, p);
+    svg('rect', { x: tx - 2, y: y0 - h + 24, width: 30, height: 7, stroke: 'none' }, p);
+    // the A-frame and its stay ropes
     const ax = x + span / 2, ay = y0 - h - 84;
     svg('path', { d: `M${x} ${y0 - h - 10}L${ax} ${ay}L${x + span + leg} ${y0 - h - 10}`, fill: 'none', 'stroke-width': 5 }, p);
     svg('path', { d: `M${ax} ${ay}L${x - 150} ${y0 - h - 8}M${ax} ${ay}L${x + span + leg + 150} ${y0 - h - 8}`, fill: 'none', 'stroke-width': 1.6 }, p);
+    svg('path', { d: `M${ax} ${ay}L${x - 60} ${y0 - h - 9}M${ax} ${ay}L${x + span + leg + 70} ${y0 - h - 9}`, fill: 'none', 'stroke-width': 1 }, p);
+    // the ladder up the seaward leg
+    svg('path', { d: `M${x + 3} ${y0 - h}V${y0}`, fill: 'none', 'stroke-width': 1, opacity: 0.55 }, p);
+  }
+
+  // a block of boxes in the yard, stacked three or four high
+  function stack(g, R, x, rows) {
+    const p = svg('g', { fill: 'currentColor' }, g);
+    for (let r = 0; r < rows; r++) {
+      for (let k = 0; k < 4 + Math.floor(R() * 5); k++) {
+        if (R() < 0.12) continue;
+        svg('rect', { x: x + k * 27, y: 300 - (r + 1) * 15, width: 25, height: 14 }, p);
+      }
+    }
+  }
+
+  // a lighting mast with its head frame, and a squat storage tank
+  function mast(g, x, h) {
+    const p = svg('g', { fill: 'currentColor', stroke: 'currentColor' }, g);
+    svg('rect', { x, y: 300 - h, width: 4, height: h, stroke: 'none' }, p);
+    svg('rect', { x: x - 13, y: 300 - h - 12, width: 30, height: 9, stroke: 'none' }, p);
+    svg('path', { d: `M${x - 13} ${300 - h - 3}L${x + 2} ${300 - h + 14}L${x + 17} ${300 - h - 3}`, fill: 'none', 'stroke-width': 1.4 }, p);
+  }
+  function tank(g, x, w, h) {
+    const p = svg('g', { fill: 'currentColor' }, g);
+    svg('path', { d: `M${x} 300V${300 - h}q${w / 2} ${-w * 0.3} ${w} 0V300Z` }, p);
+    svg('rect', { x: x + w * 0.42, y: 300 - h - w * 0.34, width: w * 0.16, height: 8 }, p);
   }
 
   function palm(g, R, x, h, lean) {
@@ -195,7 +315,10 @@
     const f3 = $('#far3'), f2 = $('#far2');
     const g3 = svg('g', { fill: 'currentColor' }, f3);
     for (let x = 80; x < 4200; x += 240 + R() * 260) {
-      if (R() < 0.5) crane(g3, x, 140 + R() * 70, 'currentColor');
+      const pk = R();
+      if (pk < 0.44) crane(g3, x, 140 + R() * 70, 'currentColor');
+      else if (pk < 0.58) { stack(g3, R, x, 2 + Math.floor(R() * 3)); mast(g3, x + 150, 150 + R() * 50); }
+      else if (pk < 0.68) { tank(g3, x, 60 + R() * 50, 46 + R() * 30); tank(g3, x + 130, 50 + R() * 40, 40 + R() * 26); }
       else {
         const w = 160 + R() * 260, h = 30 + R() * 50;
         svg('rect', { x, y: 300 - h, width: w, height: h }, g3);
@@ -646,15 +769,15 @@
   // 40 ft bays, sixteen rows across. Kept as vectors so it stays sharp from quay level to open water.
   function shipModel() {
     const R = rng(2207);
-    const pal = ['#1f4aa8', '#c8322c', '#2f8f4e', '#e8e8e3', '#e08a2e', '#c23d86', '#d9b43c', '#86919b', '#203566', '#4a8fd6', '#e8e8e3', '#c8322c', '#1f4aa8', '#2f8f4e'];
+    const pal = ['#1b3fae', '#e03a22', '#3aa652', '#f0f0ec', '#f08a1e', '#d8357f', '#efb41f', '#8d99a4', '#1c2f78', '#5aa3e8', '#f0f0ec', '#e03a22', '#1b3fae', '#3aa652'];
     const pick = () => pal[Math.floor(R() * pal.length)];
     const RW = 2.44, ROWS = 16, X0 = -ROWS * RW / 2;
     const boxes = [];
     let hatch = '', seams = '', bridges = '', bridgeHi = '';
     for (let g = 0; g < 7; g++) {
       const y0 = -92 + g * 27.2, half = hullHalf(y0 + 25) - 1.4;
-      bridges += pR(-20.8, y0 - 2.2, 41.6, 2.2);
-      bridgeHi += pR(-20.8, y0 - 2.2, 41.6, 0.35);
+      bridges += pR(-20.8, y0 - 2.6, 41.6, 2.6);
+      bridgeHi += pR(-20.8, y0 - 2.6, 41.6, 0.5);
       for (let r = 0; r < ROWS;) {
         const run = Math.min(ROWS - r, 1 + Math.floor(R() * 3));
         const empty = R() < 0.07, c1 = pick(), c2 = R() < 0.75 ? c1 : pick(), tone = (R() - 0.5) * 0.26;
@@ -679,13 +802,13 @@
       hull: new Path2D(hull),
       deck: new Path2D(deck),
       under: [
-        layer('#0c2034', hull),
-        layer('#1c4c7c', deck),
+        layer('#10293f', hull),
+        layer('#2a6ba8', deck),
         layer(null, deck, 1, '#5d8fbf', 0.3),
-        layer('#2a5684', pR(-21.2, -95, 1.2, 168) + pR(20, -95, 1.2, 168)),
-        layer('#33414f', bridges),
-        layer('#8a99a8', bridgeHi),
-        layer('#2b5f93', hatch)
+        layer('#3d84c4', pR(-21.2, -95, 1.2, 168) + pR(20, -95, 1.2, 168)),
+        layer('#2c3b49', bridges),
+        layer('#9fb0c0', bridgeHi),
+        layer('#3576b4', hatch)
       ],
       over: [
         layer('#000', seams, 0.45),
@@ -741,7 +864,7 @@
     }
     // the yard: blocks of containers seven rows wide, kept as data for close views and drawn once
     // into a raster for distant ones
-    const pal = ['#1f4aa8', '#c8322c', '#2f8f4e', '#e8e8e3', '#e08a2e', '#86919b', '#203566', '#4a8fd6'];
+    const pal = ['#1b3fae', '#e03a22', '#3aa652', '#f0f0ec', '#f08a1e', '#8d99a4', '#1c2f78', '#5aa3e8'];
     const yard = [];
     for (let k = 0; k < 4; k++) {
       const bx = -104 - k * 46;
@@ -896,19 +1019,21 @@
     };
     const gauss = () => (R() + R() + R() - 1.5) / 1.5;
     const lobes = [];
-    for (let i = 0; i < 6; i++) lobes.push([W * (0.3 + R() * 0.4), H * (0.3 + R() * 0.4), 0.6 + R() * 0.5]);
+    for (let i = 0; i < 7; i++) lobes.push([W * (0.3 + R() * 0.4), H * (0.3 + R() * 0.4), 0.6 + R() * 0.5]);
     const tops = [];
-    for (let i = 0; i < 240; i++) {
+    for (let i = 0; i < 320; i++) {
       const [lx, ly, ls] = lobes[i % lobes.length];
       const x = lx + gauss() * W * 0.16 * ls, y = ly + gauss() * H * 0.16 * ls;
       const edge = Math.hypot((x - W / 2) / (W * 0.4), (y - H / 2) / (H * 0.4));
       if (edge > 1) continue;
-      tops.push([x, y, (20 + R() * 46) * (1.3 - edge * 0.6)]);
+      tops.push([x, y, (22 + R() * 50) * (1.3 - edge * 0.62)]);
     }
-    // each puff throws its shadow down-right onto the ones drawn before it, which opens up creases
+    // a light base first, so the mass reads thick without closing up the gaps between billows
+    for (const [x, y, r] of tops) puff(x, y, r * 1.05, [[0, 'rgba(242,246,252,.26)'], [0.7, 'rgba(242,246,252,.12)'], [1, 'rgba(242,246,252,0)']]);
+    // then each billow with a deep crease beneath it, which is what gives cumulus their relief
     for (const [x, y, r] of tops) {
-      puff(x + r * 0.3, y + r * 0.38, r * 1.08, [[0, 'rgba(120,136,168,.34)'], [0.7, 'rgba(120,136,168,.13)'], [1, 'rgba(120,136,168,0)']]);
-      puff(x, y, r, [[0, 'rgba(255,255,255,.95)'], [0.6, 'rgba(247,250,254,.82)'], [0.86, 'rgba(236,241,249,.3)'], [1, 'rgba(236,241,249,0)']]);
+      puff(x + r * 0.26, y + r * 0.34, r * 1.04, [[0, 'rgba(104,122,158,.46)'], [0.62, 'rgba(104,122,158,.2)'], [1, 'rgba(104,122,158,0)']]);
+      puff(x - r * 0.08, y - r * 0.1, r, [[0, 'rgba(255,255,255,1)'], [0.52, 'rgba(252,253,255,.96)'], [0.8, 'rgba(240,245,252,.46)'], [1, 'rgba(236,241,249,0)']]);
     }
     return c;
   }
@@ -1027,6 +1152,41 @@ ${fairings}${engines}
         g.beginPath(); g.ellipse(px, py, r, r * 2.5, 0, 0, 6.283); g.fill();
       });
     }
+    return c;
+  }
+
+  // The sun glitter path: thousands of wave facets catching the sun along one axis. Built once as a
+  // sprite, speckles first, then faded from the centre by a mask, so a frame costs one drawImage.
+  function glintSprite() {
+    // built at device scale and drawn 1:1, because an upscaled facet is just a smear
+    const S = 1536, c = toCanvas(S, S), g = c.getContext('2d'), R = rng(5150);
+    g.lineCap = 'round';
+    for (let i = 0; i < 11000; i++) {
+      const x = R() * S, y = R() * S;
+      // facets lie along the swell, like the crests in the wind-wave texture
+      const a = -0.42 + (R() - 0.5) * 0.9, len = 2.2 + R() * R() * 20, lw = 1 + R() * 2.4;
+      const op = 0.3 + R() * 0.7;
+      g.strokeStyle = `rgba(255,${(246 - R() * 26).toFixed(0)},${(214 - R() * 44).toFixed(0)},${op.toFixed(3)})`;
+      g.lineWidth = lw;
+      g.beginPath();
+      g.moveTo(x - Math.cos(a) * len / 2, y - Math.sin(a) * len / 2);
+      g.lineTo(x + Math.cos(a) * len / 2, y + Math.sin(a) * len / 2);
+      g.stroke();
+    }
+    // the path is an ellipse stretched along the sun's bearing, brightest at its heart
+    g.globalCompositeOperation = 'destination-in';
+    g.save();
+    g.translate(S / 2, S / 2);
+    g.rotate(-0.62);
+    g.scale(1, 0.46);
+    const rg = g.createRadialGradient(0, 0, 0, 0, 0, S / 2);
+    rg.addColorStop(0, 'rgba(0,0,0,1)');
+    rg.addColorStop(0.34, 'rgba(0,0,0,.92)');
+    rg.addColorStop(0.66, 'rgba(0,0,0,.38)');
+    rg.addColorStop(1, 'rgba(0,0,0,0)');
+    g.fillStyle = rg;
+    g.fillRect(-S / 2, -S / 2, S, S);
+    g.restore();
     return c;
   }
 
@@ -1515,8 +1675,8 @@ ${fairings}${engines}
   const nightVeil = $('#nightVeil');
   const mapLights = $('#mapLights');
   const tv = {
-    cab: $('#tvCab'), t1: $('#tvTrailer'), t2: $('#tvTrailer2'),
-    sCab: $('#tvShadowCab'), s1: $('#tvShadowTrailer'), s2: $('#tvShadowTrailer2'),
+    cab: $('#tvCab'), t1: $('#tvTrailer'),
+    sCab: $('#tvShadowCab'), s1: $('#tvShadowTrailer'),
     lCab: $('#tvLightsCab'), lTail: $('#tvLightsTrailer')
   };
   const fencePing = $('#fencePing');
@@ -1768,21 +1928,16 @@ ${fairings}${engines}
   function renderMap() {
     const r = map.route;
     const s = lerp(ROUTE_START, r.len - 40, F.p);
-    // the road train articulates: cab, 40 ft trailer, then the dolly and 20 ft trailer
+    // the unit articulates about the kingpin: cab, then the 40 ft trailer behind it
     const K = laneAt(r, s, 72);
     const front = laneAt(r, s + 40, 72);
     const R1 = laneAt(r, s - 176, 72);
-    const D = laneAt(r, s - 200, 72);
-    const R2 = laneAt(r, s - 296, 72);
     const cabA = Math.atan2(front.y - K.y, front.x - K.x);
     const t1A = Math.atan2(K.y - R1.y, K.x - R1.x);
-    const t2A = Math.atan2(D.y - R2.y, D.x - R2.x);
     place(tv.cab, K.x, K.y, cabA);
     place(tv.t1, K.x, K.y, t1A);
-    place(tv.t2, D.x, D.y, t2A);
     place(tv.sCab, K.x + 10, K.y + 12, cabA);
     place(tv.s1, K.x + 10, K.y + 12, t1A);
-    place(tv.s2, D.x + 10, D.y + 12, t2A);
 
     // evening falls over the corridor: warm light, then blue hour and the lights come on
     const n = F.night;
@@ -1795,7 +1950,7 @@ ${fairings}${engines}
     mapLights.style.display = lightsOn ? '' : 'none';
     if (lightsOn) {
       place(tv.lCab, K.x, K.y, cabA);
-      place(tv.lTail, D.x, D.y, t2A);
+      place(tv.lTail, K.x, K.y, t1A);
       for (const c of map.cars) c.lit.setAttribute('transform', c.el.getAttribute('transform') || '');
     }
 
@@ -2025,10 +2180,24 @@ ${fairings}${engines}
     OL.Lp = OL.H * 0.98; // the plane, far nearer the camera than the sea
     const cx = OL.W / 2, cy = OL.H * 0.35;
     const g = oc.createRadialGradient(cx, cy, 0, cx, cy, Math.hypot(OL.W, OL.H) * 0.72);
-    g.addColorStop(0, '#13438f');
-    g.addColorStop(0.45, '#0b2c68');
-    g.addColorStop(1, '#04122f');
+    g.addColorStop(0, '#1d57ab');
+    g.addColorStop(0.3, '#15427f');
+    g.addColorStop(0.62, '#0d2c5c');
+    g.addColorStop(1, '#06162f');
     OL.grad = g;
+    // the sun sits off the upper left, so its sheen pools there and the far water stays cool
+    const sx = OL.W * 0.3, sy = OL.H * 0.26;
+    const sh = oc.createRadialGradient(sx, sy, 0, sx, sy, Math.hypot(OL.W, OL.H) * 0.78);
+    sh.addColorStop(0, 'rgba(255,238,198,.2)');
+    sh.addColorStop(0.42, 'rgba(255,226,170,.075)');
+    sh.addColorStop(1, 'rgba(255,214,150,0)');
+    OL.sheen = sh;
+    const cg = oc.createLinearGradient(OL.W, 0, 0, OL.H);
+    cg.addColorStop(0, 'rgba(6,22,56,.34)');
+    cg.addColorStop(0.55, 'rgba(6,22,56,.08)');
+    cg.addColorStop(1, 'rgba(6,22,56,0)');
+    OL.cool = cg;
+    OL.glintW = 1536 / OL.dpr; // one device pixel per sprite pixel
     OL.listH = oList.offsetHeight;
     OL.items = oItems.map((li) => ({ li, mid: li.offsetTop + li.offsetHeight / 2, on: null, a: -1 }));
     oDirty = true;
@@ -2041,6 +2210,7 @@ ${fairings}${engines}
     SEA.foamPat = SEA.bctx.createPattern(foamTexture(), 'repeat');
     SEA.mask = wakeMask();
     SEA.kelvin = kelvinRipples();
+    SEA.glint = glintSprite();
     SEA.ship = shipModel();
     SEA.shipShadow = softShadow(SEA.ship.hull, -26, -134, 52, 268, 3, 4, 'rgba(0,6,22,.6)');
     SEA.port = portModel();
@@ -2211,6 +2381,17 @@ ${fairings}${engines}
       g.fillRect(0, 0, W, H);
     }
     g.globalAlpha = 1;
+    // sun glitter, drifting with the water so the facets live
+    const gw = OL.glintW, gx = W * 0.3 + (ox % 160) * 0.12, gy = H * 0.26 + (oy % 160) * 0.12;
+    g.globalCompositeOperation = 'lighter';
+    g.globalAlpha = lerp(0.95, 0.5, clamp((O.z - 1) / 1.6, 0, 1));
+    g.drawImage(SEA.glint, gx - gw / 2, gy - gw / 2, gw, gw);
+    g.globalCompositeOperation = 'source-over';
+    g.globalAlpha = 1;
+    g.fillStyle = OL.cool;
+    g.fillRect(0, 0, W, H);
+    g.fillStyle = OL.sheen;
+    g.fillRect(0, 0, W, H);
 
     // the harbour: calmer water inside the breakwater, the coast running south-east, then the port,
     // which is modelled with its land towards −x and mirrored onto the east side of the berth
