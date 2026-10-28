@@ -1,0 +1,198 @@
+/* Compass Nexus iQ flagship
+   Tailwind does the layout. This file only holds what utilities express badly: the glass
+   material, the generated-art frames, the split-text masks and the reduced-motion rules. */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+    --gutter: clamp(16px, 4vw, 56px);
+    --header-h: 72px;
+  }
+  html {
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  html.lenis, html.lenis body { height: auto; }
+  .lenis.lenis-smooth { scroll-behavior: auto !important; }
+  .lenis.lenis-stopped { overflow: hidden; }
+  body { @apply bg-night font-sans text-white antialiased; overflow-x: clip; }
+  h1, h2, h3 { text-wrap: balance; }
+  p { text-wrap: pretty; }
+  ::selection { background: #e2b100; color: #04060c; }
+  :focus-visible { outline: 2px solid #f2cf55; outline-offset: 3px; border-radius: 6px; }
+  [hidden] { display: none !important; }
+}
+
+@layer components {
+  .wrap { @apply mx-auto w-full max-w-site; padding-inline: var(--gutter); }
+
+  .eyebrow { @apply font-mono text-[11px] font-medium uppercase tracking-label text-gold-soft; }
+  .eyebrow-ink { @apply font-mono text-[11px] font-medium uppercase tracking-label text-cobalt; }
+
+  /* glass: frosted fill, a lit top edge and a gradient hairline that catches gold at one corner */
+  .glass {
+    @apply relative isolate rounded-[28px] bg-white/[.055] backdrop-blur-2xl backdrop-saturate-150;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, .16),
+      inset 0 -1px 0 rgba(255, 255, 255, .03),
+      0 40px 90px -40px rgba(0, 0, 0, .85);
+  }
+  .glass::before,
+  .glass-light::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(145deg, rgba(255, 255, 255, .42), rgba(255, 255, 255, .06) 32%, rgba(255, 255, 255, .02) 64%, rgba(242, 207, 85, .38));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+  .glass-strong { @apply bg-[#0b1430]/60; }
+  .glass-light {
+    @apply relative isolate rounded-[28px] bg-white/70 text-ink backdrop-blur-2xl backdrop-saturate-150;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .9), 0 30px 70px -36px rgba(10, 20, 48, .45);
+  }
+  .glass-light::before { background: linear-gradient(145deg, rgba(255, 255, 255, .95), rgba(10, 20, 48, .08) 40%, rgba(29, 78, 255, .25)); }
+
+  /* sheen that follows the pointer on tilt cards (--mx / --my set in flagship.js) */
+  .sheen::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 0%), rgba(255, 255, 255, .10), transparent 60%);
+    opacity: 0;
+    transition: opacity .4s;
+    pointer-events: none;
+  }
+  .sheen:hover::after { opacity: 1; }
+
+  .chip { @apply inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[.06] px-3 py-1.5 font-mono text-[10.5px] uppercase tracking-[.14em] text-white/80 backdrop-blur-md; }
+  .chip-sim { @apply inline-flex items-center gap-1.5 rounded-full border border-gold/40 bg-gold/10 px-2.5 py-1 font-mono text-[10px] uppercase tracking-[.14em] text-gold-soft; }
+  .dot-live { @apply relative inline-block h-1.5 w-1.5 rounded-full bg-emerald-400; box-shadow: 0 0 0 0 rgba(52, 211, 153, .6); animation: ping-soft 2s infinite; }
+
+  .btn { @apply inline-flex min-h-[48px] items-center justify-center gap-2 rounded-full px-6 text-[15px] font-semibold transition duration-300 ease-out; }
+  .btn-gold { @apply btn bg-gold text-night hover:bg-gold-soft; box-shadow: 0 10px 40px -10px rgba(226, 177, 0, .55), inset 0 1px 0 rgba(255, 255, 255, .45); }
+  .btn-glass { @apply btn border border-white/20 bg-white/[.07] text-white backdrop-blur-xl hover:bg-white/[.14]; }
+  .btn-ink { @apply btn bg-ink text-white hover:bg-navy-2; }
+
+  .h-display { @apply font-display font-extrabold leading-[.95] tracking-[-.035em]; font-stretch: 92%; }
+  .h-section { @apply font-display text-[clamp(2.2rem,5.2vw,5rem)] font-extrabold leading-[.98] tracking-[-.03em]; font-stretch: 94%; }
+  .lede { @apply text-[clamp(1.05rem,1.3vw,1.25rem)] leading-relaxed text-white/70; }
+  .gold-dot { @apply ml-[.06em] inline-block h-[.16em] w-[.16em] translate-y-[-.08em] rounded-full bg-gold align-baseline; }
+
+  /* generated art: canvas sits under an optional <img>, so a real photo can replace a scene */
+  .art { @apply absolute inset-0 overflow-hidden; }
+  .art > canvas, .art > img { @apply absolute inset-0 h-full w-full; }
+  .art > img { @apply object-cover; }
+
+  .split-line { @apply block; }
+  .mask-line { overflow: clip; padding-bottom: .06em; margin-bottom: -.06em; }
+
+  .tick-row { @apply flex items-center justify-between gap-3 border-b border-white/[.07] py-2.5 text-[13px]; }
+  .check { @apply inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[.08em] text-emerald-300; }
+  .check::before { content: ""; @apply inline-block h-3.5 w-3.5 rounded-full bg-emerald-400/20; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M4 7.2 6.1 9.3 10 5' fill='none' stroke='%236ee7b7' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); }
+  .load-step.is-lit > span { @apply border-gold bg-gold text-night; box-shadow: 0 0 0 6px rgba(226, 177, 0, .15); }
+
+  .grain {
+    pointer-events: none;
+    position: fixed;
+    inset: -50%;
+    z-index: 70;
+    opacity: .06;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    animation: grain 1.2s steps(6) infinite;
+  }
+
+  .marquee-text {
+    @apply whitespace-nowrap font-display font-extrabold uppercase leading-none tracking-[-.02em];
+    font-size: clamp(3.4rem, 10vw, 9rem);
+    font-stretch: 112%;
+    -webkit-text-stroke: 1px rgba(255, 255, 255, .28);
+    color: transparent;
+  }
+  .marquee-text b { @apply font-extrabold text-white; -webkit-text-stroke: 0; }
+  .marquee-text i { @apply mx-[.3em] inline-block h-[.18em] w-[.18em] translate-y-[-.18em] rounded-full bg-gold align-middle; }
+
+  /* phone in the ride journey */
+  .phone {
+    --ph: min(54svh, 560px);
+    @apply relative mx-auto rounded-[44px] p-[9px];
+    height: var(--ph);
+    width: calc(var(--ph) * 9 / 19);
+    background: linear-gradient(160deg, #3b4256, #10141f 40%, #252b3b);
+    box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, .18), 0 60px 120px -40px rgba(0, 0, 0, .9), 0 0 0 1px rgba(0, 0, 0, .6);
+  }
+  .phone-screen {
+    @apply relative h-full w-full overflow-hidden rounded-[36px];
+    font-size: calc(var(--ph) * .0235);
+    background: radial-gradient(120% 60% at 50% 0%, #142252 0%, #070b18 60%);
+  }
+  @media (min-width: 1024px) { .phone { --ph: min(76svh, 640px); } }
+  .screen { @apply absolute inset-0 flex flex-col px-[1.2em] pb-[1.5em] pt-[3.2em]; }
+  .screen + .screen { opacity: 0; visibility: hidden; }
+  .no-js .screen + .screen { display: none; }
+
+  .step-item { @apply relative border-l border-white/10 py-2.5 pl-6 text-white/40 transition-colors duration-500; }
+  .step-item p { max-height: 0; opacity: 0; overflow: hidden; transition: max-height .5s cubic-bezier(.16,1,.3,1), opacity .4s; }
+  .step-item.is-current p { max-height: 6em; opacity: 1; }
+  .no-gsap .step-item p, .reduced .step-item p { max-height: none; opacity: 1; }
+  .step-item::before { content: ""; @apply absolute -left-px top-0 h-full w-px origin-top scale-y-0 bg-gold transition-transform duration-500; }
+  .step-item.is-on { @apply text-white; }
+  .step-item.is-on::before { @apply scale-y-100; }
+
+  .state-chip { @apply rounded-full border border-white/10 px-3 py-1.5 font-mono text-[10.5px] uppercase tracking-[.12em] text-white/35 transition duration-500; }
+  .state-chip.is-on { @apply border-gold/50 bg-gold/15 text-gold-pale; }
+  .state-chip.is-now { @apply border-gold bg-gold text-night; }
+
+  .field { @apply grid gap-1.5 text-[13px] text-white/60; }
+  .field input, .field select, .field textarea {
+    @apply w-full rounded-2xl border border-white/12 bg-white/[.05] px-4 py-3 text-[15px] text-white placeholder:text-white/30 outline-none transition focus:border-gold/70 focus:bg-white/[.08];
+  }
+  .field select option { color: #0d0e10; }
+  .seg { @apply flex rounded-full border border-white/12 bg-white/[.04] p-1 text-[13px]; }
+  .seg button { @apply flex-1 rounded-full px-4 py-2 font-medium text-white/60 transition; }
+  .seg button[aria-pressed="true"] { @apply bg-white text-night; }
+}
+
+@layer utilities {
+  .border-white\/12 { border-color: rgba(255, 255, 255, .12); }
+  .text-stroke { -webkit-text-stroke: 1px rgba(255, 255, 255, .35); color: transparent; }
+  .pin-spacer-fix { contain: layout; }
+}
+
+@keyframes grain {
+  0%, 100% { transform: translate(0, 0); }
+  20% { transform: translate(-6%, 4%); }
+  40% { transform: translate(5%, -7%); }
+  60% { transform: translate(-3%, 8%); }
+  80% { transform: translate(7%, 2%); }
+}
+@keyframes ping-soft {
+  0% { box-shadow: 0 0 0 0 rgba(52, 211, 153, .55); }
+  80%, 100% { box-shadow: 0 0 0 8px rgba(52, 211, 153, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grain, .dot-live { animation: none; }
+  *, *::before, *::after { transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
+
+/* reduced motion, or no GSAP: every pinned sequence falls back to a plain stacked layout */
+.no-gsap .screen + .screen, .reduced .screen + .screen { display: none; }
+.no-gsap #hscroll > div, .reduced #hscroll > div { height: auto; display: block; }
+.no-gsap [data-hscroll-track], .reduced [data-hscroll-track] { flex-direction: column; width: auto; padding-block: 2rem; }
+.no-gsap .hpanel, .reduced .hpanel { width: 100%; }
+.no-gsap #rideSteps, .reduced #rideSteps { display: block; }
+.no-gsap #stepCaption, .reduced #stepCaption { display: none; }
+.no-gsap .step-item { color: #fff; }

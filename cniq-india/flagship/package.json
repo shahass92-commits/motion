@@ -1,0 +1,14 @@
+{
+  "name": "cniq-flagship",
+  "private": true,
+  "description": "Compass Nexus iQ flagship page: Tailwind CSS + GSAP ScrollTrigger",
+  "scripts": {
+    "build": "tailwindcss -c tailwind.config.js -i src/input.css -o assets/css/flagship.css --minify && node scripts/vendor.js",
+    "watch": "tailwindcss -c tailwind.config.js -i src/input.css -o assets/css/flagship.css --watch"
+  },
+  "devDependencies": {
+    "gsap": "3.13.0",
+    "lenis": "1.1.13",
+    "tailwindcss": "3.4.17"
+  }
+}
