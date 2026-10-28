@@ -1,0 +1,866 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Compass Nexus iQ · Intelligent Navigation</title>
+<meta name="description" content="Compass Nexus iQ runs employee transportation for corporate campuses and multimodal logistics from Thiruvananthapuram. Every ride and every load is planned, tracked and verified on one record.">
+<meta name="theme-color" content="#04060c">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Martian+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/css/flagship.css">
+<script>
+  // mark JS early so the loader only shows when scripts can dismiss it; never leave it up for long
+  document.documentElement.classList.replace('no-js', 'js');
+  setTimeout(function () { if (!window.__cniqReady) document.documentElement.classList.add('loader-done'); }, 6000);
+</script>
+<style>
+  #loader { display: none; }
+  .js #loader { display: grid; }
+  .loader-done #loader { display: none; }
+</style>
+</head>
+<body>
+
+<!-- ============ LOADER ============ -->
+<div id="loader" class="fixed inset-0 z-[90] place-items-center bg-night" aria-hidden="true">
+  <div class="w-[min(520px,82vw)]">
+    <svg id="loaderDial" class="mx-auto mb-10 h-24 w-24 text-white" viewBox="0 0 40 40">
+      <circle cx="20" cy="20" r="18.5" fill="none" stroke="currentColor" stroke-opacity=".25"/>
+      <path d="M20 3.5v3M20 33.5v3M3.5 20h3M33.5 20h3" stroke="currentColor" stroke-opacity=".6" stroke-linecap="round"/>
+      <g id="loaderNeedle"><path d="M20 8 23.6 20h-7.2z" fill="#e2b100"/><path d="M16.4 20h7.2L20 32z" fill="#fff" fill-opacity=".85"/></g>
+      <circle cx="20" cy="20" r="1.6" fill="#04060c"/>
+    </svg>
+    <p class="text-center font-display text-[clamp(1.6rem,4.6vw,2.6rem)] font-extrabold uppercase tracking-[-.01em]" style="font-stretch:112%"><span id="loaderWord">Compass Nexus iQ</span></p>
+    <div class="mt-8 flex justify-between font-mono text-[10.5px] uppercase tracking-[.14em] text-white/45">
+      <span>Calibrating heading · 08°31′N 076°56′E</span><span id="loaderCount">000</span>
+    </div>
+    <div class="mt-3 h-px bg-white/10"><i id="loaderBar" class="block h-full origin-left scale-x-0 bg-gold"></i></div>
+  </div>
+</div>
+
+<div class="grain" aria-hidden="true"></div>
+
+<!-- ============ HEADER ============ -->
+<header id="siteHeader" class="fixed inset-x-0 top-0 z-50 border-b border-transparent transition-colors duration-500 data-[scrolled=true]:border-white/[.06] data-[scrolled=true]:bg-night/55 data-[scrolled=true]:backdrop-blur-xl">
+  <div class="wrap flex h-[72px] items-center justify-between gap-4">
+    <a href="#hero" class="group flex items-center gap-3" aria-label="Compass Nexus iQ, back to top">
+      <svg class="h-9 w-9 text-white" viewBox="0 0 40 40" aria-hidden="true">
+        <circle cx="20" cy="20" r="18.5" fill="none" stroke="currentColor" stroke-opacity=".35"/>
+        <circle cx="20" cy="20" r="13.5" fill="none" stroke="currentColor" stroke-opacity=".12"/>
+        <path d="M20 4v3M20 33v3M4 20h3M33 20h3" stroke="currentColor" stroke-opacity=".7" stroke-linecap="round"/>
+        <g class="origin-center transition-transform duration-700 ease-out group-hover:rotate-[360deg]" style="transform-box:fill-box"><path d="M20 8.5 23.4 20h-6.8z" fill="#e2b100"/><path d="M16.6 20h6.8L20 31.5z" fill="#fff" fill-opacity=".85"/></g>
+        <circle cx="20" cy="20" r="1.6" fill="#04060c"/>
+      </svg>
+      <span class="leading-none">
+        <b class="block font-display text-[18px] font-extrabold tracking-[-.01em]" style="font-stretch:112%">CNIQ<span class="text-gold">.</span></b>
+        <span class="mt-1 block font-mono text-[9px] uppercase tracking-[.22em] text-white/55">Compass Nexus iQ</span>
+      </span>
+    </a>
+    <nav class="glass hidden items-center gap-1 rounded-full px-1.5 py-1.5 lg:flex" aria-label="Primary">
+      <a data-nav href="#mobility" class="rounded-full px-4 py-2 text-[14px] text-white/70 transition hover:text-white data-[active=true]:bg-white/[.12] data-[active=true]:text-white">Mobility</a>
+      <a data-nav href="#logistics" class="rounded-full px-4 py-2 text-[14px] text-white/70 transition hover:text-white data-[active=true]:bg-white/[.12] data-[active=true]:text-white">Logistics</a>
+      <a data-nav href="#platform" class="rounded-full px-4 py-2 text-[14px] text-white/70 transition hover:text-white data-[active=true]:bg-white/[.12] data-[active=true]:text-white">Platform</a>
+      <a data-nav href="#contact" class="rounded-full px-4 py-2 text-[14px] text-white/70 transition hover:text-white data-[active=true]:bg-white/[.12] data-[active=true]:text-white">Contact</a>
+    </nav>
+    <div class="flex items-center gap-2">
+      <a class="btn-gold hidden !min-h-[42px] !px-5 !text-[14px] sm:inline-flex" href="#contact">Talk to us</a>
+      <button id="menuBtn" type="button" class="glass grid h-11 w-11 place-items-center !rounded-full lg:hidden" aria-expanded="false" aria-controls="drawer">
+        <span class="sr-only">Open menu</span>
+        <span class="grid gap-[5px]"><i class="block h-[1.5px] w-[18px] bg-white transition"></i><i class="block h-[1.5px] w-[18px] bg-white transition"></i></span>
+      </button>
+    </div>
+  </div>
+  <i id="progress" class="absolute inset-x-0 bottom-[-1px] block h-[2px] origin-left scale-x-0 bg-gradient-to-r from-cobalt via-cobalt-soft to-gold" aria-hidden="true"></i>
+</header>
+
+<div id="drawer" class="fixed inset-0 z-40 bg-night/80 backdrop-blur-2xl lg:hidden" hidden>
+  <nav class="wrap flex h-full flex-col justify-center gap-2" aria-label="Menu">
+    <a href="#mobility" class="flex items-baseline gap-4 border-b border-white/10 py-4 font-display text-[clamp(2rem,9vw,3.2rem)] font-extrabold tracking-[-.02em]"><small class="font-mono text-[11px] font-normal text-gold-soft">01</small>Mobility</a>
+    <a href="#logistics" class="flex items-baseline gap-4 border-b border-white/10 py-4 font-display text-[clamp(2rem,9vw,3.2rem)] font-extrabold tracking-[-.02em]"><small class="font-mono text-[11px] font-normal text-gold-soft">02</small>Logistics</a>
+    <a href="#platform" class="flex items-baseline gap-4 border-b border-white/10 py-4 font-display text-[clamp(2rem,9vw,3.2rem)] font-extrabold tracking-[-.02em]"><small class="font-mono text-[11px] font-normal text-gold-soft">03</small>Platform</a>
+    <a href="#contact" class="flex items-baseline gap-4 border-b border-white/10 py-4 font-display text-[clamp(2rem,9vw,3.2rem)] font-extrabold tracking-[-.02em]"><small class="font-mono text-[11px] font-normal text-gold-soft">04</small>Contact</a>
+    <p class="mt-8 font-mono text-[11px] uppercase tracking-[.14em] text-white/45">Thiruvananthapuram, Kerala · 08°31′N 076°56′E</p>
+  </nav>
+</div>
+
+<main>
+
+<!-- ============ HERO ============ -->
+<section id="hero" class="relative h-[100svh] min-h-[640px] overflow-hidden" aria-labelledby="heroTitle">
+  <div id="heroArt" class="art origin-[60%_70%]" data-scene="city"><canvas aria-hidden="true"></canvas></div>
+  <svg id="heroDial" class="pointer-events-none absolute right-[-22vw] top-1/2 w-[78vw] max-w-none -translate-y-1/2 text-white opacity-[.09] lg:right-[-12vw] lg:w-[58vw]" viewBox="0 0 400 400" aria-hidden="true">
+    <circle cx="200" cy="200" r="196" fill="none" stroke="currentColor" stroke-width=".8"/>
+    <circle cx="200" cy="200" r="150" fill="none" stroke="currentColor" stroke-width=".6" stroke-dasharray="2 6"/>
+    <g id="dialTicks" stroke="currentColor"></g>
+    <g font-family="Martian Mono, monospace" font-size="13" fill="currentColor" text-anchor="middle"><text x="200" y="36">N</text><text x="372" y="205">E</text><text x="200" y="376">S</text><text x="28" y="205">W</text></g>
+    <path d="M200 64 214 200h-28z" fill="none" stroke="#e2b100" stroke-width="1.2"/><path d="M186 200h28l-14 136z" fill="none" stroke="currentColor" stroke-width="1"/>
+  </svg>
+  <div class="pointer-events-none absolute inset-0 bg-gradient-to-r from-night/90 via-night/45 to-night/0" aria-hidden="true"></div>
+  <div class="pointer-events-none absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-night to-night/0" aria-hidden="true"></div>
+
+  <div id="heroFg" class="absolute inset-0 z-10">
+  <div class="wrap relative z-10 flex h-full flex-col justify-end pb-[14svh] lg:justify-center lg:pb-0">
+    <div id="heroCopy" class="max-w-[48rem] pt-[var(--header-h)]">
+      <p class="eyebrow mb-6 flex items-center gap-3" data-hero-in><span class="h-px w-10 bg-gold/70"></span>Compass Nexus iQ · Intelligent navigation</p>
+      <h1 id="heroTitle" class="h-display text-[clamp(2.75rem,6.6vw,6.75rem)]" data-split="hero">Intelligent navigation for people and cargo<span class="gold-dot"></span></h1>
+      <p class="lede mt-7 max-w-xl" data-hero-in>Employee transportation for corporate campuses and multimodal logistics from Thiruvananthapuram. Every ride and every load is planned, tracked and verified on one record, from booking to payment.</p>
+      <div class="mt-9 flex flex-wrap gap-3" data-hero-in>
+        <a class="btn-gold" href="#mobility">Explore mobility</a>
+        <a class="btn-glass" href="#logistics">See logistics</a>
+      </div>
+    </div>
+  </div>
+
+  <aside id="heroPanel" class="glass glass-strong absolute bottom-[12svh] right-[var(--gutter)] z-10 hidden w-[352px] p-5 xl:block" aria-label="Trip monitor, simulated feed">
+    <header class="flex items-center justify-between">
+      <span class="flex items-center gap-2 text-[13px] font-semibold"><i class="dot-live"></i>Trip monitor</span>
+      <span class="chip-sim">Simulated feed</span>
+    </header>
+    <div class="mt-4 flex items-center justify-between font-mono text-[11px] text-white/50"><span>TRIP · CNQ-0918 · SHIFT DROP</span><time id="pClock">21:41</time></div>
+    <div class="mt-4 rounded-2xl border border-white/[.08] bg-white/[.03] p-4">
+      <div class="flex items-center justify-between text-[13px]"><span>Technopark Ph III</span><span class="text-white/40">→</span><span>Kazhakoottam</span></div>
+      <div class="relative mt-3 h-1 rounded-full bg-white/10"><i id="pRoute" class="absolute inset-y-0 left-0 block w-[38%] rounded-full bg-gradient-to-r from-cobalt-soft to-gold"></i><i id="pCab" class="absolute top-1/2 block h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-night bg-gold" style="left:38%"></i></div>
+    </div>
+    <div class="mt-4 grid grid-cols-[1fr_1fr_auto] items-center gap-x-4 gap-y-3">
+      <div><p class="font-mono text-[10px] uppercase tracking-[.14em] text-white/45">ETA</p><p class="mt-1 font-display text-[30px] font-bold leading-none tracking-[-.02em]"><span id="pEta">06</span><small class="ml-1 text-[12px] font-medium text-white/50">min</small></p></div>
+      <div><p class="font-mono text-[10px] uppercase tracking-[.14em] text-white/45">Speed</p><p class="mt-1 font-display text-[30px] font-bold leading-none tracking-[-.02em]"><span id="pSpd">38</span><small class="ml-1 text-[12px] font-medium text-white/50">km/h</small></p></div>
+      <svg class="row-span-2 h-[74px] w-[74px] text-white" viewBox="0 0 100 100" aria-hidden="true">
+        <circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-opacity=".18"/>
+        <g id="pTicks" stroke="currentColor" stroke-opacity=".35"></g>
+        <text x="50" y="18" text-anchor="middle" font-family="Martian Mono, monospace" font-size="9" fill="#f2cf55">N</text>
+        <g id="pNeedle"><path d="M50 22 55 50H45Z" fill="#e2b100"/><path d="M45 50h10L50 78Z" fill="currentColor" fill-opacity=".7"/></g>
+        <circle cx="50" cy="50" r="3.4" fill="#04060c" stroke="currentColor" stroke-opacity=".5"/>
+      </svg>
+      <div><p class="font-mono text-[10px] uppercase tracking-[.14em] text-white/45">Heading</p><p class="mt-1 font-mono text-[15px]" id="pHdg">012° N</p></div>
+      <div><p class="font-mono text-[10px] uppercase tracking-[.14em] text-white/45">Seats</p><p class="mt-1 font-mono text-[15px]">5 / 7</p></div>
+    </div>
+    <ol class="mt-5 grid grid-cols-4 gap-1.5 text-center font-mono text-[9.5px] uppercase tracking-[.08em]">
+      <li class="rounded-lg bg-white/[.08] py-1.5 text-white/70">Assigned</li>
+      <li class="rounded-lg bg-white/[.08] py-1.5 text-white/70">En route</li>
+      <li class="rounded-lg bg-gold py-1.5 font-semibold text-night">Picked up</li>
+      <li class="rounded-lg border border-white/10 py-1.5 text-white/35">Drop</li>
+    </ol>
+  </aside>
+
+  <p id="scrollCue" class="absolute bottom-6 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-3 font-mono text-[10px] uppercase tracking-[.2em] text-white/50" aria-hidden="true">
+    Scroll<span class="relative block h-10 w-px overflow-hidden bg-white/15"><i class="cue-dot absolute left-0 top-0 block h-3 w-px bg-gold"></i></span>
+  </p>
+  </div>
+</section>
+
+<!-- ============ MARQUEE ============ -->
+<section class="relative overflow-hidden border-y border-white/[.06] bg-night py-8 sm:py-10" aria-label="What we run">
+  <div id="marquee" class="flex w-max will-change-transform">
+    <p class="marquee-text pr-[.3em]"><b>Employee transport</b><i></i>Highway linehaul<i></i><b>Port &amp; yard</b><i></i>Sea &amp; air<i></i><b>Live telemetry</b><i></i>Verified billing<i></i></p>
+    <p class="marquee-text pr-[.3em]" aria-hidden="true"><b>Employee transport</b><i></i>Highway linehaul<i></i><b>Port &amp; yard</b><i></i>Sea &amp; air<i></i><b>Live telemetry</b><i></i>Verified billing<i></i></p>
+  </div>
+</section>
+
+<!-- ============ THE RECORD ============ -->
+<section id="record" class="relative overflow-hidden bg-night py-[16svh]" aria-labelledby="recordTitle">
+  <div class="pointer-events-none absolute -left-[20vw] top-[10%] h-[60vw] w-[60vw] rounded-full bg-cobalt/[.12] blur-[120px]" data-drift aria-hidden="true"></div>
+  <div class="wrap relative">
+    <p class="eyebrow" id="recordTitle">The single record</p>
+    <p data-scrub-words class="mt-8 max-w-[24ch] font-display text-[clamp(1.9rem,4.4vw,4.2rem)] font-bold leading-[1.06] tracking-[-.025em]">One record runs from the moment a ride or a load is booked to the moment it is paid. Every trip verified, every invoice traceable, every change kept.</p>
+
+    <div class="mt-20 grid gap-4 sm:grid-cols-2 lg:grid-cols-4" data-stagger>
+      <article class="glass sheen p-7" data-tilt>
+        <p class="flex items-center justify-between font-mono text-[11px] text-white/45"><span>01</span><span>Trip</span></p>
+        <p class="mt-12 font-display text-[clamp(3.8rem,6vw,5.8rem)] font-extrabold leading-none tracking-[-.045em]"><span data-count="12">12</span></p>
+        <h3 class="mt-4 text-[18px] font-semibold">Trip states</h3>
+        <p class="mt-2 text-[14.5px] leading-relaxed text-white/55">From scheduled to billed. Each trip carries one status at a time, and each change is logged.</p>
+      </article>
+      <article class="glass sheen p-7" data-tilt>
+        <p class="flex items-center justify-between font-mono text-[11px] text-white/45"><span>02</span><span>Verification</span></p>
+        <p class="mt-12 font-display text-[clamp(3.8rem,6vw,5.8rem)] font-extrabold leading-none tracking-[-.045em]"><span data-count="11">11</span></p>
+        <h3 class="mt-4 text-[18px] font-semibold">Checks before billing</h3>
+        <p class="mt-2 text-[14.5px] leading-relaxed text-white/55">Booking, vehicle, driver, actual km, route, pickup and drop, cancellations and customer sign-off. Then the trip is locked.</p>
+      </article>
+      <article class="glass sheen p-7" data-tilt>
+        <p class="flex items-center justify-between font-mono text-[11px] text-white/45"><span>03</span><span>Access</span></p>
+        <p class="mt-12 font-display text-[clamp(3.8rem,6vw,5.8rem)] font-extrabold leading-none tracking-[-.045em]"><span data-count="8">8</span></p>
+        <h3 class="mt-4 text-[18px] font-semibold">Access roles</h3>
+        <p class="mt-2 text-[14.5px] leading-relaxed text-white/55">Driver and employee details are shown only to the roles that need them.</p>
+      </article>
+      <article class="glass sheen p-7" data-tilt>
+        <p class="flex items-center justify-between font-mono text-[11px] text-white/45"><span>04</span><span>Billing</span></p>
+        <p class="mt-12 font-display text-[clamp(3.8rem,6vw,5.8rem)] font-extrabold leading-none tracking-[-.045em]"><span data-count="100" data-suffix="%">100%</span></p>
+        <h3 class="mt-4 text-[18px] font-semibold">Invoice lines traced</h3>
+        <p class="mt-2 text-[14.5px] leading-relaxed text-white/55">Every invoice line links back to a verified trip, its vehicle, its driver and its route.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 01 MOBILITY ============ -->
+<section id="mobility" class="relative bg-night" aria-labelledby="mobTitle">
+
+  <div id="mobOpener" class="relative h-[100svh] min-h-[640px] overflow-hidden">
+    <div id="campusArt" class="art" data-scene="campus"><canvas aria-hidden="true"></canvas></div>
+    <div class="pointer-events-none absolute inset-0 bg-gradient-to-b from-night/80 via-night/0 to-night/0" aria-hidden="true"></div>
+    <div class="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-night to-night/0" aria-hidden="true"></div>
+
+    <div class="wrap relative z-10 pt-[calc(var(--header-h)+7svh)]">
+      <p class="eyebrow">01 · Mobility</p>
+      <h2 id="mobTitle" class="h-section mt-5 max-w-[15ch]" data-split="lines">Employee transport, run like a control room<span class="gold-dot"></span></h2>
+      <p class="lede mt-6 max-w-[34rem] !text-white/80" data-reveal>Shift rosters, verified drivers, compliant vehicles and live trips for IT campuses, corporate offices, ports and industrial sites.</p>
+    </div>
+
+    <div id="shuttleWrap" class="absolute bottom-[2.6%] left-0 z-10 w-[min(860px,94vw)] will-change-transform">
+      <ul class="pointer-events-none absolute inset-x-0 -top-16 hidden sm:block" aria-label="On every ride">
+        <li class="glass shuttle-chip absolute left-[4%] top-[-10px] !rounded-full px-4 py-2 text-[13px] font-medium">Shift-aware rosters</li>
+        <li class="glass shuttle-chip absolute left-[30%] top-[-46px] !rounded-full px-4 py-2 text-[13px] font-medium">Verified drivers</li>
+        <li class="glass shuttle-chip absolute left-[56%] top-[-14px] !rounded-full px-4 py-2 text-[13px] font-medium">Live ETA</li>
+        <li class="glass shuttle-chip absolute left-[78%] top-[-50px] !rounded-full px-4 py-2 text-[13px] font-medium">SOS on every trip</li>
+      </ul>
+      <svg id="shuttle" class="block w-full" viewBox="0 0 900 300" role="img" aria-labelledby="shuttleTitle">
+        <title id="shuttleTitle">A pearl-white Compass Nexus iQ employee shuttle drives through an IT campus at sunrise.</title>
+        <defs>
+          <linearGradient id="vBody" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#fff1df"/><stop offset=".28" stop-color="#f4f2ef"/><stop offset=".55" stop-color="#dfe3ea"/><stop offset=".82" stop-color="#b4bccb"/><stop offset="1" stop-color="#7d8698"/>
+          </linearGradient>
+          <linearGradient id="vSheen" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".55" stop-color="#fff" stop-opacity=".55"/><stop offset=".62" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#ffd9a8" stop-opacity=".35"/>
+          </linearGradient>
+          <linearGradient id="vGlass" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#2a3550"/><stop offset=".45" stop-color="#121a2c"/><stop offset="1" stop-color="#070b14"/>
+          </linearGradient>
+          <linearGradient id="vGlassRefl" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#ffd2a1" stop-opacity=".0"/><stop offset=".35" stop-color="#ffd2a1" stop-opacity=".32"/><stop offset=".42" stop-color="#ffd2a1" stop-opacity="0"/><stop offset=".7" stop-color="#9fb4ff" stop-opacity=".18"/><stop offset=".76" stop-color="#9fb4ff" stop-opacity="0"/>
+          </linearGradient>
+          <linearGradient id="vSkirt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a4150"/><stop offset="1" stop-color="#14171e"/></linearGradient>
+          <radialGradient id="vTyre"><stop offset=".62" stop-color="#1c1f25"/><stop offset=".9" stop-color="#0b0d10"/><stop offset="1" stop-color="#050608"/></radialGradient>
+          <radialGradient id="vRim" cx=".42" cy=".38" r=".7"><stop offset="0" stop-color="#f3f5f8"/><stop offset=".6" stop-color="#a3abb8"/><stop offset="1" stop-color="#555d6b"/></radialGradient>
+          <radialGradient id="vLamp"><stop offset="0" stop-color="#fffdf2"/><stop offset=".25" stop-color="#fff2c8" stop-opacity=".85"/><stop offset="1" stop-color="#ffd27a" stop-opacity="0"/></radialGradient>
+          <radialGradient id="vTail"><stop offset="0" stop-color="#ff5a4a"/><stop offset="1" stop-color="#ff2a1a" stop-opacity="0"/></radialGradient>
+          <linearGradient id="vBeam" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff4d4" stop-opacity=".55"/><stop offset="1" stop-color="#fff4d4" stop-opacity="0"/></linearGradient>
+          <radialGradient id="vShadow"><stop offset="0" stop-color="#000" stop-opacity=".7"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
+          <g id="vWheel">
+            <circle r="47" fill="url(#vTyre)"/>
+            <circle r="46" fill="none" stroke="#2b2f37" stroke-width="1.5"/>
+            <circle r="31" fill="url(#vRim)"/>
+            <g class="spokes" fill="#454c59">
+              <path d="M-4 -29 4 -29 3 -8 -3 -8Z"/><path d="M-4 -29 4 -29 3 -8 -3 -8Z" transform="rotate(72)"/><path d="M-4 -29 4 -29 3 -8 -3 -8Z" transform="rotate(144)"/><path d="M-4 -29 4 -29 3 -8 -3 -8Z" transform="rotate(216)"/><path d="M-4 -29 4 -29 3 -8 -3 -8Z" transform="rotate(288)"/>
+            </g>
+            <circle r="29" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="1"/>
+            <circle r="9" fill="#2a2f38"/><circle r="4" fill="#e2b100"/>
+          </g>
+        </defs>
+        <ellipse cx="450" cy="292" rx="430" ry="16" fill="url(#vShadow)"/>
+        <path id="vBeamPath" d="M868 196 1300 150 1300 300 868 232Z" fill="url(#vBeam)" opacity=".0"/>
+        <!-- body -->
+        <path d="M44 252V88c0-24 14-40 40-40h548c22 0 36 6 50 20l62 64c10 10 22 16 40 20l30 6c18 4 30 16 34 34l6 28v32c0 6-4 10-10 10H54c-6 0-10-4-10-10Z" fill="url(#vBody)"/>
+        <path d="M44 252V88c0-24 14-40 40-40h548c22 0 36 6 50 20l62 64c10 10 22 16 40 20l30 6c18 4 30 16 34 34l6 28v32c0 6-4 10-10 10H54c-6 0-10-4-10-10Z" fill="url(#vSheen)" opacity=".7"/>
+        <path d="M84 50h548c20 0 32 5 44 17" fill="none" stroke="#fff" stroke-opacity=".9" stroke-width="2"/>
+        <!-- glass band -->
+        <path d="M70 76c0-10 6-16 16-16h538c12 0 20 3 28 11l40 44c4 5 1 11-5 11H70Z" fill="url(#vGlass)"/>
+        <path d="M70 76c0-10 6-16 16-16h538c12 0 20 3 28 11l40 44c4 5 1 11-5 11H70Z" fill="url(#vGlassRefl)"/>
+        <g fill="#e6e9ef"><rect x="196" y="60" width="9" height="66"/><rect x="340" y="60" width="9" height="66"/><rect x="484" y="60" width="9" height="66"/><rect x="612" y="60" width="10" height="66"/></g>
+        <path d="M640 64 700 126" stroke="#e6e9ef" stroke-width="9"/>
+        <!-- windscreen -->
+        <path d="M676 72 742 138c6 6 14 9 24 10l-4 4c-12 0-22-4-30-12l-62-62Z" fill="#141b2c"/>
+        <!-- waistline accents -->
+        <path d="M58 156H770" stroke="#e2b100" stroke-width="3"/>
+        <path d="M58 163H560" stroke="#1d4eff" stroke-width="2" stroke-opacity=".8"/>
+        <path d="M44 214H868" stroke="#8e97a8" stroke-opacity=".5"/>
+        <!-- doors -->
+        <path d="M498 132V242M606 132V242" stroke="#8e97a8" stroke-opacity=".65" stroke-width="1.5"/>
+        <rect x="586" y="176" width="14" height="4" rx="2" fill="#6c7586"/>
+        <path d="M680 132 714 176V242" fill="none" stroke="#8e97a8" stroke-opacity=".65" stroke-width="1.5"/>
+        <!-- livery -->
+        <text x="84" y="148" font-family="Archivo, Arial, sans-serif" font-weight="800" font-size="19" letter-spacing="1" fill="#0a1430" style="font-stretch:112%">COMPASS NEXUS iQ</text>
+        <text x="262" y="196" font-family="Martian Mono, monospace" font-size="9" letter-spacing="2" fill="#0a1430" fill-opacity=".55">EMPLOYEE TRANSPORT</text>
+        <g transform="translate(560 192)"><circle r="15" fill="none" stroke="#0a1430" stroke-opacity=".5"/><path d="M0-11 3 0h-6z" fill="#e2b100"/><path d="M-3 0h6L0 11z" fill="#0a1430"/></g>
+        <!-- mirror -->
+        <path d="M746 122h10c4 0 6 3 6 6v16c0 3-2 5-5 5h-8Z" fill="#1d2230"/>
+        <!-- lamps -->
+        <path d="M842 178c12 0 22 6 26 14l-2 6c-10-2-22-4-30-8Z" fill="#fffaf0"/>
+        <circle cx="856" cy="190" r="34" fill="url(#vLamp)" class="v-lamp"/>
+        <path d="M800 196 862 204" stroke="#fff" stroke-opacity=".85" stroke-width="2.5" stroke-linecap="round"/>
+        <rect x="44" y="86" width="6" height="60" rx="3" fill="#d4372b"/>
+        <circle cx="47" cy="116" r="22" fill="url(#vTail)" opacity=".7"/>
+        <!-- skirts & arches -->
+        <path d="M44 236h826v16c0 6-4 10-10 10H54c-6 0-10-4-10-10Z" fill="url(#vSkirt)"/>
+        <circle cx="190" cy="244" r="56" fill="#0b0d12"/>
+        <circle cx="712" cy="244" r="56" fill="#0b0d12"/>
+        <g class="v-wheel" transform="translate(190 244)"><use href="#vWheel"/></g>
+        <g class="v-wheel" transform="translate(712 244)"><use href="#vWheel"/></g>
+      </svg>
+    </div>
+  </div>
+
+  <!-- the ride, step by step -->
+  <div id="journey" class="relative overflow-hidden">
+    <div class="pointer-events-none absolute right-[-10vw] top-[20%] h-[50vw] w-[50vw] rounded-full bg-gold/[.07] blur-[140px]" aria-hidden="true"></div>
+    <div id="journeyPin" class="wrap relative grid min-h-[100svh] content-center items-center gap-x-10 gap-y-6 pb-10 pt-[calc(var(--header-h)+1.5rem)] lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:pb-8">
+      <div class="lg:self-center">
+        <p class="eyebrow">A shift drop, end to end</p>
+        <h3 class="mt-4 font-display text-[clamp(1.9rem,3.4vw,3.3rem)] font-extrabold leading-[1] tracking-[-.03em]" data-split="lines">Every ride, visible from booking to rating</h3>
+        <ol id="rideSteps" class="mt-8 hidden lg:block">
+          <li class="step-item is-on is-current"><span class="font-mono text-[11px]">01</span><h4 class="mt-1 text-[17px] font-semibold">Booked</h4><p class="mt-1 max-w-sm text-[14px] leading-relaxed">The employee books against their shift. Pickup and drop come from their profile.</p></li>
+          <li class="step-item"><span class="font-mono text-[11px]">02</span><h4 class="mt-1 text-[17px] font-semibold">Assigned</h4><p class="mt-1 max-w-sm text-[14px] leading-relaxed">A compliant vehicle and a verified driver are matched to the trip.</p></li>
+          <li class="step-item"><span class="font-mono text-[11px]">03</span><h4 class="mt-1 text-[17px] font-semibold">En route</h4><p class="mt-1 max-w-sm text-[14px] leading-relaxed">The cab is followed live with an ETA and a notification when it is close.</p></li>
+          <li class="step-item"><span class="font-mono text-[11px]">04</span><h4 class="mt-1 text-[17px] font-semibold">Picked up</h4><p class="mt-1 max-w-sm text-[14px] leading-relaxed">The driver verifies the employee before the trip starts. No-shows are recorded, not guessed.</p></li>
+          <li class="step-item"><span class="font-mono text-[11px]">05</span><h4 class="mt-1 text-[17px] font-semibold">Dropped</h4><p class="mt-1 max-w-sm text-[14px] leading-relaxed">Actual times and kilometres are captured against the trip ID for verification.</p></li>
+          <li class="step-item"><span class="font-mono text-[11px]">06</span><h4 class="mt-1 text-[17px] font-semibold">Rated</h4><p class="mt-1 max-w-sm text-[14px] leading-relaxed">Feedback goes into the account’s service-quality report.</p></li>
+        </ol>
+      </div>
+
+      <!-- phone: every size inside is in em, so the whole screen scales with the frame -->
+      <div class="relative mx-auto">
+        <div class="phone">
+          <span class="absolute left-1/2 top-[18px] z-20 h-[22px] w-[30%] -translate-x-1/2 rounded-full bg-black" aria-hidden="true"></span>
+          <div class="phone-screen" id="phoneScreen">
+            <div class="absolute inset-x-0 top-0 z-10 flex justify-between px-[1.6em] pt-[1.05em] text-[.68em] font-semibold text-white/85" aria-hidden="true"><span>21:34</span><span class="tracking-[.1em]">●●● 5G</span></div>
+
+            <div class="screen" data-screen="0">
+              <p class="flex items-center gap-[.5em] text-[.72em] font-semibold text-white/60"><span class="inline-block h-[.9em] w-[.9em] rounded-full border border-gold"></span>Nexus Ride</p>
+              <p class="mt-[1.6em] font-display text-[1.55em] font-extrabold leading-[1.05] tracking-[-.02em]">Your ride is booked</p>
+              <div class="mt-[1.2em] rounded-[1.1em] border border-white/10 bg-white/[.05] p-[1em] text-[.78em]">
+                <p class="flex justify-between text-white/50"><span>Shift</span><span>Today</span></p>
+                <p class="mt-[.3em] font-display text-[1.6em] font-bold">Drop · 21:30</p>
+                <div class="mt-[.9em] grid gap-[.7em]">
+                  <p class="flex items-center gap-[.7em]"><i class="h-[.7em] w-[.7em] rounded-full bg-cobalt-soft"></i>Technopark Phase III</p>
+                  <p class="flex items-center gap-[.7em]"><i class="h-[.7em] w-[.7em] rounded-[.2em] bg-gold"></i>Kazhakoottam</p>
+                </div>
+              </div>
+              <div class="mt-auto rounded-full bg-gold py-[.85em] text-center text-[.8em] font-semibold text-night">Track ride</div>
+            </div>
+
+            <div class="screen" data-screen="1">
+              <p class="text-[.72em] font-semibold text-white/60">Nexus Ride</p>
+              <p class="mt-[1.6em] font-display text-[1.55em] font-extrabold leading-[1.05] tracking-[-.02em]">Driver and vehicle assigned</p>
+              <div class="mt-[1.2em] flex items-center gap-[.9em] rounded-[1.1em] border border-white/10 bg-white/[.05] p-[1em]">
+                <span class="grid h-[2.8em] w-[2.8em] place-items-center rounded-full bg-gradient-to-br from-cobalt to-navy-3 text-[.9em]">◎</span>
+                <div class="text-[.78em]"><p class="font-semibold">Your driver</p><p class="mt-[.2em] text-emerald-300">✓ Background verified</p></div>
+              </div>
+              <div class="mt-[.8em] rounded-[1.1em] border border-white/10 bg-white/[.05] p-[1em] text-[.78em]">
+                <p class="text-white/50">Vehicle</p>
+                <p class="mt-[.25em] font-mono text-[1.15em] tracking-[.06em]">KL 01 ●● ●●●●</p>
+                <p class="mt-[.5em] text-white/60">7-seater · AC · GPS on</p>
+                <p class="mt-[.8em] flex justify-between font-mono text-[.85em] text-white/45"><span>Trip ID</span><span>CNQ-0918</span></p>
+              </div>
+            </div>
+
+            <div class="screen" data-screen="2">
+              <p class="text-[.72em] font-semibold text-white/60">Nexus Ride</p>
+              <div class="relative mt-[1em] h-[44%] overflow-hidden rounded-[1.1em] bg-[#0b1531]">
+                <svg class="absolute inset-0 h-full w-full" viewBox="0 0 200 160" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+                  <path d="M-10 120C40 110 60 60 110 70s80-40 110-50" stroke="#1d2a52" stroke-width="10" fill="none"/>
+                  <path d="M20 -10C30 50 70 80 60 170M140 -10c-10 60 30 100 20 180" stroke="#16223f" stroke-width="6" fill="none"/>
+                  <path d="M-10 120C40 110 60 60 110 70s80-40 110-50" stroke="#5b82ff" stroke-width="2.5" fill="none" stroke-dasharray="4 5"/>
+                  <circle cx="150" cy="44" r="5" fill="#e2b100"/><circle cx="150" cy="44" r="12" fill="#e2b100" fill-opacity=".2"/>
+                  <circle cx="70" cy="86" r="5" fill="#fff"/>
+                </svg>
+              </div>
+              <p class="mt-[1em] text-[.72em] uppercase tracking-[.14em] text-white/45">Arriving at Gate 2</p>
+              <p class="font-display text-[2.6em] font-extrabold leading-none tracking-[-.03em]"><span data-eta>06</span><small class="ml-[.2em] text-[.35em] font-medium text-white/50">min</small></p>
+              <div class="mt-auto grid grid-cols-2 gap-[.6em] text-[.76em] font-semibold">
+                <span class="rounded-full bg-[#e5484d] py-[.8em] text-center">SOS</span>
+                <span class="rounded-full border border-white/15 py-[.8em] text-center">Share trip</span>
+              </div>
+            </div>
+
+            <div class="screen" data-screen="3">
+              <p class="text-[.72em] font-semibold text-white/60">Nexus Ride</p>
+              <p class="mt-[1.6em] font-display text-[1.55em] font-extrabold leading-[1.05] tracking-[-.02em]">Show this code to your driver</p>
+              <div class="mt-[1.4em] grid grid-cols-4 gap-[.5em]">
+                <span class="rounded-[.7em] border border-white/15 bg-white/[.06] py-[.55em] text-center font-display text-[1.6em] font-bold">4</span>
+                <span class="rounded-[.7em] border border-white/15 bg-white/[.06] py-[.55em] text-center font-display text-[1.6em] font-bold">8</span>
+                <span class="rounded-[.7em] border border-white/15 bg-white/[.06] py-[.55em] text-center font-display text-[1.6em] font-bold">1</span>
+                <span class="rounded-[.7em] border border-white/15 bg-white/[.06] py-[.55em] text-center font-display text-[1.6em] font-bold">7</span>
+              </div>
+              <div class="mt-[1.2em] rounded-[1.1em] border border-emerald-400/30 bg-emerald-400/10 p-[1em] text-[.78em]">
+                <p class="font-semibold text-emerald-300">✓ Verified at pickup</p>
+                <p class="mt-[.3em] text-white/60">Trip started 21:41</p>
+              </div>
+              <p class="mt-auto text-center text-[.7em] text-white/40">Emergency contact is one tap away</p>
+            </div>
+
+            <div class="screen" data-screen="4">
+              <p class="text-[.72em] font-semibold text-white/60">Nexus Ride</p>
+              <p class="mt-[1.6em] font-display text-[1.55em] font-extrabold leading-[1.05] tracking-[-.02em]">You’ve arrived</p>
+              <dl class="mt-[1.2em] grid grid-cols-2 gap-[.6em] text-[.76em]">
+                <div class="rounded-[1em] bg-white/[.05] p-[.9em]"><dt class="text-white/45">Pickup</dt><dd class="mt-[.2em] font-display text-[1.4em] font-bold">21:41</dd></div>
+                <div class="rounded-[1em] bg-white/[.05] p-[.9em]"><dt class="text-white/45">Drop</dt><dd class="mt-[.2em] font-display text-[1.4em] font-bold">22:03</dd></div>
+                <div class="rounded-[1em] bg-white/[.05] p-[.9em]"><dt class="text-white/45">Distance</dt><dd class="mt-[.2em] font-display text-[1.4em] font-bold">11.6 km</dd></div>
+                <div class="rounded-[1em] bg-white/[.05] p-[.9em]"><dt class="text-white/45">Trip ID</dt><dd class="mt-[.35em] font-mono text-[1em]">CNQ-0918</dd></div>
+              </dl>
+              <p class="mt-auto rounded-full border border-white/15 py-[.8em] text-center text-[.78em]">Sent for verification</p>
+            </div>
+
+            <div class="screen" data-screen="5">
+              <p class="text-[.72em] font-semibold text-white/60">Nexus Ride</p>
+              <p class="mt-[1.6em] font-display text-[1.55em] font-extrabold leading-[1.05] tracking-[-.02em]">How was your ride?</p>
+              <p class="mt-[1em] flex gap-[.25em] text-[1.9em] text-gold" aria-label="Five stars">★★★★★</p>
+              <div class="mt-[1em] flex flex-wrap gap-[.45em] text-[.7em]">
+                <span class="rounded-full bg-white/10 px-[.9em] py-[.45em]">On time</span>
+                <span class="rounded-full bg-white/10 px-[.9em] py-[.45em]">Clean vehicle</span>
+                <span class="rounded-full bg-white/10 px-[.9em] py-[.45em]">Safe driving</span>
+              </div>
+              <p class="mt-auto text-center text-[.72em] text-white/50">Sent to your transport desk</p>
+            </div>
+          </div>
+        </div>
+        <div id="stepCaption" class="mx-auto mt-6 max-w-[22rem] text-center lg:hidden" aria-live="polite">
+          <p class="font-mono text-[11px] text-gold-soft"><span id="capNo">01</span> / 06</p>
+          <p class="mt-1 text-[17px] font-semibold" id="capTitle">Booked</p>
+          <p class="mt-1 text-[14px] leading-relaxed text-white/60" id="capText">The employee books against their shift. Pickup and drop come from their profile.</p>
+        </div>
+      </div>
+
+      <div class="glass hidden p-5 lg:block">
+        <div class="flex items-center justify-between">
+          <p class="text-[13px] font-semibold">Control room view</p>
+          <span class="chip-sim">Illustration</span>
+        </div>
+        <svg id="routeMap" class="mt-4 w-full rounded-2xl bg-[#060c1d]" viewBox="0 0 360 300" aria-label="Route from Technopark Phase III to Kazhakoottam with the pickup at Gate 2" role="img">
+          <defs><pattern id="mGrid" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M24 0H0v24" fill="none" stroke="#5b82ff" stroke-opacity=".07"/></pattern></defs>
+          <rect width="360" height="300" fill="url(#mGrid)"/>
+          <path d="M-20 250C60 230 90 190 140 170s120-10 160-60 80-70 90-90" fill="none" stroke="#1a2547" stroke-width="16"/>
+          <path d="M60 -10C70 80 40 160 80 310M250 -10c-20 90 20 160-10 320M-10 90c100 20 200-10 380 30" fill="none" stroke="#131d39" stroke-width="7"/>
+          <path d="M-10 200c80-10 130 30 200 10" fill="none" stroke="#131d39" stroke-width="4"/>
+          <path id="routeBase" d="M40 244C90 226 112 196 148 176s110-12 150-54 44-58 48-74" fill="none" stroke="#5b82ff" stroke-opacity=".25" stroke-width="4" stroke-linecap="round"/>
+          <path id="routeLive" d="M40 244C90 226 112 196 148 176s110-12 150-54 44-58 48-74" fill="none" stroke="url(#routeGrad)" stroke-width="4" stroke-linecap="round"/>
+          <linearGradient id="routeGrad" x1="0" x2="1"><stop offset="0" stop-color="#5b82ff"/><stop offset="1" stop-color="#e2b100"/></linearGradient>
+          <g font-family="Martian Mono, monospace" font-size="8.5" fill="#a9bcff">
+            <circle cx="40" cy="244" r="6" fill="#5b82ff"/><text x="52" y="262">TECHNOPARK PH III</text>
+            <circle cx="148" cy="176" r="5" fill="#fff" class="map-stop"/><text x="118" y="160">GATE 2 · PICKUP</text>
+            <circle cx="346" cy="48" r="7" fill="#e2b100"/><text x="250" y="30" fill="#f2cf55">KAZHAKOOTTAM</text>
+            <circle cx="148" cy="176" r="14" fill="none" stroke="#fff" stroke-opacity=".5" class="map-ping"/>
+          </g>
+          <g id="routeCab"><circle r="11" fill="#e2b100" fill-opacity=".22"/><circle r="5.5" fill="#e2b100" stroke="#04060c" stroke-width="2"/></g>
+        </svg>
+        <dl class="mt-4 grid grid-cols-3 gap-2 text-center">
+          <div class="rounded-xl bg-white/[.04] py-3"><dt class="font-mono text-[9.5px] uppercase tracking-[.12em] text-white/45">Step</dt><dd class="mt-1 font-display text-[22px] font-bold"><span id="mStep">01</span></dd></div>
+          <div class="rounded-xl bg-white/[.04] py-3"><dt class="font-mono text-[9.5px] uppercase tracking-[.12em] text-white/45">Km run</dt><dd class="mt-1 font-display text-[22px] font-bold"><span id="mKm">0.0</span></dd></div>
+          <div class="rounded-xl bg-white/[.04] py-3"><dt class="font-mono text-[9.5px] uppercase tracking-[.12em] text-white/45">Status</dt><dd class="mt-2 font-mono text-[11px] text-gold-soft" id="mStatus">Scheduled</dd></div>
+        </dl>
+      </div>
+    </div>
+  </div>
+
+  <!-- mobility bento -->
+  <div class="wrap pb-[14svh] pt-[6svh]">
+    <div class="grid gap-8 lg:grid-cols-[1fr_1fr] lg:items-end">
+      <h3 class="font-display text-[clamp(1.9rem,3.6vw,3.4rem)] font-extrabold leading-[1] tracking-[-.03em]" data-split="lines">Vehicles, drivers and trips your transport desk can check</h3>
+      <p class="lede max-w-xl" data-reveal>Every vehicle has a quality profile, every driver a verified record, and every trip an audit trail. Your team sees what its role allows.</p>
+    </div>
+
+    <div class="mt-14 grid gap-4 lg:grid-cols-12" data-stagger>
+      <article class="glass sheen p-6 sm:p-8 lg:col-span-7 lg:row-span-2" data-tilt>
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <p class="eyebrow">Vehicle quality profile</p><span class="chip-sim">Sample profile</span>
+        </div>
+        <div class="mt-6 grid gap-8 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]">
+          <div>
+            <svg class="w-full" viewBox="0 0 300 150" aria-hidden="true">
+              <ellipse cx="150" cy="136" rx="130" ry="8" fill="#000" fill-opacity=".45"/>
+              <path d="M18 120V44c0-10 6-16 16-16h180c8 0 14 2 19 7l22 22c4 4 9 6 15 7l10 2c7 2 11 7 12 14l2 10v34c0 3-2 5-5 5H22c-2 0-4-2-4-5Z" fill="#e7eaf0"/>
+              <path d="M28 46c0-5 3-8 8-8h176c5 0 8 1 11 4l15 16c2 2 0 5-2 5H28Z" fill="#141b2c"/>
+              <path d="M24 82H272" stroke="#e2b100" stroke-width="2"/>
+              <circle cx="74" cy="124" r="19" fill="#0b0d12"/><circle cx="74" cy="124" r="11" fill="#9aa3b5"/>
+              <circle cx="238" cy="124" r="19" fill="#0b0d12"/><circle cx="238" cy="124" r="11" fill="#9aa3b5"/>
+            </svg>
+            <dl class="mt-4 grid grid-cols-2 gap-2 text-[12.5px]">
+              <div class="rounded-xl bg-white/[.04] p-3"><dt class="text-white/45">Registration</dt><dd class="mt-1 font-mono">KL 01 ●● ●●●●</dd></div>
+              <div class="rounded-xl bg-white/[.04] p-3"><dt class="text-white/45">Type</dt><dd class="mt-1">7-seater · AC</dd></div>
+              <div class="rounded-xl bg-white/[.04] p-3"><dt class="text-white/45">Fuel</dt><dd class="mt-1">Diesel</dd></div>
+              <div class="rounded-xl bg-white/[.04] p-3"><dt class="text-white/45">Availability</dt><dd class="mt-1 text-emerald-300">On shift</dd></div>
+            </dl>
+          </div>
+          <ul class="text-white/80" data-checklist>
+            <li class="tick-row"><span>Insurance</span><span class="check">Valid</span></li>
+            <li class="tick-row"><span>Fitness certificate</span><span class="check">Valid</span></li>
+            <li class="tick-row"><span>Permit</span><span class="check">Valid</span></li>
+            <li class="tick-row"><span>PUC</span><span class="check">Valid</span></li>
+            <li class="tick-row"><span>First aid kit</span><span class="check">Checked</span></li>
+            <li class="tick-row"><span>Fire extinguisher</span><span class="check">Checked</span></li>
+            <li class="tick-row"><span>GPS</span><span class="check">Online</span></li>
+            <li class="tick-row"><span>Cleanliness, interior and AC</span><span class="check">Inspected</span></li>
+          </ul>
+        </div>
+        <p class="mt-6 border-t border-white/[.07] pt-5 text-[13.5px] leading-relaxed text-white/55">Your administrator sets the inspection criteria and thresholds. A quality score appears only after an inspection is recorded against them.</p>
+      </article>
+
+      <article class="glass sheen p-6 sm:p-8 lg:col-span-5" data-tilt>
+        <div class="flex items-center justify-between gap-3">
+          <p class="eyebrow">Driver record</p>
+          <span class="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[.12em] text-white/50"><svg class="h-3 w-3" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 5V3.6a3 3 0 0 1 6 0V5" fill="none" stroke="currentColor" stroke-width="1.3"/><rect x="2" y="5" width="8" height="6" rx="1.5" fill="currentColor"/></svg>Access-controlled</span>
+        </div>
+        <div class="seg mt-5 max-w-[20rem]" role="group" aria-label="Viewing as">
+          <button type="button" data-role="fleet" aria-pressed="true">Fleet manager</button>
+          <button type="button" data-role="customer" aria-pressed="false">Customer admin</button>
+        </div>
+        <dl class="mt-5 text-[13.5px]" id="driverRecord">
+          <div class="tick-row"><dt class="text-white/50">Licence</dt><dd class="font-mono" data-mask="KL01 2015 0004521" data-masked="KL●● ●●●● ●●●4521">KL01 2015 0004521</dd></div>
+          <div class="tick-row"><dt class="text-white/50">Mobile</dt><dd class="font-mono" data-mask="+91 98470 12345" data-masked="+91 ●●●●● ●●345">+91 98470 12345</dd></div>
+          <div class="tick-row"><dt class="text-white/50">Background check</dt><dd class="text-emerald-300">Verified</dd></div>
+          <div class="tick-row"><dt class="text-white/50">Training</dt><dd class="text-emerald-300">Completed</dd></div>
+          <div class="tick-row !border-0"><dt class="text-white/50">Licence expiry alert</dt><dd>60 days ahead</dd></div>
+        </dl>
+        <p class="mt-3 text-[12px] text-white/40">Sample record. Personal details are masked for roles that do not need them.</p>
+      </article>
+
+      <article class="glass sheen relative overflow-hidden p-6 sm:p-8 lg:col-span-5" data-tilt>
+        <p class="eyebrow">Safety on every trip</p>
+        <div class="mt-6 flex items-center gap-6">
+          <span class="relative grid h-20 w-20 shrink-0 place-items-center rounded-full bg-[#e5484d] font-display text-[18px] font-extrabold" aria-hidden="true">
+            <i class="sos-ring absolute inset-0 rounded-full border-2 border-[#e5484d]"></i><i class="sos-ring absolute inset-0 rounded-full border-2 border-[#e5484d]"></i>SOS
+          </span>
+          <p class="text-[14.5px] leading-relaxed text-white/70">SOS, an emergency contact and live trip status are in the employee app on every ride. Incidents are reported from the driver app and logged against the trip.</p>
+        </div>
+      </article>
+
+      <article class="glass sheen p-6 sm:p-8 lg:col-span-4" data-tilt>
+        <p class="eyebrow">Driver app</p>
+        <ul class="mt-5 grid gap-2.5 text-[14px] text-white/75">
+          <li class="flex gap-3"><i class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-gold"></i>Today’s schedule and navigation</li>
+          <li class="flex gap-3"><i class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-gold"></i>Employee verification at pickup</li>
+          <li class="flex gap-3"><i class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-gold"></i>Trip start, end and GPS kilometres</li>
+          <li class="flex gap-3"><i class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-gold"></i>No-show and incident reporting</li>
+          <li class="flex gap-3"><i class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-gold"></i>Vehicle inspection and document expiry alerts</li>
+        </ul>
+      </article>
+
+      <article class="glass sheen p-6 sm:p-8 lg:col-span-4" data-tilt>
+        <div class="flex items-center justify-between gap-3"><p class="eyebrow">Service quality</p><span class="chip-sim">Illustration</span></div>
+        <svg class="mt-5 w-full" viewBox="0 0 280 110" aria-hidden="true">
+          <path d="M0 100H280M0 70H280M0 40H280" stroke="#fff" stroke-opacity=".06"/>
+          <path class="spark-fill" d="M0 78 28 70 56 74 84 58 112 62 140 46 168 50 196 36 224 40 252 26 280 30V110H0Z" fill="url(#sparkGrad)" opacity=".5"/>
+          <path class="spark" d="M0 78 28 70 56 74 84 58 112 62 140 46 168 50 196 36 224 40 252 26 280 30" fill="none" stroke="#f2cf55" stroke-width="2.4" stroke-linejoin="round"/>
+          <circle class="spark-dot" cx="280" cy="30" r="4" fill="#f2cf55"/>
+          <linearGradient id="sparkGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e2b100" stop-opacity=".45"/><stop offset="1" stop-color="#e2b100" stop-opacity="0"/></linearGradient>
+        </svg>
+        <p class="mt-4 text-[14px] leading-relaxed text-white/65">On-time performance, completion, cleanliness, breakdowns and feedback, reported daily, weekly and monthly.</p>
+      </article>
+
+      <article class="glass sheen p-6 sm:p-8 lg:col-span-4" data-tilt>
+        <p class="eyebrow">For your transport desk</p>
+        <ul class="mt-5 grid grid-cols-2 gap-2 text-[13px]">
+          <li class="rounded-xl bg-white/[.05] px-3 py-2.5">Today’s trips</li>
+          <li class="rounded-xl bg-white/[.05] px-3 py-2.5">Verify trips</li>
+          <li class="rounded-xl bg-white/[.05] px-3 py-2.5">Raise a dispute</li>
+          <li class="rounded-xl bg-white/[.05] px-3 py-2.5">Trip sheets</li>
+          <li class="rounded-xl bg-white/[.05] px-3 py-2.5">Invoices</li>
+          <li class="rounded-xl bg-white/[.05] px-3 py-2.5">Service requests</li>
+        </ul>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 02 LOGISTICS ============ -->
+<section id="logistics" class="relative bg-night pt-[14svh]" aria-labelledby="logTitle">
+  <div class="wrap grid gap-8 lg:grid-cols-[1.15fr_.85fr] lg:items-end">
+    <div>
+      <p class="eyebrow">02 · Logistics</p>
+      <h2 id="logTitle" class="h-section mt-5" data-split="lines">Containers, project cargo and freight across road, port, sea and air<span class="gold-dot"></span></h2>
+    </div>
+    <div>
+      <p class="lede" data-reveal>Six services, one shipment record. Each leg is planned, tracked and checked against its booking before it reaches your invoice.</p>
+      <a class="btn-glass mt-7" href="../index.html" data-reveal>Watch the yard-to-port film <span aria-hidden="true">→</span></a>
+    </div>
+  </div>
+
+  <div id="hscroll" class="relative mt-14 overflow-hidden">
+    <div class="flex h-[100svh] items-center">
+      <div data-hscroll-track class="flex w-max items-stretch gap-5 pl-[var(--gutter)] pr-[var(--gutter)] will-change-transform sm:gap-6">
+
+        <article class="hpanel relative h-[74svh] min-h-[460px] w-[86vw] shrink-0 overflow-hidden rounded-[32px] sm:w-[72vw] lg:w-[min(64vw,1080px)]">
+          <div class="art scale-[1.12]" data-scene="linehaul"><canvas aria-hidden="true"></canvas></div>
+          <div class="absolute inset-0 bg-gradient-to-t from-night/85 via-night/5 to-night/0"></div>
+          <div class="glass absolute right-4 top-4 !rounded-2xl px-5 py-4 text-right sm:right-6 sm:top-6">
+            <p class="font-display text-[clamp(2rem,3.6vw,3.2rem)] font-extrabold leading-none tracking-[-.03em]"><span data-count="40" data-suffix=" ft">40 ft</span></p>
+            <p class="mt-1 font-mono text-[10px] uppercase tracking-[.14em] text-white/55">Container loads</p>
+          </div>
+          <div class="hcap glass absolute bottom-4 left-4 right-4 max-w-[30rem] p-6 sm:bottom-7 sm:left-7 sm:p-8">
+            <div class="flex items-center justify-between"><span class="font-mono text-[11px] text-gold-soft">01 / 06</span><span class="chip">Road</span></div>
+            <h3 class="mt-5 font-display text-[clamp(1.7rem,2.8vw,2.7rem)] font-extrabold leading-none tracking-[-.025em]">Highway linehaul</h3>
+            <p class="mt-3 text-[15px] leading-relaxed text-white/70">Full-truckload container and cargo runs on national highway corridors, with rest stops and driver hours planned into every route.</p>
+          </div>
+        </article>
+
+        <article class="hpanel relative h-[74svh] min-h-[460px] w-[86vw] shrink-0 overflow-hidden rounded-[32px] sm:w-[72vw] lg:w-[min(64vw,1080px)]">
+          <div class="art scale-[1.12]" data-scene="project"><canvas aria-hidden="true"></canvas></div>
+          <div class="absolute inset-0 bg-gradient-to-t from-night/85 via-night/5 to-night/0"></div>
+          <ol class="glass absolute right-4 top-4 hidden !rounded-2xl px-5 py-4 font-mono text-[10.5px] uppercase tracking-[.12em] text-white/70 sm:right-6 sm:top-6 sm:block">
+            <li>Route survey</li><li class="mt-1.5">Permits</li><li class="mt-1.5 text-gold-soft">Engineered load plan</li>
+          </ol>
+          <div class="hcap glass absolute bottom-4 left-4 right-4 max-w-[30rem] p-6 sm:bottom-7 sm:left-7 sm:p-8">
+            <div class="flex items-center justify-between"><span class="font-mono text-[11px] text-gold-soft">02 / 06</span><span class="chip">Heavy haul</span></div>
+            <h3 class="mt-5 font-display text-[clamp(1.7rem,2.8vw,2.7rem)] font-extrabold leading-none tracking-[-.025em]">Project cargo</h3>
+            <p class="mt-3 text-[15px] leading-relaxed text-white/70">Oversized and complex loads handled end to end, from route surveys and permits to engineered load plans.</p>
+          </div>
+        </article>
+
+        <article class="hpanel relative h-[74svh] min-h-[460px] w-[86vw] shrink-0 overflow-hidden rounded-[32px] sm:w-[72vw] lg:w-[min(64vw,1080px)]">
+          <div class="art scale-[1.12]" data-scene="interstate"><canvas aria-hidden="true"></canvas></div>
+          <div class="absolute inset-0 bg-gradient-to-t from-night/85 via-night/5 to-night/0"></div>
+          <div class="absolute right-4 top-4 hidden gap-2 sm:right-6 sm:top-6 sm:flex"><span class="chip">Local</span><span class="chip">Metro</span><span class="chip">Interstate</span></div>
+          <div class="hcap glass absolute bottom-4 left-4 right-4 max-w-[30rem] p-6 sm:bottom-7 sm:left-7 sm:p-8">
+            <div class="flex items-center justify-between"><span class="font-mono text-[11px] text-gold-soft">03 / 06</span><span class="chip">Road</span></div>
+            <h3 class="mt-5 font-display text-[clamp(1.7rem,2.8vw,2.7rem)] font-extrabold leading-none tracking-[-.025em]">Domestic &amp; interstate</h3>
+            <p class="mt-3 text-[15px] leading-relaxed text-white/70">Local, metro and interstate transport run to consistent service levels, with delivery visibility at every handover.</p>
+          </div>
+        </article>
+
+        <article class="hpanel relative h-[74svh] min-h-[460px] w-[86vw] shrink-0 overflow-hidden rounded-[32px] sm:w-[72vw] lg:w-[min(64vw,1080px)]">
+          <div class="art scale-[1.12]" data-scene="port"><canvas aria-hidden="true"></canvas></div>
+          <div class="absolute inset-0 bg-gradient-to-t from-night/85 via-night/5 to-night/0"></div>
+          <div class="glass absolute right-4 top-4 hidden !rounded-2xl px-5 py-4 text-right sm:right-6 sm:top-6 sm:block">
+            <p class="font-mono text-[10px] uppercase tracking-[.14em] text-white/55">Timed to</p>
+            <p class="mt-1 font-display text-[22px] font-bold leading-tight">Terminal schedules</p>
+          </div>
+          <div class="hcap glass absolute bottom-4 left-4 right-4 max-w-[30rem] p-6 sm:bottom-7 sm:left-7 sm:p-8">
+            <div class="flex items-center justify-between"><span class="font-mono text-[11px] text-gold-soft">04 / 06</span><span class="chip">Port</span></div>
+            <h3 class="mt-5 font-display text-[clamp(1.7rem,2.8vw,2.7rem)] font-extrabold leading-none tracking-[-.025em]">Port &amp; yard handling</h3>
+            <p class="mt-3 text-[15px] leading-relaxed text-white/70">Container pickup, positioning and yard moves timed to terminal schedules, so boxes are ready when vessels and trucks are.</p>
+          </div>
+        </article>
+
+        <article class="hpanel relative h-[74svh] min-h-[460px] w-[86vw] shrink-0 overflow-hidden rounded-[32px] sm:w-[72vw] lg:w-[min(64vw,1080px)]">
+          <div class="art scale-[1.12]" data-scene="seaair"><canvas aria-hidden="true"></canvas></div>
+          <div class="absolute inset-0 bg-gradient-to-t from-night/85 via-night/5 to-night/0"></div>
+          <div class="glass absolute right-4 top-4 !rounded-2xl px-5 py-4 text-right sm:right-6 sm:top-6">
+            <p class="font-display text-[clamp(2rem,3.6vw,3.2rem)] font-extrabold leading-none tracking-[-.03em]">~<span data-count="15" data-suffix=" km">15 km</span></p>
+            <p class="mt-1 max-w-[12rem] font-mono text-[10px] uppercase leading-relaxed tracking-[.12em] text-white/55">Vizhinjam seaport to TRV airport</p>
+          </div>
+          <div class="hcap glass absolute bottom-4 left-4 right-4 max-w-[30rem] p-6 sm:bottom-7 sm:left-7 sm:p-8">
+            <div class="flex items-center justify-between"><span class="font-mono text-[11px] text-gold-soft">05 / 06</span><span class="chip">Sea · Air</span></div>
+            <h3 class="mt-5 font-display text-[clamp(1.7rem,2.8vw,2.7rem)] font-extrabold leading-none tracking-[-.025em]">Sea &amp; air freight</h3>
+            <p class="mt-3 text-[15px] leading-relaxed text-white/70">Ocean and air legs booked alongside the road move, so a single shipment record covers the whole journey.</p>
+          </div>
+        </article>
+
+        <article class="hpanel relative h-[74svh] min-h-[460px] w-[86vw] shrink-0 overflow-hidden rounded-[32px] sm:w-[72vw] lg:w-[min(64vw,1080px)]">
+          <div class="art scale-[1.12]" data-scene="telemetry"><canvas aria-hidden="true"></canvas></div>
+          <div class="absolute inset-0 bg-gradient-to-t from-night/85 via-night/0 to-night/0"></div>
+          <dl class="glass absolute right-4 top-4 hidden w-[15rem] !rounded-2xl p-4 font-mono text-[11px] sm:right-6 sm:top-6 sm:block" aria-label="Simulated telemetry">
+            <div class="mb-2 flex justify-between"><span class="flex items-center gap-1.5 text-white/80"><i class="dot-live"></i>Live</span><span class="text-gold-soft">Simulated</span></div>
+            <div class="flex justify-between border-t border-white/[.07] py-1.5"><dt class="text-white/45">Lat</dt><dd id="tLat">08.5241° N</dd></div>
+            <div class="flex justify-between border-t border-white/[.07] py-1.5"><dt class="text-white/45">Lon</dt><dd id="tLon">076.9366° E</dd></div>
+            <div class="flex justify-between border-t border-white/[.07] py-1.5"><dt class="text-white/45">Speed</dt><dd><span id="tSpd">52</span> km/h</dd></div>
+            <div class="flex justify-between border-t border-white/[.07] py-1.5"><dt class="text-white/45">Geofence</dt><dd class="text-emerald-300" id="tFence">Port gate 2</dd></div>
+          </dl>
+          <div class="hcap glass absolute bottom-4 left-4 right-4 max-w-[30rem] p-6 sm:bottom-7 sm:left-7 sm:p-8">
+            <div class="flex items-center justify-between"><span class="font-mono text-[11px] text-gold-soft">06 / 06</span><span class="chip">Data</span></div>
+            <h3 class="mt-5 font-display text-[clamp(1.7rem,2.8vw,2.7rem)] font-extrabold leading-none tracking-[-.025em]">Live telemetry</h3>
+            <p class="mt-3 text-[15px] leading-relaxed text-white/70">GPS position, speed, geofence events and exceptions streamed to your team as they happen.</p>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- six steps -->
+  <div id="loadSteps" class="wrap pb-[14svh] pt-[10svh]">
+    <p class="eyebrow">How a load moves</p>
+    <h3 class="mt-4 max-w-[20ch] font-display text-[clamp(1.9rem,3.6vw,3.4rem)] font-extrabold leading-[1] tracking-[-.03em]" data-split="lines">Six steps from booking to proof of delivery</h3>
+    <div class="relative mt-14">
+      <div class="absolute left-[22px] right-0 top-[22px] hidden h-px bg-white/10 lg:block" aria-hidden="true"><i id="loadLine" class="block h-full origin-left scale-x-0 bg-gradient-to-r from-cobalt via-cobalt-soft to-gold"></i></div>
+      <ol class="grid gap-x-5 gap-y-10 sm:grid-cols-2 lg:grid-cols-6">
+        <li class="load-step relative"><span class="relative z-10 grid h-11 w-11 place-items-center rounded-full border border-white/15 bg-night font-mono text-[12px] transition duration-500">01</span><h4 class="mt-5 text-[18px] font-semibold">Book</h4><p class="mt-2 text-[14px] leading-relaxed text-white/55">Your request is logged against your account and contract, with pickup, drop and cargo details.</p></li>
+        <li class="load-step relative"><span class="relative z-10 grid h-11 w-11 place-items-center rounded-full border border-white/15 bg-night font-mono text-[12px] transition duration-500">02</span><h4 class="mt-5 text-[18px] font-semibold">Assign</h4><p class="mt-2 text-[14px] leading-relaxed text-white/55">A compliant vehicle and a verified driver are matched to the load. Permits and documents are checked.</p></li>
+        <li class="load-step relative"><span class="relative z-10 grid h-11 w-11 place-items-center rounded-full border border-white/15 bg-night font-mono text-[12px] transition duration-500">03</span><h4 class="mt-5 text-[18px] font-semibold">Dispatch</h4><p class="mt-2 text-[14px] leading-relaxed text-white/55">The route, stops and handover points are planned and shared before the wheels turn.</p></li>
+        <li class="load-step relative"><span class="relative z-10 grid h-11 w-11 place-items-center rounded-full border border-white/15 bg-night font-mono text-[12px] transition duration-500">04</span><h4 class="mt-5 text-[18px] font-semibold">Track</h4><p class="mt-2 text-[14px] leading-relaxed text-white/55">GPS, geofences and exception alerts follow the load in real time.</p></li>
+        <li class="load-step relative"><span class="relative z-10 grid h-11 w-11 place-items-center rounded-full border border-white/15 bg-night font-mono text-[12px] transition duration-500">05</span><h4 class="mt-5 text-[18px] font-semibold">Verify</h4><p class="mt-2 text-[14px] leading-relaxed text-white/55">Distance, timings and handovers are reconciled against the booking and locked.</p></li>
+        <li class="load-step relative"><span class="relative z-10 grid h-11 w-11 place-items-center rounded-full border border-white/15 bg-night font-mono text-[12px] transition duration-500">06</span><h4 class="mt-5 text-[18px] font-semibold">Deliver</h4><p class="mt-2 text-[14px] leading-relaxed text-white/55">Proof of delivery, trip sheet and invoice reach you as one linked package.</p></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 03 PLATFORM ============ -->
+<section id="platform" class="relative overflow-hidden bg-abyss py-[14svh]" aria-labelledby="platTitle">
+  <div class="pointer-events-none absolute inset-0" aria-hidden="true">
+    <div class="aurora absolute left-[-10%] top-[-10%] h-[55vw] w-[55vw] rounded-full bg-cobalt/25 blur-[130px]"></div>
+    <div class="aurora absolute right-[-15%] top-[30%] h-[45vw] w-[45vw] rounded-full bg-gold/[.12] blur-[140px]"></div>
+    <div class="aurora absolute bottom-[-20%] left-[25%] h-[50vw] w-[50vw] rounded-full bg-cobalt-soft/[.14] blur-[150px]"></div>
+  </div>
+  <div class="wrap relative">
+    <div class="grid gap-8 lg:grid-cols-[1.1fr_.9fr] lg:items-end">
+      <div>
+        <p class="eyebrow">03 · Platform</p>
+        <h2 id="platTitle" class="h-section mt-5" data-split="lines">One source of truth, from trip to payment<span class="gold-dot"></span></h2>
+      </div>
+      <p class="lede" data-reveal>Compass Nexus iQ links customer, contract, employee, vehicle, driver, trip, verification, invoice and payment, so every financial record traces back to the trip behind it.</p>
+    </div>
+
+    <div class="mt-16 grid gap-4 lg:grid-cols-12" data-stagger>
+
+      <article class="glass sheen p-6 sm:p-8 lg:col-span-8" data-tilt>
+        <div class="flex flex-wrap items-center justify-between gap-3"><p class="eyebrow">Invoice to trip, one chain</p><span class="chip-sim">Sample record</span></div>
+        <div id="chain" class="relative mt-8">
+          <svg class="pointer-events-none absolute inset-0 hidden h-full w-full md:block" aria-hidden="true" preserveAspectRatio="none" viewBox="0 0 1000 100">
+            <path class="chain-line" d="M100 50H900" stroke="url(#chainGrad)" stroke-width="2" fill="none" vector-effect="non-scaling-stroke"/>
+            <linearGradient id="chainGrad" x1="0" x2="1"><stop offset="0" stop-color="#e2b100"/><stop offset="1" stop-color="#5b82ff"/></linearGradient>
+          </svg>
+          <ol class="relative grid gap-3 md:grid-cols-5">
+            <li class="chain-node rounded-2xl border border-gold/40 bg-night/70 p-4 backdrop-blur"><p class="font-mono text-[10px] uppercase tracking-[.12em] text-gold-soft">Invoice</p><p class="mt-2 text-[14px] font-semibold">Tax invoice</p><p class="mt-1 text-[12px] text-white/50">HSN/SAC, GST, amount in words</p></li>
+            <li class="chain-node rounded-2xl border border-white/10 bg-night/70 p-4 backdrop-blur"><p class="font-mono text-[10px] uppercase tracking-[.12em] text-white/45">Period</p><p class="mt-2 text-[14px] font-semibold">Billing period</p><p class="mt-1 text-[12px] text-white/50">One cycle, one package</p></li>
+            <li class="chain-node rounded-2xl border border-white/10 bg-night/70 p-4 backdrop-blur"><p class="font-mono text-[10px] uppercase tracking-[.12em] text-white/45">Account</p><p class="mt-2 text-[14px] font-semibold">Customer account</p><p class="mt-1 text-[12px] text-white/50">Contract, site and rate</p></li>
+            <li class="chain-node rounded-2xl border border-white/10 bg-night/70 p-4 backdrop-blur"><p class="font-mono text-[10px] uppercase tracking-[.12em] text-white/45">Ledger</p><p class="mt-2 text-[14px] font-semibold">Trip ledger</p><p class="mt-1 text-[12px] text-white/50">Verified, locked trips</p></li>
+            <li class="chain-node rounded-2xl border border-cobalt-soft/50 bg-night/70 p-4 backdrop-blur"><p class="font-mono text-[10px] uppercase tracking-[.12em] text-cobalt-ice">Trip</p><p class="mt-2 text-[14px] font-semibold">Vehicle · driver · route</p><p class="mt-1 text-[12px] text-white/50">Times, km, GPS record</p></li>
+          </ol>
+        </div>
+        <div class="mt-6 grid gap-2 font-mono text-[11.5px] text-white/60 sm:grid-cols-3">
+          <p class="rounded-xl bg-white/[.04] px-3 py-2.5">Trip ID · CNQ-0918</p>
+          <p class="rounded-xl bg-white/[.04] px-3 py-2.5">Status · Verified → Billed</p>
+          <p class="rounded-xl bg-white/[.04] px-3 py-2.5">Actual km · <span data-count="11.6" data-decimals="1">11.6</span></p>
+        </div>
+      </article>
+
+      <article class="glass sheen p-6 sm:p-8 lg:col-span-4" data-tilt>
+        <p class="eyebrow">Trip status</p>
+        <ul id="states" class="mt-6 flex flex-wrap gap-2">
+          <li class="state-chip">Scheduled</li><li class="state-chip">Assigned</li><li class="state-chip">Driver en route</li><li class="state-chip">Vehicle arrived</li><li class="state-chip">Passenger picked up</li><li class="state-chip">Trip started</li><li class="state-chip">Trip completed</li><li class="state-chip">Verified</li><li class="state-chip">Billed</li>
+          <li class="state-chip !text-white/30 line-through decoration-white/20">Cancelled</li><li class="state-chip !text-white/30 line-through decoration-white/20">No show</li><li class="state-chip !text-white/30 line-through decoration-white/20">Disputed</li>
+        </ul>
+        <p class="mt-6 text-[13.5px] leading-relaxed text-white/55">Cancelled, no-show and disputed trips stay on record but never reach an invoice unpicked.</p>
+      </article>
+
+      <article class="glass sheen p-6 sm:p-8 lg:col-span-7" data-tilt>
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <p class="eyebrow">Compass Nexus iQ AI</p>
+          <span class="chip"><i class="dot-live"></i>Flags for review</span>
+        </div>
+        <p class="mt-5 max-w-xl font-display text-[clamp(1.4rem,2.2vw,2rem)] font-bold leading-[1.15] tracking-[-.02em]">AI compares bookings, rosters, GPS, trip sheets and invoices. People decide.</p>
+        <ul id="flags" class="mt-6 grid gap-2 font-mono text-[12px]">
+          <li class="flex items-center justify-between gap-3 rounded-xl border border-white/[.08] bg-white/[.03] px-4 py-3"><span data-type>KM mismatch · GPS vs trip sheet</span><span class="shrink-0 rounded-full bg-gold/15 px-2.5 py-1 text-[10px] uppercase tracking-[.1em] text-gold-soft">Review</span></li>
+          <li class="flex items-center justify-between gap-3 rounded-xl border border-white/[.08] bg-white/[.03] px-4 py-3"><span data-type>Duplicate trip · same vehicle, same window</span><span class="shrink-0 rounded-full bg-gold/15 px-2.5 py-1 text-[10px] uppercase tracking-[.1em] text-gold-soft">Review</span></li>
+          <li class="flex items-center justify-between gap-3 rounded-xl border border-white/[.08] bg-white/[.03] px-4 py-3"><span data-type>No-show marked billable</span><span class="shrink-0 rounded-full bg-gold/15 px-2.5 py-1 text-[10px] uppercase tracking-[.1em] text-gold-soft">Review</span></li>
+          <li class="flex items-center justify-between gap-3 rounded-xl border border-white/[.08] bg-white/[.03] px-4 py-3"><span data-type>Rate differs from contract</span><span class="shrink-0 rounded-full bg-gold/15 px-2.5 py-1 text-[10px] uppercase tracking-[.1em] text-gold-soft">Review</span></li>
+        </ul>
+        <div class="mt-6 flex flex-wrap gap-2 text-[10.5px]">
+          <span class="chip">Fact</span><span class="chip">Calculated</span><span class="chip">User-provided</span><span class="chip">Document-derived</span><span class="chip !border-gold/40 !text-gold-soft">AI suggestion</span>
+        </div>
+        <p class="mt-4 text-[13px] text-white/50">Every value is labelled with where it came from. Final invoices need a person’s approval.</p>
+      </article>
+
+      <article class="glass sheen p-6 sm:p-8 lg:col-span-5" data-tilt>
+        <div class="flex items-center justify-between gap-3"><p class="eyebrow">Audit trail</p><span class="chip-sim">Sample change</span></div>
+        <dl class="mt-6 text-[13.5px]">
+          <div class="tick-row"><dt class="text-white/50">Field</dt><dd>Actual km · CNQ-0918</dd></div>
+          <div class="tick-row"><dt class="text-white/50">Old value</dt><dd class="font-mono text-white/45 line-through">10.9</dd></div>
+          <div class="tick-row"><dt class="text-white/50">New value</dt><dd class="font-mono text-gold-soft" id="auditNew">11.6</dd></div>
+          <div class="tick-row"><dt class="text-white/50">Changed by</dt><dd>Operations desk</dd></div>
+          <div class="tick-row"><dt class="text-white/50">When</dt><dd class="font-mono">28 Oct · 22:19</dd></div>
+          <div class="tick-row !border-0"><dt class="text-white/50">Reason</dt><dd class="text-right">GPS route confirmed</dd></div>
+        </dl>
+        <p class="mt-4 text-[13px] text-white/50">Locked records are never overwritten. Each change keeps both values, who made it, when and why.</p>
+      </article>
+
+      <article class="glass sheen p-6 sm:p-8 lg:col-span-6" data-tilt>
+        <p class="eyebrow">Billing package, every cycle</p>
+        <ul class="mt-6 grid gap-x-6 sm:grid-cols-2" data-checklist>
+          <li class="tick-row"><span>Tax invoice</span><span class="check">PDF</span></li>
+          <li class="tick-row"><span>Trip summary</span><span class="check">PDF</span></li>
+          <li class="tick-row"><span>Detailed trip sheet</span><span class="check">Excel</span></li>
+          <li class="tick-row"><span>Vehicle and driver summary</span><span class="check">PDF</span></li>
+          <li class="tick-row"><span>KM and rate calculation</span><span class="check">Excel</span></li>
+          <li class="tick-row"><span>Tax calculation</span><span class="check">PDF</span></li>
+          <li class="tick-row"><span>QR verification</span><span class="check">On invoice</span></li>
+          <li class="tick-row"><span>Customer approval status</span><span class="check">Recorded</span></li>
+        </ul>
+      </article>
+
+      <article class="glass sheen p-6 sm:p-8 lg:col-span-6" data-tilt>
+        <p class="eyebrow">Who sees what</p>
+        <ul class="mt-6 flex flex-wrap gap-2" data-stagger-chips>
+          <li class="chip">Super admin</li><li class="chip">Business admin</li><li class="chip">Finance</li><li class="chip">Operations</li><li class="chip">Fleet manager</li><li class="chip">Customer admin</li><li class="chip">Driver</li><li class="chip">Employee</li>
+        </ul>
+        <p class="mt-6 text-[14px] leading-relaxed text-white/60">Login, data-change, trip, invoice, document and user-activity audits sit behind every role.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 04 CONTACT ============ -->
+<section id="contact" class="relative overflow-hidden bg-night py-[14svh]" aria-labelledby="contactTitle">
+  <div class="art opacity-70" data-scene="city" data-seed="7"><canvas aria-hidden="true"></canvas></div>
+  <div class="pointer-events-none absolute inset-0 bg-gradient-to-b from-night via-night/70 to-night/40" aria-hidden="true"></div>
+  <div class="wrap relative grid gap-12 lg:grid-cols-[1fr_minmax(0,540px)] lg:items-start">
+    <div>
+      <p class="eyebrow">04 · Contact</p>
+      <h2 id="contactTitle" class="h-section mt-5 max-w-[14ch]" data-split="lines">Tell us who or what needs to move<span class="gold-dot"></span></h2>
+      <p class="lede mt-6 max-w-lg" data-reveal>Send the shift pattern, or the route and the cargo. We reply with a plan, the vehicles and a price.</p>
+      <dl class="mt-10 grid max-w-lg gap-3" data-reveal>
+        <div class="glass flex items-center justify-between gap-4 !rounded-2xl px-5 py-4">
+          <div><dt class="font-mono text-[10px] uppercase tracking-[.14em] text-white/45">Email</dt><dd class="mt-1 select-all text-[15px]" id="contactEmail">navigation@compassnai.com</dd></div>
+          <button class="copy chip shrink-0 hover:bg-white/10" type="button" data-copy="navigation@compassnai.com">Copy</button>
+        </div>
+        <div class="glass flex items-center justify-between gap-4 !rounded-2xl px-5 py-4">
+          <div><dt class="font-mono text-[10px] uppercase tracking-[.14em] text-white/45">Phone</dt><dd class="mt-1 select-all text-[15px]">+91 99958 81477</dd></div>
+          <button class="copy chip shrink-0 hover:bg-white/10" type="button" data-copy="+919995881477">Copy</button>
+        </div>
+        <div class="glass !rounded-2xl px-5 py-4">
+          <dt class="font-mono text-[10px] uppercase tracking-[.14em] text-white/45">Base</dt><dd class="mt-1 text-[15px]">Thiruvananthapuram, Kerala, India</dd>
+        </div>
+      </dl>
+    </div>
+
+    <form id="quoteForm" class="glass glass-strong p-6 sm:p-8" novalidate data-reveal>
+      <p class="font-display text-[22px] font-bold tracking-[-.01em]">Request a plan</p>
+      <div class="seg mt-5" role="group" aria-label="Service">
+        <button type="button" data-kind="mobility" aria-pressed="true">Employee transport</button>
+        <button type="button" data-kind="logistics" aria-pressed="false">Logistics</button>
+      </div>
+      <div class="mt-5 grid gap-4 sm:grid-cols-2">
+        <label class="field"><span>Your name</span><input id="qName" name="name" autocomplete="name" required placeholder="Full name"></label>
+        <label class="field"><span>Company</span><input id="qCompany" name="company" autocomplete="organization" placeholder="Company"></label>
+      </div>
+      <div class="mt-4 grid gap-4 sm:grid-cols-2" data-kind-fields="mobility">
+        <label class="field"><span>Campus or site</span><input id="qSite" name="site" placeholder="e.g. Technopark Phase III"></label>
+        <label class="field"><span>Employees per shift</span><input id="qHeads" name="heads" inputmode="numeric" placeholder="Approximate"></label>
+        <label class="field sm:col-span-2"><span>Shift timings</span><input id="qShifts" name="shifts" placeholder="e.g. 06:00, 14:00, 22:00"></label>
+      </div>
+      <div class="mt-4 grid gap-4 sm:grid-cols-2" data-kind-fields="logistics" hidden>
+        <label class="field"><span>Pickup</span><input id="qFrom" name="from" placeholder="City or port"></label>
+        <label class="field"><span>Drop</span><input id="qTo" name="to" placeholder="City or port"></label>
+        <label class="field sm:col-span-2"><span>Cargo</span>
+          <select id="qCargo" name="cargo">
+            <option>40 ft container</option>
+            <option>20 ft container</option>
+            <option>Project cargo (oversized)</option>
+            <option>General cargo, full truckload</option>
+            <option>Sea or air freight</option>
+          </select>
+        </label>
+      </div>
+      <label class="field mt-4"><span>Notes</span><textarea id="qNotes" name="notes" rows="3" placeholder="Dates, volumes, special needs"></textarea></label>
+      <p class="mt-3 min-h-[20px] text-[13px] text-gold-soft" id="formMsg" role="status" aria-live="polite"></p>
+      <div class="mt-2 flex flex-wrap gap-3">
+        <button class="btn-gold" type="submit">Copy request</button>
+        <a class="btn-glass" id="mailLink" href="mailto:navigation@compassnai.com">Open in email</a>
+      </div>
+    </form>
+  </div>
+</section>
+
+</main>
+
+<footer class="relative overflow-hidden border-t border-white/[.06] bg-night pb-10 pt-16">
+  <div class="wrap">
+    <p id="footerMark" class="select-none font-display text-[clamp(2.4rem,14vw,4.6rem)] font-extrabold uppercase leading-[.88] tracking-[-.035em] sm:whitespace-nowrap sm:text-[clamp(2.2rem,8.2vw,9.6rem)]" style="font-stretch:112%" aria-label="Compass Nexus iQ">Compass Nexus <span class="text-gold">iQ</span></p>
+    <div class="mt-10 flex flex-col gap-4 border-t border-white/[.08] pt-6 text-[13px] text-white/50 md:flex-row md:items-center md:justify-between">
+      <p>© <span id="year">2026</span> Compass Nexus iQ · Operated by Compass Travel &amp; Transportation</p>
+      <p class="font-mono text-[11px] uppercase tracking-[.12em]">08°31′N 076°56′E · Thiruvananthapuram</p>
+      <p class="flex gap-5"><a class="hover:text-white" href="../index.html">CNIQ India film</a><a class="hover:text-white" href="#hero">Back to top ↑</a></p>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/vendor/gsap.min.js"></script>
+<script src="assets/vendor/ScrollTrigger.min.js"></script>
+<script src="assets/vendor/SplitText.min.js"></script>
+<script src="assets/vendor/ScrambleTextPlugin.min.js"></script>
+<script src="assets/vendor/lenis.min.js"></script>
+<script src="assets/js/scenes.js"></script>
+<script src="assets/js/flagship.js"></script>
+</body>
+</html>

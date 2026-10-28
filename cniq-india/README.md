@@ -57,6 +57,10 @@ The place names are drawn on the canvas in `nameBlock`, `chip`, `pin` and `water
 
 The `O` object holds the scroll state and the timeline sits next to `drawOcean` in `main.js`. The five points are the `.ocean-points` list in `index.html`. Their copy comes from the services and operating model already on the page: one shipment record, live position, checks before billing, flagged exceptions and an audit trail. Check it against how you actually run sea and air legs before launch.
 
+## Flagship page
+
+`flagship/` holds the Compass Nexus iQ flagship page: mobility and logistics on one page, built with Tailwind CSS and GSAP ScrollTrigger. It links back to this film. Open it at `/flagship/`; see `flagship/README.md`.
+
 ## Files
 
 ```
